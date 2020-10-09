@@ -16,11 +16,11 @@ void ABattleGrid::BeginPlay()
 	
 	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
 
-	for (uint32 x = 0; x < sizeX; x++)
+	for (int x = 0; x < sizeX; x++)
 	{
 		rows.Add(GridRow());
 
-		for (uint32 y = 0; y < sizeY; y++)
+		for (int y = 0; y < sizeY; y++)
 		{
 			FTransform transform;
 			transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -45.f));
@@ -81,8 +81,46 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	int currentY = centerNode->yIndex;
 
 	//+X
-	if (currentX < sizeX)
+	if (currentX < (sizeX - 1))
 	{
-		outNodes.Add(&rows[currentX + 1].columns[currentY]);
+		FGridNode* node = &rows[currentX + 1].columns[currentY];
+		if (!node->bClosed)
+		{
+			node->bClosed = true;
+			outNodes.Add(node);
+		}
+	}
+
+	//-X
+	if (currentX > 0)
+	{
+		FGridNode* node = &rows[currentX - 1].columns[currentY];
+		if (!node->bClosed)
+		{
+			node->bClosed = true;
+			outNodes.Add(node);
+		}
+	}
+
+	//+Y
+	if (currentY < (sizeY - 1))
+	{
+		FGridNode* node = &rows[currentX].columns[currentY + 1];
+		if (!node->bClosed)
+		{
+			node->bClosed = true;
+			outNodes.Add(node);
+		}
+	}
+
+	//-Y
+	if (currentY > 0)
+	{
+		FGridNode* node = &rows[currentX + 1].columns[currentY - 1];
+		if (!node->bClosed)
+		{
+			node->bClosed = true;
+			outNodes.Add(node);
+		}
 	}
 }

@@ -38,4 +38,30 @@ void AUnit::Tick(float DeltaTime)
 void AUnit::ShowMovementPath(int movementPoints)
 {
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
+
+	TArray<FGridNode*> previewNodes;
+	TArray<FGridNode*> closedPreviewNodes;
+
+	battleGrid->GetNeighbouringNodes(startingNode, previewNodes);
+
+	for (int moveIndex = 0; moveIndex < movementPoints; moveIndex++)
+	{
+		for (int previewIndex = 0; previewIndex < previewNodes.Num(); previewIndex++)
+		{
+			battleGrid->GetNeighbouringNodes(previewNodes[previewIndex], closedPreviewNodes);
+		}
+
+		previewNodes.Append(closedPreviewNodes);
+		closedPreviewNodes.Empty();
+	}
+
+	for (FGridNode* node : previewNodes)
+	{
+		FTransform transform;
+		battleGrid->instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		transform.SetScale3D(FVector(0.f));
+		battleGrid->instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+	}
+
+	return;
 }

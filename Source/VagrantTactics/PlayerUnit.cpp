@@ -125,6 +125,7 @@ void APlayerUnit::Attack()
 				AUnit* unit = Cast<AUnit>(hit.GetActor());
 				if (unit)
 				{
+					unit->ShowMovementPath(1);
 					unit->currentHealth -= 20;
 					currentActionPoints -= 20;
 				}

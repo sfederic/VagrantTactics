@@ -26,9 +26,9 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	FGridNode* GetNode(uint32 x, uint32 y);
+	FGridNode* GetNode(int x, int y);
 	void ActivateBattle();
-	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNodes*>& outNodes)
+	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
 
 	TArray<GridRow> rows;
 

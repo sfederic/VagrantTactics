@@ -26,4 +26,5 @@ struct FGridNode
 	int yIndex;
 	int32 instancedMeshIndex;
 	bool bActive = true;
+	bool bClosed;
 };
