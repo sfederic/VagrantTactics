@@ -29,24 +29,28 @@ void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*if (GetActorLocation().Equals(nextMoveLocation))
+	if (GetActorLocation().Equals(nextMoveLocation) && bSetToMove)
 	{
-		if (movementPathNodes.Num() > 0)
+		if (pathNodes.Num() > 0)
 		{
-			if (movementPathNodeIndex < movementPathNodes.Num())
+			if (movementPathNodeIndex < pathNodes.Num())
 			{
-				nextMoveLocation = movementPathNodes[movementPathNodeIndex].location;
+				nextMoveLocation = pathNodes[movementPathNodeIndex].location;
+				xIndex = pathNodes[movementPathNodeIndex].xIndex;
+				yIndex = pathNodes[movementPathNodeIndex].yIndex;
 				movementPathNodeIndex++;
 			}
 
-			if (movementPathNodeIndex > (movementPathNodes.Num() - 1))
+			if (movementPathNodeIndex > (pathNodes.Num() - 1))
 			{
-				movementPathNodes.Empty();
+				pathNodes.Empty();
+				movementPathNodeIndex = 0;
+				bSetToMove = false;
 			}
 		}
 	}
 
-	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextMoveLocation, DeltaTime, moveSpeed));*/
+	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextMoveLocation, DeltaTime, moveSpeed));
 
 	if (currentHealth <= 0)
 	{
@@ -58,7 +62,7 @@ void AUnit::Tick(float DeltaTime)
 
 void AUnit::ShowMovementPath(int movementPoints)
 {
-	battleGrid->ResetAllNodes();
+	battleGrid->ResetAllNodeValues();
 
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 
@@ -79,124 +83,48 @@ void AUnit::ShowMovementPath(int movementPoints)
 	}
 
 	battleGrid->UnhideNodes(previewNodes);
+
+	for (FGridNode* node : previewNodes)
+	{
+		movementPathNodes.Add(*node);
+	}
 }
 
-void AUnit::MoveTo(FGridNode* destinationNode)
+void AUnit::MoveTo(FGridNode destinationNode)
 {
-	battleGrid->ResetAllNodes();
+	bSetToMove = true;
 
-	FGridNode* startingNode = &battleGrid->rows[xIndex].columns[yIndex];
-	startingNode->gCost = FVector::Dist(startingNode->location, startingNode->location);
-	startingNode->hCost = FVector::Dist(startingNode->location, destinationNode->location);
-	startingNode->parentNode = nullptr;
+	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 
-	FGridNode* currentNode = startingNode;
-
-	TArray<FGridNode*> openNodes;
-	openNodes.Add(currentNode);
-
-	TArray<FGridNode*> closedNodes;
-
-	while (openNodes.Num() > 0)
+	//Assign all costs
+	for (int i = 0; i < movementPathNodes.Num(); i++)
 	{
-		//Find node with lowest F-cost in array.
-		float lowestFCost = TNumericLimits<float>::Max();
-		int currentIndex = 0;
-		for (int i = 0; i < openNodes.Num(); i++)
-		{
-			float fCost = openNodes[i]->GetFCost();
-			if (fCost <= lowestFCost)
-			{
-				lowestFCost = fCost;
-				currentIndex = i;
-			}
-		}
-
-		currentNode = openNodes[currentIndex];
-		currentNode->bClosed = true;
-		closedNodes.Add(currentNode);
-		openNodes.RemoveAt(currentIndex);
-
-		//Check if currentNode is destinationNode
-		if (currentNode == destinationNode)
-		{
-			goto EndLoop;
-		}
-
-		//Get each cross neighbour of the current node
-		int currentX = currentNode->xIndex;
-		int currentY = currentNode->yIndex;
-
-		//+X
-		if (currentX < (battleGrid->sizeX - 1))
-		{
-			FGridNode* node = &battleGrid->rows[currentX + 1].columns[currentY];
-			if (node->bActive && !node->bClosed)
-			{
-				node->gCost = FVector::Dist(node->location, startingNode->location);
-				node->hCost = FVector::Dist(node->location, destinationNode->location);
-				node->parentNode = currentNode;
-
-				openNodes.Add(node);
-			}
-		}
-
-		//-X
-		if (currentX != 0)
-		{
-			FGridNode* node = &battleGrid->rows[currentX - 1].columns[currentY];
-			if (node->bActive && !node->bClosed)
-			{
-				node->gCost = FVector::Dist(node->location, startingNode->location);
-				node->hCost = FVector::Dist(node->location, destinationNode->location);
-				node->parentNode = currentNode;
-
-				openNodes.Add(node);
-			}
-		}
-
-		//+Y
-		if (currentY < (battleGrid->sizeY - 1))
-		{
-			FGridNode* node = &battleGrid->rows[currentX].columns[currentY + 1];
-			if (node->bActive && !node->bClosed)
-			{
-				node->gCost = FVector::Dist(node->location, startingNode->location);
-				node->hCost = FVector::Dist(node->location, destinationNode->location);
-				node->parentNode = currentNode;
-
-				openNodes.Add(node);
-			}
-		}
-
-		//-Y
-		if (currentY != 0)
-		{
-			FGridNode* node = &battleGrid->rows[currentX].columns[currentY - 1];
-			if (node->bActive && !node->bClosed)
-			{
-				node->gCost = FVector::Dist(node->location, startingNode->location);
-				node->hCost = FVector::Dist(node->location, destinationNode->location);
-				node->parentNode = currentNode;
-
-				openNodes.Add(node);
-			}
-		}
-	}
-	
-	EndLoop:
-
-	//Trace path from destination node to starting node position through parents
-	movementPathNodes.Add(*currentNode);
-
-	while (currentNode->parentNode != nullptr)
-	{
-		currentNode = currentNode->parentNode;
-		movementPathNodes.Add(*currentNode);
+		movementPathNodes[i].gCost = FVector::Distance(startingNode->location, movementPathNodes[i].location);
+		movementPathNodes[i].hCost = FVector::Distance(destinationNode.location, movementPathNodes[i].location);
 	}
 
-	Algo::Reverse(movementPathNodes);
+	//Find lowest distance to end
+	int lowestHCostIndex = 0;
+	float lowestHCost = TNumericLimits<float>::Max();
+	for (int i = 0; i < movementPathNodes.Num(); i++)
+	{
+		if (movementPathNodes[i].hCost < lowestHCost)
+		{
+			lowestHCost = movementPathNodes[i].hCost;
+			lowestHCostIndex = i;
+		}
+	}
 
-	openNodes.Empty();
-	closedNodes.Empty();
+	FGridNode* nextNode = &movementPathNodes[lowestHCostIndex];
+
+	while (nextNode != startingNode)
+	{
+		nextNode = nextNode->parentNode;
+		pathNodes.Add(*nextNode);
+	}
+
+	Algo::Reverse(pathNodes);
+	movementPathNodes.Empty();
+
+	return;
 }

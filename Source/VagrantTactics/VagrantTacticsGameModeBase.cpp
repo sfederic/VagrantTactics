@@ -19,7 +19,6 @@ void AVagrantTacticsGameModeBase::BeginPlay()
 		gridActors.Add(gridActor);
 	}
 
-
 	//Get BattleGrid
 	TArray<AActor*> outBattleGrid;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleGrid::StaticClass(), outBattleGrid);

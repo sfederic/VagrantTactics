@@ -16,6 +16,7 @@ void ABattleGrid::BeginPlay()
 	
 	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
 
+	//Populate grid and setup instances
 	for (int x = 0; x < sizeX; x++)
 	{
 		rows.Add(GridRow());
@@ -25,6 +26,7 @@ void ABattleGrid::BeginPlay()
 			FGridNode node = {};
 			node.xIndex = x;
 			node.yIndex = y;
+			node.location = FVector((float)x * 100.f, (float)y * 100.f, 0.f);
 
 			FTransform transform;
 			transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -45.f));
@@ -42,6 +44,10 @@ void ABattleGrid::BeginPlay()
 			}
 
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
+
+			//Add index to map
+			nodeMap.Add(instancedMeshIndex, node);
+
 			node.instancedMeshIndex = instancedMeshIndex;
 			rows[x].columns.Add(node);
 		}
@@ -87,6 +93,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -98,6 +105,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -109,6 +117,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -120,6 +129,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -152,7 +162,7 @@ void ABattleGrid::UnhideNodes(TArray<FGridNode*> nodesToUnhide)
 	}
 }
 
-void ABattleGrid::ResetAllNodes()
+void ABattleGrid::ResetAllNodeValues()
 {
 	for (int x = 0; x < sizeX; x++)
 	{

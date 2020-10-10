@@ -7,6 +7,8 @@
 #include "PlayerUnit.generated.h"
 
 class UCameraComponent;
+class ABattleGrid;
+class AUnit;
 
 //Player class.
 UCLASS()
@@ -41,6 +43,9 @@ public:
 	UCameraComponent* camera;
 	FRotator cameraFocusRotation;
 	UPROPERTY(EditAnywhere) float cameraFocusLerpSpeed;
+
+	ABattleGrid* battleGrid;
+	AUnit* selectedUnit;
 
 	FVector nextLocation;
 	FRotator nextRotation;

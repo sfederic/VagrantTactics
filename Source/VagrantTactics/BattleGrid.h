@@ -31,9 +31,10 @@ public:
 	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
 	void HideNodes(TArray<FGridNode*> nodesToHide);
 	void UnhideNodes(TArray<FGridNode*> nodesToUnhide);
-	void ResetAllNodes();
+	void ResetAllNodeValues();
 
 	TArray<GridRow> rows;
+	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
 	class UInstancedStaticMeshComponent* instancedStaticMeshComponent;
 

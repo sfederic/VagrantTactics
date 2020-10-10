@@ -30,6 +30,9 @@ void APlayerUnit::BeginPlay()
 
 	camera = FindComponentByClass<UCameraComponent>();
 	cameraFocusRotation = camera->GetComponentRotation();
+
+	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	battleGrid = gameMode->activeBattleGrid;
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -170,8 +173,20 @@ void APlayerUnit::Click()
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
 		if (unit)
 		{
-			unit->ShowMovementPath(unit->currentMovementPoints);
-			camera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), unit->GetActorLocation()));
+			selectedUnit = unit;
+		}
+		
+		if (selectedUnit)
+		{
+			selectedUnit->ShowMovementPath(selectedUnit->currentMovementPoints);
+
+			if (hit.Item > -1)
+			{
+				FGridNode node = *battleGrid->nodeMap.Find(hit.Item);
+				selectedUnit->MoveTo(node);
+			}
+
+			//camera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), unit->GetActorLocation()));
 		}
 		else
 		{
