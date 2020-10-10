@@ -22,9 +22,13 @@ void ABattleGrid::BeginPlay()
 
 		for (int y = 0; y < sizeY; y++)
 		{
+			FGridNode node = {};
+			node.xIndex = x;
+			node.yIndex = y;
+
 			FTransform transform;
 			transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -45.f));
-			transform.SetScale3D(FVector(0.95f));
+			transform.SetScale3D(FVector(0.f));
 
 			FHitResult hit;
 			FCollisionQueryParams params;
@@ -32,20 +36,16 @@ void ABattleGrid::BeginPlay()
 			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
-				if (!hit.GetActor()->Tags.Contains(GameplayTags::Player))
-				{
-					//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
-					transform.SetScale3D(FVector(0.f));
-				}
+				//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
+				transform.SetScale3D(FVector(0.f));
+				node.bActive = false;
 			}
 
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
-			//instancedStaticMeshComponent->UpdateInstanceTransform(0, FTransform(FVector(0.f)));
-			rows[x].columns.Add(FGridNode(x, y, instancedMeshIndex));
+			node.instancedMeshIndex = instancedMeshIndex;
+			rows[x].columns.Add(node);
 		}
 	}
-
-	//instancedStaticMeshComponent->SetHiddenInGame(true);
 }
 
 void ABattleGrid::Tick(float DeltaTime)
@@ -84,7 +84,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	if (currentX < (sizeX - 1))
 	{
 		FGridNode* node = &rows[currentX + 1].columns[currentY];
-		if (!node->bClosed)
+		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
 			outNodes.Add(node);
@@ -95,7 +95,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	if (currentX > 0)
 	{
 		FGridNode* node = &rows[currentX - 1].columns[currentY];
-		if (!node->bClosed)
+		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
 			outNodes.Add(node);
@@ -106,7 +106,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	if (currentY < (sizeY - 1))
 	{
 		FGridNode* node = &rows[currentX].columns[currentY + 1];
-		if (!node->bClosed)
+		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
 			outNodes.Add(node);
@@ -116,11 +116,49 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	//-Y
 	if (currentY > 0)
 	{
-		FGridNode* node = &rows[currentX + 1].columns[currentY - 1];
-		if (!node->bClosed)
+		FGridNode* node = &rows[currentX].columns[currentY - 1];
+		if (!node->bClosed && node->bActive)
 		{
 			node->bClosed = true;
 			outNodes.Add(node);
+		}
+	}
+}
+
+void ABattleGrid::HideNodes(TArray<FGridNode*> nodesToHide)
+{
+	//Instance meshes need to have render dirty flag set to update transform.
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (FGridNode* node : nodesToHide)
+	{
+		FTransform transform;
+		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		transform.SetScale3D(FVector(0.f));
+		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+	}
+}
+
+void ABattleGrid::UnhideNodes(TArray<FGridNode*> nodesToUnhide)
+{
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (FGridNode* node : nodesToUnhide)
+	{
+		FTransform transform;
+		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		transform.SetScale3D(FVector(0.95f));
+		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+	}
+}
+
+void ABattleGrid::ResetAllNodes()
+{
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			rows[x].columns[y].ResetValues();
 		}
 	}
 }

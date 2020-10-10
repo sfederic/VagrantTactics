@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Vector.h"
 #include "GridNode.generated.h"
 
 USTRUCT()
@@ -13,12 +14,25 @@ struct FGridNode
 		xIndex = x;
 		yIndex = y;
 		instancedMeshIndex = instancedMeshIndex_;
+
+		location = FVector((float)x * 100.f, (float)y * 100.f, 0.f);
 	}
 	
 	float GetFCost()
 	{
 		return gCost + hCost;
 	}
+
+	void ResetValues()
+	{
+		gCost = 0.f;
+		hCost = 0.f;
+		parentNode = nullptr;
+		bClosed = false;
+	}
+
+	FGridNode* parentNode;
+	FVector location;
 
 	float gCost; //Distance from start node
 	float hCost; //Distance to end node

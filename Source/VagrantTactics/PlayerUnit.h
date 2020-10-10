@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerUnit.generated.h"
 
+class UCameraComponent;
+
 //Player class.
 UCLASS()
 class VAGRANTTACTICS_API APlayerUnit : public APawn
@@ -35,6 +37,10 @@ public:
 	void Click();
 	void StartCombat();
 	void ResetActionPointsToMax();
+
+	UCameraComponent* camera;
+	FRotator cameraFocusRotation;
+	UPROPERTY(EditAnywhere) float cameraFocusLerpSpeed;
 
 	FVector nextLocation;
 	FRotator nextRotation;

@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "VagrantTacticsGameModeBase.h"
 #include "BattleGrid.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -25,6 +27,9 @@ void APlayerUnit::BeginPlay()
 
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	controller->bShowMouseCursor = true;
+
+	camera = FindComponentByClass<UCameraComponent>();
+	cameraFocusRotation = camera->GetComponentRotation();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -33,6 +38,8 @@ void APlayerUnit::Tick(float DeltaTime)
 
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextLocation, DeltaTime, moveSpeed));
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), nextRotation, DeltaTime, rotateSpeed));
+
+	//camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -125,7 +132,6 @@ void APlayerUnit::Attack()
 				AUnit* unit = Cast<AUnit>(hit.GetActor());
 				if (unit)
 				{
-					unit->ShowMovementPath(1);
 					unit->currentHealth -= 20;
 					currentActionPoints -= 20;
 				}
@@ -160,6 +166,17 @@ void APlayerUnit::Click()
 	if (controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_WorldStatic), true, hit))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Clicked Actor: %s | Index: %d"), *hit.GetActor()->GetName(), hit.Item);
+
+		AUnit* unit = Cast<AUnit>(hit.GetActor());
+		if (unit)
+		{
+			unit->ShowMovementPath(unit->currentMovementPoints);
+			camera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), unit->GetActorLocation()));
+		}
+		else
+		{
+			camera->SetWorldRotation(cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation()));
+		}
 	}
 }
 
