@@ -27,7 +27,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	FGridNode* GetNode(int x, int y);
-	void Init();
+	void Init(); //Init() exists because of BeginPlay() order not being a thing. Have to rely on GameMode
 	void ActivateBattle();
 	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
 	void HideNodes(TArray<FGridNode*>& nodesToHide);
@@ -37,6 +37,8 @@ public:
 	void ResetAllNodeValues();
 
 	TArray<GridRow> rows;
+
+	//Keep in mind because of the USTRUCT() serialization fuckery, have to manually copy GridNode values across through Find()s
 	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
 	FVector nodeVisibleScale = FVector(0.95f);

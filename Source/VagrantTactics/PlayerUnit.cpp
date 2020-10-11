@@ -126,6 +126,10 @@ void APlayerUnit::Move(FVector direction)
 			UE_LOG(LogTemp, Warning, TEXT("Player can't move into inactive node"));
 			return;
 		}
+		else
+		{
+			nextLocation = nextNodeToMoveTo->location;
+		}
 	}
 }
 

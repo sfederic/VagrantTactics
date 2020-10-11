@@ -4,6 +4,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "GameplayTags.h"
 #include "GridActor.h"
+#include "LevelGridValues.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -45,16 +46,16 @@ void ABattleGrid::Init()
 			FGridNode node = {};
 			node.xIndex = x;
 			node.yIndex = y;
-			node.location = FVector((float)x * 100.f, (float)y * 100.f, 0.f);
+			node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, 0.f);
 			node.bActive = true;
 
 			FTransform transform;
-			transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -45.f));
+			transform.SetLocation(FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, -LevelGridValues::nodeHeightOffset));
 			transform.SetScale3D(nodeVisibleScale);
 
 			FHitResult hit;
 			FCollisionQueryParams params;
-			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 45.f);
+			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
@@ -63,6 +64,21 @@ void ABattleGrid::Init()
 					//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
 					transform.SetScale3D(nodeHiddenScale);
 					node.bActive = false; 
+				}
+
+
+				//Deal with platforms
+				if (hit.GetActor()->Tags.Contains(GameplayTags::Platform))
+				{
+					FHitResult platformHit;
+					FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+					if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
+					{
+						transform.SetLocation(platformHit.ImpactPoint + FVector(0.f, 0.f, 5.f));
+						transform.SetScale3D(nodeVisibleScale);
+						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+						node.bActive = true;
+					}
 				}
 			}
 
@@ -82,7 +98,6 @@ void ABattleGrid::Init()
 					if (hitGridActor)
 					{
 						hitGridActor->connectedNodeIndices.Add(node.instancedMeshIndex);
-						UE_LOG(LogTemp, Warning, TEXT("X %d Y %d"), node.xIndex, node.yIndex);
 					}
 				}
 			}
