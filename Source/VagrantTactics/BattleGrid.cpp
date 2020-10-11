@@ -78,7 +78,7 @@ void ABattleGrid::Init()
 					AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
 					if (hitGridActor)
 					{
-						hitGridActor->connectedNodes.Add(&rows[x].columns[y]);
+						hitGridActor->connectedNodes.Add(rows[x].columns[y]);
 						UE_LOG(LogTemp, Warning, TEXT("X:%d Y:%d"), rows[x].columns[y].xIndex, rows[x].columns[y].yIndex);
 						UE_LOG(LogTemp, Warning, TEXT("Actor name: %s"), *hit.GetActor()->GetName());
 					}
@@ -102,7 +102,7 @@ void ABattleGrid::ActivateBattle()
 	}
 }
 
-void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes)
+void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>& outNodes)
 {
 	int currentX = centerNode->xIndex;
 	int currentY = centerNode->yIndex;
@@ -110,11 +110,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	//+X
 	if (currentX < (sizeX - 1))
 	{
-		FGridNode* node = &rows[currentX + 1].columns[currentY];
-		if (!node->bClosed && node->bActive)
+		FGridNode node = rows[currentX + 1].columns[currentY];
+		if (!node.bClosed && node.bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
+			node.bClosed = true;
+			node.parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -122,11 +122,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	//-X
 	if (currentX > 0)
 	{
-		FGridNode* node = &rows[currentX - 1].columns[currentY];
-		if (!node->bClosed && node->bActive)
+		FGridNode node = rows[currentX - 1].columns[currentY];
+		if (!node.bClosed && node.bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
+			node.bClosed = true;
+			node.parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -134,11 +134,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	//+Y
 	if (currentY < (sizeY - 1))
 	{
-		FGridNode* node = &rows[currentX].columns[currentY + 1];
-		if (!node->bClosed && node->bActive)
+		FGridNode node = rows[currentX].columns[currentY + 1];
+		if (!node.bClosed && node.bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
+			node.bClosed = true;
+			node.parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -146,44 +146,44 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	//-Y
 	if (currentY > 0)
 	{
-		FGridNode* node = &rows[currentX].columns[currentY - 1];
-		if (!node->bClosed && node->bActive)
+		FGridNode node = rows[currentX].columns[currentY - 1];
+		if (!node.bClosed && node.bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
+			node.bClosed = true;
+			node.parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
 }
 
-void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
+void ABattleGrid::HideNodes(TArray<FGridNode>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.
 	instancedStaticMeshComponent->MarkRenderStateDirty();
 
-	for (FGridNode* node : nodesToHide)
+	for (FGridNode& node : nodesToHide)
 	{
-		node->bActive = false;
+		node.bActive = false;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		instancedStaticMeshComponent->GetInstanceTransform(node.instancedMeshIndex, transform);
 		transform.SetScale3D(nodeHiddenScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+		instancedStaticMeshComponent->UpdateInstanceTransform(node.instancedMeshIndex, transform);
 	}
 }
 
-void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
+void ABattleGrid::UnhideNodes(TArray<FGridNode>& nodesToUnhide)
 {
 	instancedStaticMeshComponent->MarkRenderStateDirty();
 
-	for (FGridNode* node : nodesToUnhide)
+	for (FGridNode& node : nodesToUnhide)
 	{
-		node->bActive = true;
+		node.bActive = true;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		instancedStaticMeshComponent->GetInstanceTransform(node.instancedMeshIndex, transform);
 		transform.SetScale3D(nodeVisibleScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+		instancedStaticMeshComponent->UpdateInstanceTransform(node.instancedMeshIndex, transform);
 	}
 }
 

@@ -57,8 +57,8 @@ void AUnit::ShowMovementPath(int movementPoints)
 
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 
-	TArray<FGridNode*> previewNodes;
-	TArray<FGridNode*> closedPreviewNodes;
+	TArray<FGridNode> previewNodes;
+	TArray<FGridNode> closedPreviewNodes;
 
 	battleGrid->GetNeighbouringNodes(startingNode, previewNodes);
 
@@ -66,7 +66,7 @@ void AUnit::ShowMovementPath(int movementPoints)
 	{
 		for (int previewIndex = 0; previewIndex < previewNodes.Num(); previewIndex++)
 		{
-			battleGrid->GetNeighbouringNodes(previewNodes[previewIndex], closedPreviewNodes);
+			battleGrid->GetNeighbouringNodes(&previewNodes[previewIndex], closedPreviewNodes);
 		}
 
 		previewNodes.Append(closedPreviewNodes);
@@ -75,9 +75,9 @@ void AUnit::ShowMovementPath(int movementPoints)
 
 	battleGrid->UnhideNodes(previewNodes);
 
-	for (FGridNode* node : previewNodes)
+	for (FGridNode& node : previewNodes)
 	{
-		movementPathNodes.Add(*node);
+		movementPathNodes.Add(node);
 	}
 }
 

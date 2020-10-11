@@ -29,9 +29,9 @@ public:
 	FGridNode* GetNode(int x, int y);
 	void Init();
 	void ActivateBattle();
-	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
-	void HideNodes(TArray<FGridNode*>& nodesToHide);
-	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);
+	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>& outNodes);
+	void HideNodes(TArray<FGridNode>& nodesToHide);
+	void UnhideNodes(TArray<FGridNode>& nodesToUnhide);
 	void ResetAllNodeValues();
 
 	TArray<GridRow> rows;
