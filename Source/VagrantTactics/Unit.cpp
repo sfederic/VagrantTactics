@@ -33,9 +33,9 @@ void AUnit::Tick(float DeltaTime)
 		{
 			if (movementPathNodeIndex < pathNodes.Num())
 			{
-				nextMoveLocation = pathNodes[movementPathNodeIndex].location;
-				xIndex = pathNodes[movementPathNodeIndex].xIndex;
-				yIndex = pathNodes[movementPathNodeIndex].yIndex;
+				nextMoveLocation = pathNodes[movementPathNodeIndex]->location;
+				xIndex = pathNodes[movementPathNodeIndex]->xIndex;
+				yIndex = pathNodes[movementPathNodeIndex]->yIndex;
 				movementPathNodeIndex++;
 			}
 
@@ -57,8 +57,8 @@ void AUnit::ShowMovementPath(int movementPoints)
 
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 
-	TArray<FGridNode> previewNodes;
-	TArray<FGridNode> closedPreviewNodes;
+	TArray<FGridNode*> previewNodes;
+	TArray<FGridNode*> closedPreviewNodes;
 
 	battleGrid->GetNeighbouringNodes(startingNode, previewNodes);
 
@@ -66,7 +66,7 @@ void AUnit::ShowMovementPath(int movementPoints)
 	{
 		for (int previewIndex = 0; previewIndex < previewNodes.Num(); previewIndex++)
 		{
-			battleGrid->GetNeighbouringNodes(&previewNodes[previewIndex], closedPreviewNodes);
+			battleGrid->GetNeighbouringNodes(previewNodes[previewIndex], closedPreviewNodes);
 		}
 
 		previewNodes.Append(closedPreviewNodes);
@@ -75,13 +75,13 @@ void AUnit::ShowMovementPath(int movementPoints)
 
 	battleGrid->UnhideNodes(previewNodes);
 
-	for (FGridNode& node : previewNodes)
+	for (FGridNode* node : previewNodes)
 	{
 		movementPathNodes.Add(node);
 	}
 }
 
-void AUnit::MoveTo(FGridNode destinationNode)
+void AUnit::MoveTo(FGridNode* destinationNode)
 {
 	bSetToMove = true;
 
@@ -90,8 +90,8 @@ void AUnit::MoveTo(FGridNode destinationNode)
 	//Assign all costs
 	for (int i = 0; i < movementPathNodes.Num(); i++)
 	{
-		movementPathNodes[i].gCost = FVector::Distance(startingNode->location, movementPathNodes[i].location);
-		movementPathNodes[i].hCost = FVector::Distance(destinationNode.location, movementPathNodes[i].location);
+		movementPathNodes[i]->gCost = FVector::Distance(startingNode->location, movementPathNodes[i]->location);
+		movementPathNodes[i]->hCost = FVector::Distance(destinationNode->location, movementPathNodes[i]->location);
 	}
 
 	//Find lowest distance to end
@@ -99,19 +99,19 @@ void AUnit::MoveTo(FGridNode destinationNode)
 	float lowestHCost = TNumericLimits<float>::Max();
 	for (int i = 0; i < movementPathNodes.Num(); i++)
 	{
-		if (movementPathNodes[i].hCost < lowestHCost)
+		if (movementPathNodes[i]->hCost < lowestHCost)
 		{
-			lowestHCost = movementPathNodes[i].hCost;
+			lowestHCost = movementPathNodes[i]->hCost;
 			lowestHCostIndex = i;
 		}
 	}
 
-	FGridNode* nextNode = &movementPathNodes[lowestHCostIndex];
+	FGridNode* nextNode = movementPathNodes[lowestHCostIndex];
 
 	while (nextNode != startingNode)
 	{
 		nextNode = nextNode->parentNode;
-		pathNodes.Add(*nextNode);
+		pathNodes.Add(nextNode);
 	}
 
 	Algo::Reverse(pathNodes);

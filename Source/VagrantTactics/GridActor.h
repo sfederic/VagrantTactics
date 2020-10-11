@@ -23,7 +23,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
-	UPROPERTY() TArray<FGridNode> connectedNodes;
+	UPROPERTY() TArray<int32> connectedNodeIndices;
 
 	class ABattleGrid* battleGrid;
 

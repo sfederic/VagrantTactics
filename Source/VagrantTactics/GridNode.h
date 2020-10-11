@@ -8,10 +8,6 @@ struct FGridNode
 {
 	GENERATED_BODY()
 
-	~FGridNode()
-	{
-		GLog->Logf(TEXT("deleted early"));
-	}
 	FGridNode() {}
 	FGridNode(int x, int y, int32 instancedMeshIndex_)
 	{

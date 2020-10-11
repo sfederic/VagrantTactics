@@ -8,6 +8,7 @@
 #include "BattleGrid.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "LevelGridValues.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -39,6 +40,11 @@ void APlayerUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Set grid indices
+	xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
+	yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
+
+	//Lerp movement and rotation
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextLocation, DeltaTime, moveSpeed));
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), nextRotation, DeltaTime, rotateSpeed));
 
@@ -69,6 +75,36 @@ void APlayerUnit::Move(FVector direction)
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
+		//return out of function if player is on grid boundary
+		if (direction.Equals(-FVector::ForwardVector))
+		{
+			if (xIndex <= 0)
+			{
+				return;
+			}
+		}
+		else if (direction.Equals(FVector::ForwardVector))
+		{
+			if (xIndex >= (battleGrid->sizeX- 1))
+			{
+				return;
+			}
+		}
+		else if (direction.Equals(-FVector::RightVector))
+		{
+			if (yIndex <= 0)
+			{
+				return;
+			}
+		}
+		else if (direction.Equals(FVector::RightVector))
+		{
+			if (yIndex >= (battleGrid->sizeY - 1))
+			{
+				return;
+			}
+		}
+
 		if (bPlayerInBattle)
 		{
 			if (currentActionPoints > 10)
@@ -182,7 +218,7 @@ void APlayerUnit::Click()
 
 			if (hit.Item > -1)
 			{
-				FGridNode node = *battleGrid->nodeMap.Find(hit.Item);
+				FGridNode* node = battleGrid->nodeMap.Find(hit.Item);
 				selectedUnit->MoveTo(node);
 			}
 

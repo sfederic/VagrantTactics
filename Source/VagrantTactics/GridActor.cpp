@@ -28,7 +28,7 @@ void AGridActor::Tick(float DeltaTime)
 	{
 		if (currentHealth <= 0)
 		{
-			battleGrid->UnhideNodes(connectedNodes);
+			battleGrid->UnhideNodes(connectedNodeIndices);
 
 			Destroy();
 		}

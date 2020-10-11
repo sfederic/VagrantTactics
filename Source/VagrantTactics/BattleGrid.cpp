@@ -58,9 +58,12 @@ void ABattleGrid::Init()
 			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
-				//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
-				transform.SetScale3D(nodeHiddenScale);
-				node.bActive = false;
+				if (!hit.GetActor()->Tags.Contains(GameplayTags::Player))
+				{
+					//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
+					transform.SetScale3D(nodeHiddenScale);
+					node.bActive = false; 
+				}
 			}
 
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
@@ -78,9 +81,8 @@ void ABattleGrid::Init()
 					AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
 					if (hitGridActor)
 					{
-						hitGridActor->connectedNodes.Add(rows[x].columns[y]);
-						UE_LOG(LogTemp, Warning, TEXT("X:%d Y:%d"), rows[x].columns[y].xIndex, rows[x].columns[y].yIndex);
-						UE_LOG(LogTemp, Warning, TEXT("Actor name: %s"), *hit.GetActor()->GetName());
+						hitGridActor->connectedNodeIndices.Add(node.instancedMeshIndex);
+						UE_LOG(LogTemp, Warning, TEXT("X %d Y %d"), node.xIndex, node.yIndex);
 					}
 				}
 			}
@@ -102,7 +104,7 @@ void ABattleGrid::ActivateBattle()
 	}
 }
 
-void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>& outNodes)
+void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes)
 {
 	int currentX = centerNode->xIndex;
 	int currentY = centerNode->yIndex;
@@ -110,11 +112,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>&
 	//+X
 	if (currentX < (sizeX - 1))
 	{
-		FGridNode node = rows[currentX + 1].columns[currentY];
-		if (!node.bClosed && node.bActive)
+		FGridNode* node = &rows[currentX + 1].columns[currentY];
+		if (!node->bClosed && node->bActive)
 		{
-			node.bClosed = true;
-			node.parentNode = centerNode;
+			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -122,11 +124,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>&
 	//-X
 	if (currentX > 0)
 	{
-		FGridNode node = rows[currentX - 1].columns[currentY];
-		if (!node.bClosed && node.bActive)
+		FGridNode* node = &rows[currentX - 1].columns[currentY];
+		if (!node->bClosed && node->bActive)
 		{
-			node.bClosed = true;
-			node.parentNode = centerNode;
+			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -134,11 +136,11 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>&
 	//+Y
 	if (currentY < (sizeY - 1))
 	{
-		FGridNode node = rows[currentX].columns[currentY + 1];
-		if (!node.bClosed && node.bActive)
+		FGridNode* node = &rows[currentX].columns[currentY + 1];
+		if (!node->bClosed && node->bActive)
 		{
-			node.bClosed = true;
-			node.parentNode = centerNode;
+			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
@@ -146,44 +148,77 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode>&
 	//-Y
 	if (currentY > 0)
 	{
-		FGridNode node = rows[currentX].columns[currentY - 1];
-		if (!node.bClosed && node.bActive)
+		FGridNode* node = &rows[currentX].columns[currentY - 1];
+		if (!node->bClosed && node->bActive)
 		{
-			node.bClosed = true;
-			node.parentNode = centerNode;
+			node->bClosed = true;
+			node->parentNode = centerNode;
 			outNodes.Add(node);
 		}
 	}
 }
 
-void ABattleGrid::HideNodes(TArray<FGridNode>& nodesToHide)
+void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.
 	instancedStaticMeshComponent->MarkRenderStateDirty();
 
-	for (FGridNode& node : nodesToHide)
+	for (FGridNode* node : nodesToHide)
 	{
-		node.bActive = false;
+		node->bActive = false;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node.instancedMeshIndex, transform);
+		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
 		transform.SetScale3D(nodeHiddenScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node.instancedMeshIndex, transform);
+		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
 	}
 }
 
-void ABattleGrid::UnhideNodes(TArray<FGridNode>& nodesToUnhide)
+void ABattleGrid::HideNodes(TArray<int32>& indices)
 {
 	instancedStaticMeshComponent->MarkRenderStateDirty();
 
-	for (FGridNode& node : nodesToUnhide)
+	for (int i = 0; i < indices.Num(); i++)
 	{
-		node.bActive = true;
+		FGridNode* node = nodeMap.Find(indices[i]);
+
+		node->bActive = false;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node.instancedMeshIndex, transform);
+		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);
+		transform.SetScale3D(nodeHiddenScale);
+		instancedStaticMeshComponent->UpdateInstanceTransform(indices[i], transform);
+	}
+}
+
+void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
+{
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (FGridNode* node : nodesToUnhide)
+	{
+		node->bActive = true;
+
+		FTransform transform;
+		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
 		transform.SetScale3D(nodeVisibleScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node.instancedMeshIndex, transform);
+		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+	}
+}
+
+void ABattleGrid::UnhideNodes(TArray<int32>& indices)
+{
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (int i = 0; i < indices.Num(); i++)
+	{
+		FGridNode* node = nodeMap.Find(indices[i]);
+		node->bActive = true;
+
+		FTransform transform;
+		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);
+		transform.SetScale3D(nodeVisibleScale);
+		instancedStaticMeshComponent->UpdateInstanceTransform(indices[i], transform);
 	}
 }
 

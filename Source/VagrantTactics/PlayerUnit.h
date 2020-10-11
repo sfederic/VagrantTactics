@@ -58,5 +58,8 @@ public:
 	UPROPERTY(EditAnywhere) int maxActionPoints;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentActionPoints;
 
+	UPROPERTY(VisibleAnywhere) int xIndex;
+	UPROPERTY(VisibleAnywhere) int yIndex;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) bool bPlayerInBattle;
 };
