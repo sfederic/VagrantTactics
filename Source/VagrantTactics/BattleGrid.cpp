@@ -55,7 +55,7 @@ void ABattleGrid::Init()
 
 			FHitResult hit;
 			FCollisionQueryParams params;
-			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
 			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
@@ -65,7 +65,6 @@ void ABattleGrid::Init()
 					transform.SetScale3D(nodeHiddenScale);
 					node.bActive = false; 
 				}
-
 
 				//Deal with platforms
 				if (hit.GetActor()->Tags.Contains(GameplayTags::Platform))
