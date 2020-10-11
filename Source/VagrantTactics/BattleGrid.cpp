@@ -68,11 +68,11 @@ void ABattleGrid::Init()
 
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
 
-			//Add index to map
-			nodeMap.Add(instancedMeshIndex, node);
-
 			node.instancedMeshIndex = instancedMeshIndex;
 			rows[x].columns.Add(node);
+
+			//Add node to map through instance mesh index
+			nodeMap.Add(instancedMeshIndex, rows[x].columns[y]);
 
 			if (hit.GetActor())
 			{
@@ -181,8 +181,7 @@ void ABattleGrid::HideNodes(TArray<int32>& indices)
 	for (int i = 0; i < indices.Num(); i++)
 	{
 		FGridNode* node = nodeMap.Find(indices[i]);
-
-		node->bActive = false;
+		GetNode(node->xIndex, node->yIndex)->bActive = false;
 
 		FTransform transform;
 		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);
@@ -213,7 +212,7 @@ void ABattleGrid::UnhideNodes(TArray<int32>& indices)
 	for (int i = 0; i < indices.Num(); i++)
 	{
 		FGridNode* node = nodeMap.Find(indices[i]);
-		node->bActive = true;
+		GetNode(node->xIndex, node->yIndex)->bActive = true;
 
 		FTransform transform;
 		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);

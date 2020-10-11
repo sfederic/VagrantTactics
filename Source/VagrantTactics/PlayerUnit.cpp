@@ -75,47 +75,56 @@ void APlayerUnit::Move(FVector direction)
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
+		nextLocation += (direction * moveDistance);
+
+		//Set grid indices
+		xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
+		yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
+
 		//return out of function if player is on grid boundary
 		if (direction.Equals(-FVector::ForwardVector))
 		{
-			if (xIndex <= 0)
+			if (xIndex < 0)
 			{
+				nextLocation = GetActorLocation(); //The GetActorLocation()'s are just setting nextLocation to the previous location
+				UE_LOG(LogTemp, Warning, TEXT("Player move hit X- edge"));
 				return;
 			}
 		}
 		else if (direction.Equals(FVector::ForwardVector))
 		{
-			if (xIndex >= (battleGrid->sizeX- 1))
+			if (xIndex >= battleGrid->sizeX)
 			{
+				nextLocation = GetActorLocation();
+				UE_LOG(LogTemp, Warning, TEXT("Player move hit X+ edge"));
 				return;
 			}
 		}
 		else if (direction.Equals(-FVector::RightVector))
 		{
-			if (yIndex <= 0)
+			if (yIndex < 0)
 			{
+				nextLocation = GetActorLocation();
+				UE_LOG(LogTemp, Warning, TEXT("Player move hit Y- edge"));
 				return;
 			}
 		}
 		else if (direction.Equals(FVector::RightVector))
 		{
-			if (yIndex >= (battleGrid->sizeY - 1))
+			if (yIndex >= battleGrid->sizeY)
 			{
+				nextLocation = GetActorLocation();
+				UE_LOG(LogTemp, Warning, TEXT("Player move hit Y+ edge"));
 				return;
 			}
 		}
 
-		if (bPlayerInBattle)
+		FGridNode* nextNodeToMoveTo = battleGrid->GetNode(xIndex, yIndex);
+		if (!nextNodeToMoveTo->bActive)
 		{
-			if (currentActionPoints > 10)
-			{
-				nextLocation += (direction * moveDistance);
-				currentActionPoints -= 10;
-			}
-		}
-		else
-		{
-			nextLocation += (direction * moveDistance);
+			nextLocation = GetActorLocation();
+			UE_LOG(LogTemp, Warning, TEXT("Player can't move into inactive node"));
+			return;
 		}
 	}
 }

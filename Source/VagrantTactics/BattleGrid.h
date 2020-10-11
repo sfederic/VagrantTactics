@@ -37,7 +37,7 @@ public:
 	void ResetAllNodeValues();
 
 	TArray<GridRow> rows;
-	TMap<int32, FGridNode> nodeMap;
+	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
 	FVector nodeVisibleScale = FVector(0.95f);
 	FVector nodeHiddenScale = FVector(0.f);
