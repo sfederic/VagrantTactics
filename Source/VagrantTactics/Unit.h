@@ -3,15 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GridActor.h"
 #include "GridNode.h"
 #include "Unit.generated.h"
 
-class ABattleGrid;
-
 //Base class for all units.
 UCLASS()
-class VAGRANTTACTICS_API AUnit : public AActor
+class VAGRANTTACTICS_API AUnit : public AGridActor
 {
 	GENERATED_BODY()
 	
@@ -29,18 +27,10 @@ public:
 	UPROPERTY() TArray<FGridNode> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	UPROPERTY() TArray<FGridNode> pathNodes; //Path nodes are the final path the unit will take in Tick()
 
-	ABattleGrid* battleGrid;
-
 	FVector nextMoveLocation;
 	int movementPathNodeIndex = 0;
 
 	UPROPERTY(EditAnywhere) float moveSpeed;
-
-	UPROPERTY(VisibleAnywhere) int xIndex;
-	UPROPERTY(VisibleAnywhere) int yIndex;
-
-	UPROPERTY(EditAnywhere) int maxHealth;
-	UPROPERTY(EditAnywhere) int currentHealth;
 
 	UPROPERTY(EditAnywhere) int maxMovementPoints;
 	UPROPERTY(EditAnywhere) int currentMovementPoints;

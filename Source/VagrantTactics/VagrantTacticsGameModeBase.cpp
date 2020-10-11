@@ -10,32 +10,19 @@ void AVagrantTacticsGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Get BattleGrid
+	TArray<AActor*> outBattleGrid;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleGrid::StaticClass(), outBattleGrid);
+	check(outBattleGrid.Num() == 1); //Make sure there's only one grid per level
+	activeBattleGrid = Cast<ABattleGrid>(outBattleGrid[0]);
+
 	//Get all GridActors in level
 	TArray<AActor*> outGridActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
 	for (AActor* actor : outGridActors)
 	{
 		AGridActor* gridActor = Cast<AGridActor>(actor);
+		gridActor->battleGrid = activeBattleGrid;
 		gridActors.Add(gridActor);
-	}
-
-	//Get BattleGrid
-	TArray<AActor*> outBattleGrid;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleGrid::StaticClass(), outBattleGrid);
-	check(outBattleGrid.Num() == 1);
-	activeBattleGrid = Cast<ABattleGrid>(outBattleGrid[0]);
-
-	for (AGridActor* gridActor : gridActors)
-	{
-		//activeBattleGrid->GetNode(gridActor->xIndex, gridActor->yIndex);
-	}
-
-	//Assign battle grid to all units
-	TArray<AActor*> outUnits;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
-	for (AActor* actor : outUnits)
-	{
-		AUnit* unit = Cast<AUnit>(actor);
-		unit->battleGrid = activeBattleGrid;
 	}
 }

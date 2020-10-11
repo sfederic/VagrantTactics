@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GridNode.h" 
 #include "GridActor.generated.h"
 
 //Base class for static actors in level.
@@ -21,6 +22,16 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
+	UPROPERTY(VisibleAnywhere) TArray<FGridNode*> connectedNodes;
+
+	class ABattleGrid* battleGrid;
+
+	UPROPERTY(EditAnywhere) int maxHealth;
+	UPROPERTY(EditAnywhere) int currentHealth;
+
 	UPROPERTY(VisibleAnywhere) int xIndex;
 	UPROPERTY(VisibleAnywhere) int yIndex;
+
+	UPROPERTY(EditAnywhere) bool bIsDestructible;
 };

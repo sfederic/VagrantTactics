@@ -3,6 +3,7 @@
 #include "BattleGrid.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "GameplayTags.h"
+#include "GridActor.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -27,10 +28,11 @@ void ABattleGrid::BeginPlay()
 			node.xIndex = x;
 			node.yIndex = y;
 			node.location = FVector((float)x * 100.f, (float)y * 100.f, 0.f);
+			node.bActive = true;
 
 			FTransform transform;
 			transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -45.f));
-			transform.SetScale3D(FVector(0.f));
+			transform.SetScale3D(nodeVisibleScale);
 
 			FHitResult hit;
 			FCollisionQueryParams params;
@@ -39,7 +41,7 @@ void ABattleGrid::BeginPlay()
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
 				//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
-				transform.SetScale3D(FVector(0.f));
+				transform.SetScale3D(nodeHiddenScale);
 				node.bActive = false;
 			}
 
@@ -50,6 +52,12 @@ void ABattleGrid::BeginPlay()
 
 			node.instancedMeshIndex = instancedMeshIndex;
 			rows[x].columns.Add(node);
+
+			AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
+			if (hitGridActor)
+			{
+				hitGridActor->connectedNodes.Add(&rows[x].columns[y]);
+			}
 		}
 	}
 }
@@ -142,9 +150,11 @@ void ABattleGrid::HideNodes(TArray<FGridNode*> nodesToHide)
 
 	for (FGridNode* node : nodesToHide)
 	{
+		node->bActive = false;
+
 		FTransform transform;
 		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
-		transform.SetScale3D(FVector(0.f));
+		transform.SetScale3D(nodeHiddenScale);
 		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
 	}
 }
@@ -155,9 +165,11 @@ void ABattleGrid::UnhideNodes(TArray<FGridNode*> nodesToUnhide)
 
 	for (FGridNode* node : nodesToUnhide)
 	{
+		node->bActive = true;
+
 		FTransform transform;
 		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
-		transform.SetScale3D(FVector(0.95f));
+		transform.SetScale3D(nodeVisibleScale);
 		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
 	}
 }

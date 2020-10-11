@@ -132,10 +132,10 @@ void APlayerUnit::Attack()
 			FVector endHit = GetActorLocation() + GetActorForwardVector() * moveDistance;
 			if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
 			{
-				AUnit* unit = Cast<AUnit>(hit.GetActor());
-				if (unit)
+				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
+				if (gridActor)
 				{
-					unit->currentHealth -= 20;
+					gridActor->currentHealth -= 20;
 					currentActionPoints -= 20;
 				}
 			}

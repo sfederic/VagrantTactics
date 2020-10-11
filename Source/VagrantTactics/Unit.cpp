@@ -16,13 +16,11 @@ void AUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	currentHealth = maxHealth;
 	currentMovementPoints = maxMovementPoints;
 
 	nextMoveLocation = GetActorLocation();
 
-	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
-	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
+	bIsDestructible = true;
 }
 
 void AUnit::Tick(float DeltaTime)
@@ -51,13 +49,6 @@ void AUnit::Tick(float DeltaTime)
 	}
 
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextMoveLocation, DeltaTime, moveSpeed));
-
-	if (currentHealth <= 0)
-	{
-		APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		player->ResetActionPointsToMax();
-		Destroy();
-	}
 }
 
 void AUnit::ShowMovementPath(int movementPoints)

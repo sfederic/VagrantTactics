@@ -36,6 +36,9 @@ public:
 	TArray<GridRow> rows;
 	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
+	FVector nodeVisibleScale = FVector(0.95f);
+	FVector nodeHiddenScale = FVector(0.f);
+
 	class UInstancedStaticMeshComponent* instancedStaticMeshComponent;
 
 	UPROPERTY(EditAnywhere) int sizeX;
