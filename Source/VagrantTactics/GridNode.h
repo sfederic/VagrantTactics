@@ -8,6 +8,10 @@ struct FGridNode
 {
 	GENERATED_BODY()
 
+	~FGridNode()
+	{
+		GLog->Logf(TEXT("deleted early"));
+	}
 	FGridNode() {}
 	FGridNode(int x, int y, int32 instancedMeshIndex_)
 	{
@@ -36,8 +40,8 @@ struct FGridNode
 
 	float gCost; //Distance from start node
 	float hCost; //Distance to end node
-	int xIndex;
-	int yIndex;
+	UPROPERTY(VisibleAnywhere) int xIndex;
+	UPROPERTY(VisibleAnywhere) int yIndex;
 	int32 instancedMeshIndex;
 	bool bActive;
 	bool bClosed;

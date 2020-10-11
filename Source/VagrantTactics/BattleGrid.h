@@ -27,14 +27,15 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	FGridNode* GetNode(int x, int y);
+	void Init();
 	void ActivateBattle();
 	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
-	void HideNodes(TArray<FGridNode*> nodesToHide);
-	void UnhideNodes(TArray<FGridNode*> nodesToUnhide);
+	void HideNodes(TArray<FGridNode*>& nodesToHide);
+	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);
 	void ResetAllNodeValues();
 
 	TArray<GridRow> rows;
-	UPROPERTY() TMap<int32, FGridNode> nodeMap;
+	TMap<int32, FGridNode> nodeMap;
 
 	FVector nodeVisibleScale = FVector(0.95f);
 	FVector nodeHiddenScale = FVector(0.f);

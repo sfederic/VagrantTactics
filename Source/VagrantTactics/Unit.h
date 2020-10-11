@@ -24,8 +24,8 @@ public:
 	void ShowMovementPath(int movementPoints);
 	void MoveTo(FGridNode destinationNode);
 
-	UPROPERTY() TArray<FGridNode> movementPathNodes; //Movement nodes are the preview nodes shown on click
-	UPROPERTY() TArray<FGridNode> pathNodes; //Path nodes are the final path the unit will take in Tick()
+	TArray<FGridNode> movementPathNodes; //Movement nodes are the preview nodes shown on click
+	TArray<FGridNode> pathNodes; //Path nodes are the final path the unit will take in Tick()
 
 	FVector nextMoveLocation;
 	int movementPathNodeIndex = 0;

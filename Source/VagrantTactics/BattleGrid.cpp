@@ -15,8 +15,26 @@ void ABattleGrid::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
+}
 
+void ABattleGrid::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+FGridNode* ABattleGrid::GetNode(int x, int y)
+{
+	check(x < sizeX);
+	check(y < sizeY);
+	return &rows[x].columns[y];
+}
+
+void ABattleGrid::Init()
+{
+	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
+	check(instancedStaticMeshComponent);
+	
 	//Populate grid and setup instances
 	for (int x = 0; x < sizeX; x++)
 	{
@@ -53,26 +71,21 @@ void ABattleGrid::BeginPlay()
 			node.instancedMeshIndex = instancedMeshIndex;
 			rows[x].columns.Add(node);
 
-			AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
-			if (hitGridActor)
+			if (hit.GetActor())
 			{
-				hitGridActor->connectedNodes.Add(&rows[x].columns[y]);
+				if (!hit.GetActor()->Tags.Contains(GameplayTags::Player))
+				{
+					AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
+					if (hitGridActor)
+					{
+						hitGridActor->connectedNodes.Add(&rows[x].columns[y]);
+						UE_LOG(LogTemp, Warning, TEXT("X:%d Y:%d"), rows[x].columns[y].xIndex, rows[x].columns[y].yIndex);
+						UE_LOG(LogTemp, Warning, TEXT("Actor name: %s"), *hit.GetActor()->GetName());
+					}
+				}
 			}
 		}
 	}
-}
-
-void ABattleGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-FGridNode* ABattleGrid::GetNode(int x, int y)
-{
-	check(x < sizeX);
-	check(y < sizeY);
-	return &rows[x].columns[y];
 }
 
 void ABattleGrid::ActivateBattle()
@@ -143,7 +156,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	}
 }
 
-void ABattleGrid::HideNodes(TArray<FGridNode*> nodesToHide)
+void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.
 	instancedStaticMeshComponent->MarkRenderStateDirty();
@@ -159,7 +172,7 @@ void ABattleGrid::HideNodes(TArray<FGridNode*> nodesToHide)
 	}
 }
 
-void ABattleGrid::UnhideNodes(TArray<FGridNode*> nodesToUnhide)
+void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
 {
 	instancedStaticMeshComponent->MarkRenderStateDirty();
 
