@@ -50,7 +50,7 @@ void AUnit::Tick(float DeltaTime)
 			{
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
-				bSetToMove = false;
+				//bSetToMove = false;
 				UE_LOG(LogTemp, Warning, TEXT("move finished"));
 				bTurnFinished = true;
 			}

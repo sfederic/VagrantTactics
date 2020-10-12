@@ -41,10 +41,14 @@ void ABattleGrid::Tick(float DeltaTime)
 	{
 		if (allUnits.Num() > 0)
 		{
-			if (!allUnits[activeUnitIndex]->bSetToMove)
+			if ((!allUnits[activeUnitIndex]->bSetToMove) /*&& (allUnits[activeUnitIndex]->pathNodes.Num() == 0)*/)
 			{
-				allUnits[activeUnitIndex]->ShowMovementPath(allUnits[activeUnitIndex]->currentMovementPoints);
-				allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindPlayerNode());
+				if (allUnits[activeUnitIndex]->pathNodes.Num() < 1)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("move to hit again"));
+					allUnits[activeUnitIndex]->ShowMovementPath(allUnits[activeUnitIndex]->currentMovementPoints);
+					allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindPlayerNode());
+				}
 			}
 
 			if (allUnits[activeUnitIndex]->bTurnFinished)
@@ -57,6 +61,8 @@ void ABattleGrid::Tick(float DeltaTime)
 				{
 					//End loop 
 					activeUnitIndex = 0;
+					allUnits[activeUnitIndex]->bSetToMove = false;
+					allUnits[activeUnitIndex]->bTurnFinished = true;
 					ChangeTurn();
 				}
 			}
@@ -303,6 +309,8 @@ void ABattleGrid::ChangeTurn()
 		UE_LOG(LogTemp, Warning, TEXT("ENEMY TURN"));
 	}
 
+	allUnits.Empty();
+
 	if (bEnemyTurn)
 	{
 		RepopulateUnitArray();
@@ -333,8 +341,6 @@ void ABattleGrid::SortUnitsByTurnSpeed()
 
 void ABattleGrid::RepopulateUnitArray()
 {
-	allUnits.Empty();
-
 	TArray<AActor*> outUnits;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
 	allUnits.Reserve(outUnits.Num());
