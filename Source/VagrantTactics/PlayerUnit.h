@@ -39,6 +39,7 @@ public:
 	void Click();
 	void StartCombat();
 	void ResetActionPointsToMax();
+	void Cancel();
 
 	UCameraComponent* camera;
 	FRotator cameraFocusRotation;

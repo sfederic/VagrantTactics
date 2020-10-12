@@ -48,7 +48,16 @@ void APlayerUnit::Tick(float DeltaTime)
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextLocation, DeltaTime, moveSpeed));
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), nextRotation, DeltaTime, rotateSpeed));
 
-	//camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
+	if (selectedUnit)
+	{
+		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), selectedUnit->GetActorLocation());
+	}
+	else
+	{
+		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation());
+	}
+
+	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -69,6 +78,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAction(TEXT("EndTurn"), EInputEvent::IE_Pressed, this, &APlayerUnit::EndTurn);
 	InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &APlayerUnit::Click);
 	InputComponent->BindAction(TEXT("StartCombat"), EInputEvent::IE_Pressed, this, &APlayerUnit::StartCombat);
+	InputComponent->BindAction(TEXT("Cancel"), EInputEvent::IE_Pressed, this, &APlayerUnit::Cancel);
 }
 
 void APlayerUnit::Move(FVector direction)
@@ -184,8 +194,58 @@ void APlayerUnit::Attack()
 				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 				if (gridActor)
 				{
-					gridActor->currentHealth -= 20;
-					currentActionPoints -= 20;
+					//gridActor->currentHealth -= 20;
+					//currentActionPoints -= 20;
+
+					AUnit* unit = Cast<AUnit>(gridActor);
+					if (unit)
+					{
+						//Dealing with unit position on attack
+						if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
+						{
+							if (unit->bFrontVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("front attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
+							}
+						}
+						else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
+						{
+							if (unit->bBackVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("back attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
+							}
+						}
+						else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
+						{
+							if (unit->bLeftVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("left side attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
+							}
+						}
+						else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
+						{
+							if (unit->bRightVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("right side attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -234,12 +294,10 @@ void APlayerUnit::Click()
 				FGridNode* node = battleGrid->nodeMap.Find(hit.Item);
 				selectedUnit->MoveTo(node);
 			}
-
-			//camera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), unit->GetActorLocation()));
 		}
 		else
 		{
-			camera->SetWorldRotation(cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation()));
+			selectedUnit = nullptr;
 		}
 	}
 }
@@ -254,4 +312,11 @@ void APlayerUnit::StartCombat()
 void APlayerUnit::ResetActionPointsToMax()
 {
 	currentActionPoints = maxActionPoints;
+}
+
+//For now just resets camera focus
+void APlayerUnit::Cancel()
+{
+	cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation());
+	selectedUnit = nullptr;
 }

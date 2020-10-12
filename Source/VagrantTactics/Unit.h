@@ -36,4 +36,10 @@ public:
 	UPROPERTY(EditAnywhere) int currentMovementPoints;
 
 	UPROPERTY(VisibleAnywhere) bool bSetToMove = false;
+
+	//Whether the unit is sheidled or can be attacked from cardinal directions.
+	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bFrontVulnerable = true;
+	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bBackVulnerable = true;
+	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bLeftVulnerable = true;
+	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bRightVulnerable = true;
 };
