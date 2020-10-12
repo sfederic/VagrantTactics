@@ -5,6 +5,7 @@
 #include "PlayerUnit.h"
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
+#include "Kismet/GameplayStatics.h"
 
 AUnit::AUnit()
 {
@@ -44,6 +45,7 @@ void AUnit::Tick(float DeltaTime)
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
 				bSetToMove = false;
+				bTurnFinished = true;
 			}
 		}
 	}
@@ -84,6 +86,10 @@ void AUnit::ShowMovementPath(int movementPoints)
 void AUnit::MoveTo(FGridNode* destinationNode)
 {
 	bSetToMove = true;
+
+	//Set player camera focus
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->selectedUnit = this;
 
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 

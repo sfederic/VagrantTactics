@@ -9,6 +9,7 @@
 class UCameraComponent;
 class ABattleGrid;
 class AUnit;
+class UCameraShake;
 
 //Player class.
 UCLASS()
@@ -46,8 +47,14 @@ public:
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFocusLerpSpeed;
 	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;
+
+	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
+
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;
+
+	UPROPERTY(EditAnywhere, Category="AP Costs") int costToAttack;
+	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;
 
 	ABattleGrid* battleGrid;
 	AUnit* selectedUnit;
@@ -61,10 +68,8 @@ public:
 	const float moveDistance = 100.f;
 
 	UPROPERTY(EditAnywhere) int maxActionPoints;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentActionPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int currentActionPoints;
 
 	UPROPERTY(VisibleAnywhere) int xIndex;
 	UPROPERTY(VisibleAnywhere) int yIndex;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) bool bPlayerInBattle;
 };

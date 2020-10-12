@@ -52,11 +52,6 @@ void ABattleGrid::Tick(float DeltaTime)
 				{
 					activeUnitIndex++;
 				}
-				else
-				{
-					//End loop 
-					ChangeTurn();
-				}
 			}
 		}
 	}
@@ -291,15 +286,6 @@ void ABattleGrid::ChangeTurn()
 
 	//Make sure turn bools don't overlap somehow
 	check(bPlayerTurn != bEnemyTurn);
-
-	if (bPlayerTurn)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PLAYER TURN"));
-	} 
-	else if(bEnemyTurn)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ENEMY TURN"));
-	}
 
 	RepopulateUnitArray();
 	SortUnitsByTurnSpeed();

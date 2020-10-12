@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "LevelGridValues.h"
+#include "Camera/CameraShake.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -50,6 +51,7 @@ void APlayerUnit::Tick(float DeltaTime)
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextLocation, DeltaTime, moveSpeed));
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), nextRotation, DeltaTime, rotateSpeed));
 
+	//Camera 
 	if (selectedUnit)
 	{
 		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), selectedUnit->GetActorLocation());
@@ -58,7 +60,7 @@ void APlayerUnit::Tick(float DeltaTime)
 	{
 		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation());
 	}
-
+	
 	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 	camera->SetFieldOfView(FMath::FInterpTo(camera->FieldOfView, currentCameraFOV, DeltaTime, cameraFOVLerpSpeed));
 }
@@ -88,8 +90,14 @@ void APlayerUnit::Move(FVector direction)
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
+		if (currentActionPoints < costToMove)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not enough AP to move"));
+			return;
+		}
+
 		currentCameraFOV = maxCameraFOV;
-		selectedUnit = nullptr;
+		//selectedUnit = nullptr;
 		nextLocation += (direction * moveDistance);
 
 		//Set grid indices
@@ -144,6 +152,7 @@ void APlayerUnit::Move(FVector direction)
 		else
 		{
 			nextLocation = nextNodeToMoveTo->location;
+			currentActionPoints -= costToMove;
 		}
 	}
 }
@@ -186,73 +195,78 @@ void APlayerUnit::RotateRight()
 
 void APlayerUnit::Attack()
 {
+	if (currentActionPoints < costToAttack)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not enough AP to attack"));
+		return;
+	}
+
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
-		if (currentActionPoints > 20)
+		FHitResult hit;
+		FCollisionQueryParams hitParams;
+		hitParams.AddIgnoredActor(this);
+		FVector endHit = GetActorLocation() + GetActorForwardVector() * moveDistance;
+		if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
 		{
-			FHitResult hit;
-			FCollisionQueryParams hitParams;
-			hitParams.AddIgnoredActor(this);
-			FVector endHit = GetActorLocation() + GetActorForwardVector() * moveDistance;
-			if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
+			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
+			if (gridActor)
 			{
-				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
-				if (gridActor)
+				//gridActor->currentHealth -= 20;
+				currentActionPoints -= costToAttack;
+
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
+
+				AUnit* unit = Cast<AUnit>(gridActor);
+				if (unit)
 				{
-					//gridActor->currentHealth -= 20;
-					//currentActionPoints -= 20;
+					selectedUnit = unit;
 
-					AUnit* unit = Cast<AUnit>(gridActor);
-					if (unit)
+					currentCameraFOV = cameraFOVAttack;
+
+					//Dealing with unit position on attack
+					if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
 					{
-						selectedUnit = unit;
-
-						currentCameraFOV = cameraFOVAttack;
-
-						//Dealing with unit position on attack
-						if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
+						if (unit->bFrontVulnerable)
 						{
-							if (unit->bFrontVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("front attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
-							}
+							UE_LOG(LogTemp, Warning, TEXT("front attack"));
 						}
-						else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
+						else
 						{
-							if (unit->bBackVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("back attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
-							}
+							UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
 						}
-						else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
+					}
+					else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
+					{
+						if (unit->bBackVulnerable)
 						{
-							if (unit->bLeftVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("left side attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
-							}
+							UE_LOG(LogTemp, Warning, TEXT("back attack"));
 						}
-						else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
+						else
 						{
-							if (unit->bRightVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("right side attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
-							}
+							UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
+						}
+					}
+					else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
+					{
+						if (unit->bLeftVulnerable)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("left side attack"));
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
+						}
+					}
+					else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
+					{
+						if (unit->bRightVulnerable)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("right side attack"));
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
 						}
 					}
 				}
@@ -274,10 +288,7 @@ void APlayerUnit::Guard()
 
 void APlayerUnit::EndTurn()
 {
-	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
-	{
-		currentActionPoints = maxActionPoints;
-	}
+	battleGrid->ChangeTurn();
 }
 
 void APlayerUnit::Click()
@@ -314,7 +325,6 @@ void APlayerUnit::Click()
 void APlayerUnit::StartCombat()
 {
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	bPlayerInBattle = !bPlayerInBattle;
 	gameMode->activeBattleGrid->ActivateBattle();
 }
 
@@ -326,7 +336,6 @@ void APlayerUnit::ResetActionPointsToMax()
 //For now just resets camera focus
 void APlayerUnit::Cancel()
 {
-	cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation());
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
 }

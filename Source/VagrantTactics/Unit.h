@@ -32,10 +32,13 @@ public:
 
 	UPROPERTY(EditAnywhere) float moveSpeed;
 
+	UPROPERTY(EditAnywhere) int turnSpeed;
+
 	UPROPERTY(EditAnywhere) int maxMovementPoints;
 	UPROPERTY(EditAnywhere) int currentMovementPoints;
 
 	UPROPERTY(VisibleAnywhere) bool bSetToMove = false;
+	UPROPERTY(VisibleAnywhere) bool bTurnFinished = false;
 
 	//Whether the unit is sheidled or can be attacked from cardinal directions.
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bFrontVulnerable = true;

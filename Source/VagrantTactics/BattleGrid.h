@@ -7,6 +7,8 @@
 #include "GridNode.h"
 #include "BattleGrid.generated.h"
 
+class AUnit;
+
 struct GridRow
 {
 	TArray<FGridNode> columns;
@@ -35,11 +37,17 @@ public:
 	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);
 	void UnhideNodes(TArray<int32>& indices);
 	void ResetAllNodeValues();
+	void ChangeTurn();
+	void SortUnitsByTurnSpeed();
+	void RepopulateUnitArray();
 
 	TArray<GridRow> rows;
 
 	//Keep in mind because of the USTRUCT() serialization fuckery, have to manually copy GridNode values across through Find()s
 	UPROPERTY() TMap<int32, FGridNode> nodeMap;
+
+	UPROPERTY(VisibleAnywhere) TArray<AUnit*> allUnits;
+	int activeUnitIndex;
 
 	FVector nodeVisibleScale = FVector(0.95f);
 	FVector nodeHiddenScale = FVector(0.f);
@@ -49,5 +57,7 @@ public:
 	UPROPERTY(EditAnywhere) int sizeX;
 	UPROPERTY(EditAnywhere) int sizeY;
 
-	UPROPERTY(VisibleAnywhere) bool bBattleActive;
+	UPROPERTY(VisibleAnywhere) bool bBattleActive = true;
+	UPROPERTY(VisibleAnywhere) bool bPlayerTurn = true;
+	UPROPERTY(VisibleAnywhere) bool bEnemyTurn = false;
 };
