@@ -24,12 +24,14 @@ void AGridActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
+	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
+
 	if (bIsDestructible)
 	{
 		if (currentHealth <= 0)
 		{
 			battleGrid->UnhideNodes(connectedNodeIndices);
-
 			Destroy();
 		}
 	}

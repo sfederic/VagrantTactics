@@ -44,7 +44,7 @@ void ABattleGrid::Tick(float DeltaTime)
 			if (!allUnits[activeUnitIndex]->bSetToMove)
 			{
 				allUnits[activeUnitIndex]->ShowMovementPath(allUnits[activeUnitIndex]->currentMovementPoints);
-				allUnits[activeUnitIndex]->MoveTo(GetNode(0, 0));
+				allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindPlayerNode());
 			}
 
 			if (allUnits[activeUnitIndex]->bTurnFinished)
@@ -56,6 +56,7 @@ void ABattleGrid::Tick(float DeltaTime)
 				else
 				{
 					//End loop 
+					activeUnitIndex = 0;
 					ChangeTurn();
 				}
 			}
@@ -302,12 +303,20 @@ void ABattleGrid::ChangeTurn()
 		UE_LOG(LogTemp, Warning, TEXT("ENEMY TURN"));
 	}
 
-	RepopulateUnitArray();
-	SortUnitsByTurnSpeed();
+	if (bEnemyTurn)
+	{
+		RepopulateUnitArray();
+		SortUnitsByTurnSpeed();
+	}
 
-	//Reset player camera focus
+	//Reset player camera focus and AP
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	player->selectedUnit = nullptr;
+
+	if (bPlayerTurn)
+	{
+		player->currentActionPoints = player->maxActionPoints;
+	}
 }
 
 void ABattleGrid::SortUnitsByTurnSpeed()
@@ -332,6 +341,8 @@ void ABattleGrid::RepopulateUnitArray()
 	for (AActor* actor : outUnits)
 	{
 		AUnit* unit = Cast<AUnit>(actor);
+		unit->bTurnFinished = false;
+		unit->bSetToMove = false;
 		allUnits.Add(unit);
 	}
 }

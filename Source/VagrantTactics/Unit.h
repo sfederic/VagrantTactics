@@ -25,6 +25,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void ShowMovementPath(int movementPoints);
 	void MoveTo(FGridNode* destinationNode);
+	FGridNode* FindPlayerNode();
+	void FindPointOfInterest();
 
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()

@@ -35,9 +35,9 @@ void AUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//Movement path
-	if (GetActorLocation().Equals(nextMoveLocation) && bSetToMove)
+	if (pathNodes.Num() > 0)
 	{
-		if (pathNodes.Num() > 0)
+		if ((GetActorLocation().Equals(nextMoveLocation)) && (bSetToMove) && (!bTurnFinished))
 		{
 			if (movementPathNodeIndex < pathNodes.Num())
 			{
@@ -46,12 +46,12 @@ void AUnit::Tick(float DeltaTime)
 				yIndex = pathNodes[movementPathNodeIndex]->yIndex;
 				movementPathNodeIndex++;
 			}
-
-			if (movementPathNodeIndex > (pathNodes.Num() - 1))
+			else if (movementPathNodeIndex >= (pathNodes.Num()))
 			{
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
 				bSetToMove = false;
+				UE_LOG(LogTemp, Warning, TEXT("move finished"));
 				bTurnFinished = true;
 			}
 		}
@@ -129,6 +129,15 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 
 	Algo::Reverse(pathNodes);
 	movementPathNodes.Empty();
+}
 
-	return;
+FGridNode* AUnit::FindPlayerNode()
+{
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	return battleGrid->GetNode(player->xIndex, player->yIndex);
+}
+
+void AUnit::FindPointOfInterest()
+{
+
 }
