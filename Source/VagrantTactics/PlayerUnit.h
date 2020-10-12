@@ -43,7 +43,11 @@ public:
 
 	UCameraComponent* camera;
 	FRotator cameraFocusRotation;
-	UPROPERTY(EditAnywhere) float cameraFocusLerpSpeed;
+	UPROPERTY(EditAnywhere, Category="Camera") float cameraFocusLerpSpeed;
+	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
+	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;
+	const float maxCameraFOV = 90.f;
+	const float cameraFOVAttack = 45.f;
 
 	ABattleGrid* battleGrid;
 	AUnit* selectedUnit;

@@ -29,8 +29,10 @@ void APlayerUnit::BeginPlay()
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	controller->bShowMouseCursor = true;
 
+	//Main camera setup
 	camera = FindComponentByClass<UCameraComponent>();
 	cameraFocusRotation = camera->GetComponentRotation();
+	currentCameraFOV = camera->FieldOfView;
 
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	battleGrid = gameMode->activeBattleGrid;
@@ -58,6 +60,7 @@ void APlayerUnit::Tick(float DeltaTime)
 	}
 
 	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
+	camera->SetFieldOfView(FMath::FInterpTo(camera->FieldOfView, currentCameraFOV, DeltaTime, cameraFOVLerpSpeed));
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -85,6 +88,8 @@ void APlayerUnit::Move(FVector direction)
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
+		currentCameraFOV = maxCameraFOV;
+		selectedUnit = nullptr;
 		nextLocation += (direction * moveDistance);
 
 		//Set grid indices
@@ -200,6 +205,10 @@ void APlayerUnit::Attack()
 					AUnit* unit = Cast<AUnit>(gridActor);
 					if (unit)
 					{
+						selectedUnit = unit;
+
+						currentCameraFOV = cameraFOVAttack;
+
 						//Dealing with unit position on attack
 						if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
 						{
@@ -319,4 +328,5 @@ void APlayerUnit::Cancel()
 {
 	cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), GetActorLocation());
 	selectedUnit = nullptr;
+	currentCameraFOV = maxCameraFOV;
 }
