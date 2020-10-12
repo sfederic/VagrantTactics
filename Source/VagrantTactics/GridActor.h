@@ -27,8 +27,8 @@ public:
 
 	class ABattleGrid* battleGrid;
 
-	UPROPERTY(EditAnywhere) int maxHealth;
-	UPROPERTY(EditAnywhere) int currentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int maxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int currentHealth;
 
 	UPROPERTY(VisibleAnywhere) int xIndex;
 	UPROPERTY(VisibleAnywhere) int yIndex;

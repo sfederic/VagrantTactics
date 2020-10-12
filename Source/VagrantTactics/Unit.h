@@ -7,6 +7,8 @@
 #include "GridNode.h"
 #include "Unit.generated.h"
 
+class UHealthbarWidget;
+
 //Base class for all units.
 UCLASS()
 class VAGRANTTACTICS_API AUnit : public AGridActor
@@ -29,6 +31,8 @@ public:
 
 	FVector nextMoveLocation;
 	int movementPathNodeIndex = 0;
+
+	UHealthbarWidget* healthbarWidget;
 
 	UPROPERTY(EditAnywhere) float moveSpeed;
 

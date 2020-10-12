@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "LevelGridValues.h"
 #include "Camera/CameraShake.h"
+#include "Components/WidgetComponent.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -212,7 +213,7 @@ void APlayerUnit::Attack()
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 			if (gridActor)
 			{
-				//gridActor->currentHealth -= 20;
+				gridActor->currentHealth -= attackPoints;
 				currentActionPoints -= costToAttack;
 
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
@@ -221,6 +222,8 @@ void APlayerUnit::Attack()
 				if (unit)
 				{
 					selectedUnit = unit;
+
+					unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
 
 					currentCameraFOV = cameraFOVAttack;
 
@@ -302,7 +305,17 @@ void APlayerUnit::Click()
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
 		if (unit)
 		{
+			//Hide previous health bar widget
+			if (selectedUnit)
+			{
+				if (selectedUnit != unit)
+				{
+					selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+				}
+			}
+
 			selectedUnit = unit;
+			unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
 		}
 		
 		if (selectedUnit)
@@ -336,6 +349,11 @@ void APlayerUnit::ResetActionPointsToMax()
 //For now just resets camera focus
 void APlayerUnit::Cancel()
 {
+	if (selectedUnit)
+	{
+		selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+	}
+
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
 }

@@ -7,6 +7,7 @@
 #include "LevelGridValues.h"
 #include "Kismet/GameplayStatics.h"
 #include "Unit.h"
+#include "PlayerUnit.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -303,6 +304,10 @@ void ABattleGrid::ChangeTurn()
 
 	RepopulateUnitArray();
 	SortUnitsByTurnSpeed();
+
+	//Reset player camera focus
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->selectedUnit = nullptr;
 }
 
 void ABattleGrid::SortUnitsByTurnSpeed()

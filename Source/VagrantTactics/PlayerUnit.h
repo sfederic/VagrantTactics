@@ -56,6 +56,8 @@ public:
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToAttack;
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;
 
+	UPROPERTY(EditAnywhere) int attackPoints;
+
 	ABattleGrid* battleGrid;
 	AUnit* selectedUnit;
 
