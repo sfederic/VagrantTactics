@@ -24,6 +24,7 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	void SetIndices();
 
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
 	UPROPERTY() TArray<int32> connectedNodeIndices;

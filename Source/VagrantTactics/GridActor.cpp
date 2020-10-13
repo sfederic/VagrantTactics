@@ -72,3 +72,9 @@ void AGridActor::Tick(float DeltaTime)
 		}
 	}
 }
+
+void AGridActor::SetIndices()
+{
+	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
+	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
+}

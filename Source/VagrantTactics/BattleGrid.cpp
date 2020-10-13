@@ -83,6 +83,16 @@ void ABattleGrid::Init()
 	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
 	check(instancedStaticMeshComponent);
 	
+	TArray<AActor*> outGridActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
+	TArray<AGridActor*> allGridActors;
+	for (AActor* actor : outGridActors)
+	{
+		AGridActor* gridActor = Cast<AGridActor>(actor);
+		gridActor->SetIndices();
+		allGridActors.Add(gridActor);
+	}
+
 	//Populate grid and setup instances
 	for (int x = 0; x < sizeX; x++)
 	{
@@ -103,22 +113,36 @@ void ABattleGrid::Init()
 			FHitResult hit;
 			FCollisionQueryParams params;
 			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
-			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
-				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
-			{
-				if (!hit.GetActor()->Tags.Contains(GameplayTags::Player))
-				{
-					//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
-					transform.SetScale3D(nodeHiddenScale);
-					node.bActive = false; 
-				}
 
-				//Deal with platforms
-				if (hit.GetActor()->Tags.Contains(GameplayTags::Platform))
+			//Grid actor that will update connected node indices later
+			AGridActor* gridActorToUpdate = nullptr;
+
+			//if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
+			//	ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
+
+			for(AGridActor* gridActor : allGridActors)
+			{
+				if ((gridActor->xIndex == x) && (gridActor->yIndex == y))
 				{
-					FHitResult platformHit;
-					FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
-					if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
+					if (!gridActor->Tags.Contains(GameplayTags::Player))
+					{
+						//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
+						transform.SetScale3D(nodeHiddenScale);
+						node.bActive = false;
+
+						gridActorToUpdate = gridActor;
+						break;
+					}
+				}
+			}
+
+			//Deal with platforms
+			{
+				FHitResult platformHit;
+				FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+				if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
+				{
+					if (platformHit.GetActor()->Tags.Contains(GameplayTags::Platform))
 					{
 						transform.SetLocation(platformHit.ImpactPoint + FVector(0.f, 0.f, 5.f));
 						transform.SetScale3D(nodeVisibleScale);
@@ -130,23 +154,16 @@ void ABattleGrid::Init()
 
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
 
+			if (gridActorToUpdate)
+			{
+				gridActorToUpdate->connectedNodeIndices.Add(instancedMeshIndex);
+			}
+
 			node.instancedMeshIndex = instancedMeshIndex;
 			rows[x].columns.Add(node);
 
 			//Add node to map through instance mesh index
 			nodeMap.Add(instancedMeshIndex, rows[x].columns[y]);
-
-			if (hit.GetActor())
-			{
-				if (!hit.GetActor()->Tags.Contains(GameplayTags::Player))
-				{
-					AGridActor* hitGridActor = Cast<AGridActor>(hit.GetActor());
-					if (hitGridActor)
-					{
-						hitGridActor->connectedNodeIndices.Add(node.instancedMeshIndex);
-					}
-				}
-			}
 		}
 	}
 }
