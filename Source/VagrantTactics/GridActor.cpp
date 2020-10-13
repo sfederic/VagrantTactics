@@ -5,6 +5,8 @@
 #include "BattleGrid.h"
 #include "PlayerUnit.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameplayTags.h"
+#include "DestructibleComponent.h"
 
 AGridActor::AGridActor()
 {
@@ -39,8 +41,19 @@ void AGridActor::Tick(float DeltaTime)
 			APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 			player->ResetCameraFocusAndFOV();
 
-			Destroy();
+			if (Tags.Contains(GameplayTags::Destructible))
+			{
+				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
+				dc->ApplyDamage(1000.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 1000.f);
+
+				SetLifeSpan(2.0f);
+			}
+			else
+			{
+				Destroy();
+			}
+
+			bIsDestructible = false;
 		}
 	}
 }
-
