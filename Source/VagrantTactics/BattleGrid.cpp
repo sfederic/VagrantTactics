@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Unit.h"
 #include "PlayerUnit.h"
+#include "Components/WidgetComponent.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -157,10 +158,28 @@ void ABattleGrid::ActivateBattle()
 	if (bBattleActive)
 	{
 		instancedStaticMeshComponent->SetHiddenInGame(false);
+
+		//Show all grid actor health bars on battle start
+		TArray<AActor*> outGridActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
+		for (AActor* actor : outGridActors)
+		{
+			AGridActor* gridActor = Cast<AGridActor>(actor);
+			gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+		}
 	}
 	else if (!bBattleActive)
 	{
 		instancedStaticMeshComponent->SetHiddenInGame(true);
+
+		//Hide all grid actor health bars on battle end
+		TArray<AActor*> outGridActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
+		for (AActor* actor : outGridActors)
+		{
+			AGridActor* gridActor = Cast<AGridActor>(actor);
+			gridActor->healthbarWidgetComponent->SetHiddenInGame(true);
+		}
 	}
 }
 

@@ -6,8 +6,6 @@
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
 #include "Kismet/GameplayStatics.h"
-#include "HealthbarWidget.h"
-#include "Components/WidgetComponent.h"
 
 AUnit::AUnit()
 {
@@ -24,10 +22,6 @@ void AUnit::BeginPlay()
 	nextMoveLocation = GetActorLocation();
 
 	bIsDestructible = true;
-
-	//Setup health bar
-	healthbarWidget = Cast<UHealthbarWidget>(FindComponentByClass<UWidgetComponent>()->GetUserWidgetObject());
-	healthbarWidget->attachedUnit = this;
 }
 
 void AUnit::Tick(float DeltaTime)

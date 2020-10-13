@@ -7,6 +7,9 @@
 #include "GridNode.h" 
 #include "GridActor.generated.h"
 
+class UHealthbarWidget;
+class UWidgetComponent;
+
 //Base class for static actors in level.
 UCLASS()
 class VAGRANTTACTICS_API AGridActor : public AActor
@@ -24,6 +27,9 @@ public:
 
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
 	UPROPERTY() TArray<int32> connectedNodeIndices;
+
+	UHealthbarWidget* healthbarWidget;
+	UWidgetComponent* healthbarWidgetComponent;
 
 	class ABattleGrid* battleGrid;
 

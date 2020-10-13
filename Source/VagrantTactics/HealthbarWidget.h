@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HealthbarWidget.generated.h"
 
-class AUnit;
+class AGridActor;
 
 //Unit health bar in screen space
 UCLASS()
@@ -14,5 +14,5 @@ class VAGRANTTACTICS_API UHealthbarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadOnly) AUnit* attachedUnit;
+	UPROPERTY(BlueprintReadOnly) AGridActor* attachedUnit;
 };
