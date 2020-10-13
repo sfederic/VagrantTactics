@@ -11,6 +11,8 @@
 #include "LevelGridValues.h"
 #include "Camera/CameraShake.h"
 #include "Components/WidgetComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Blueprint/UserWidget.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -38,6 +40,10 @@ void APlayerUnit::BeginPlay()
 
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	battleGrid = gameMode->activeBattleGrid;
+
+	//Create Widgets
+	widgetActionPoints = CreateWidget<UUserWidget>(GetWorld(), classWidgetActionPoints);
+	widgetActionPoints->RemoveFromViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -64,6 +70,25 @@ void APlayerUnit::Tick(float DeltaTime)
 	
 	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 	camera->SetFieldOfView(FMath::FInterpTo(camera->FieldOfView, currentCameraFOV, DeltaTime, cameraFOVLerpSpeed));
+
+	//Camera obstruction bettwen focus/player and camera (walls, bigger enemies). 
+	FHitResult cameraObstructHit;
+	FCollisionQueryParams cameraObstructParams;
+	cameraObstructParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(cameraObstructHit, camera->GetComponentLocation(), GetActorLocation(), 
+		ECC_WorldStatic, cameraObstructParams))
+	{
+		cameraObstructActor = cameraObstructHit.GetActor();
+		cameraObstructActor->SetActorHiddenInGame(true);
+	}
+	else
+	{
+		if (cameraObstructActor)
+		{
+			cameraObstructActor->SetActorHiddenInGame(false);
+			cameraObstructActor = nullptr;
+		}
+	}
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -91,14 +116,19 @@ void APlayerUnit::Move(FVector direction)
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
-		if (currentActionPoints < costToMove)
+		if (battleGrid->bBattleActive)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Not enough AP to move"));
-			return;
+			if (currentActionPoints < costToMove)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Not enough AP to move"));
+				return;
+			}
 		}
 
 		currentCameraFOV = maxCameraFOV;
+
 		//selectedUnit = nullptr;
+
 		nextLocation += (direction * moveDistance);
 
 		//Set grid indices
@@ -153,7 +183,11 @@ void APlayerUnit::Move(FVector direction)
 		else
 		{
 			nextLocation = nextNodeToMoveTo->location;
-			currentActionPoints -= costToMove;
+
+			if (battleGrid->bBattleActive)
+			{
+				currentActionPoints -= costToMove;
+			}
 		}
 	}
 }
@@ -196,10 +230,13 @@ void APlayerUnit::RotateRight()
 
 void APlayerUnit::Attack()
 {
-	if (currentActionPoints < costToAttack)
+	if (battleGrid->bBattleActive)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not enough AP to attack"));
-		return;
+		if (currentActionPoints < costToAttack)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not enough AP to attack"));
+			return;
+		}
 	}
 
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
@@ -213,10 +250,15 @@ void APlayerUnit::Attack()
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 			if (gridActor)
 			{
-				gridActor->currentHealth -= attackPoints;
-				currentActionPoints -= costToAttack;
+				if (battleGrid->bBattleActive)
+				{
+					gridActor->currentHealth -= attackPoints;
+					currentActionPoints -= costToAttack;
 
-				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
+					currentCameraFOV = cameraFOVAttack;
+
+					UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
+				}
 
 				AUnit* unit = Cast<AUnit>(gridActor);
 				if (unit)
@@ -224,8 +266,6 @@ void APlayerUnit::Attack()
 					selectedUnit = unit;
 
 					unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
-
-					currentCameraFOV = cameraFOVAttack;
 
 					//Dealing with unit position on attack
 					if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
@@ -298,9 +338,20 @@ void APlayerUnit::Click()
 {
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	FHitResult hit;
+
+	//TODO: get rid of the casting below and change it to a custom trace channel
 	if (controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_WorldStatic), true, hit))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Clicked Actor: %s | Index: %d"), *hit.GetActor()->GetName(), hit.Item);
+
+		//UParticleSystemComponent* particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particleSystemFocus, FTransform(GetActorLocation()));
+		//particleSystem->SetBeamSourcePoint(0, GetActorLocation(), 0);
+		//particleSystem->SetBeamEndPoint(0, hit.ImpactPoint);
+
+		if (hit.GetActor()->IsA<AGridActor>())
+		{
+			selectedUnit = hit.GetActor();
+		}
 
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
 		if (unit)
@@ -317,21 +368,6 @@ void APlayerUnit::Click()
 			selectedUnit = unit;
 			unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
 		}
-		
-		if (selectedUnit)
-		{
-			selectedUnit->ShowMovementPath(selectedUnit->currentMovementPoints);
-
-			if (hit.Item > -1)
-			{
-				FGridNode* node = battleGrid->nodeMap.Find(hit.Item);
-				selectedUnit->MoveTo(node);
-			}
-		}
-		else
-		{
-			selectedUnit = nullptr;
-		}
 	}
 }
 
@@ -339,6 +375,15 @@ void APlayerUnit::StartCombat()
 {
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	gameMode->activeBattleGrid->ActivateBattle();
+
+	if (battleGrid->bBattleActive) //Battle ON
+	{
+		widgetActionPoints->AddToViewport();
+	}
+	else if (!battleGrid->bBattleActive) //Battle OFF
+	{
+		widgetActionPoints->RemoveFromViewport();
+	}
 }
 
 void APlayerUnit::ResetActionPointsToMax()
@@ -354,6 +399,12 @@ void APlayerUnit::Cancel()
 		selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
 	}
 
+	selectedUnit = nullptr;
+	currentCameraFOV = maxCameraFOV;
+}
+
+void APlayerUnit::ResetCameraFocusAndFOV()
+{
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
 }

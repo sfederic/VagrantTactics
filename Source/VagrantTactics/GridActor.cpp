@@ -3,6 +3,8 @@
 #include "GridActor.h"
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
+#include "PlayerUnit.h"
+#include "Kismet/GameplayStatics.h"
 
 AGridActor::AGridActor()
 {
@@ -32,6 +34,11 @@ void AGridActor::Tick(float DeltaTime)
 		if (currentHealth <= 0)
 		{
 			battleGrid->UnhideNodes(connectedNodeIndices);
+			
+			//Reset player camera focus on Destroy
+			APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+			player->ResetCameraFocusAndFOV();
+
 			Destroy();
 		}
 	}

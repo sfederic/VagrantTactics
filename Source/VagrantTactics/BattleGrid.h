@@ -57,7 +57,7 @@ public:
 	UPROPERTY(EditAnywhere) int sizeX;
 	UPROPERTY(EditAnywhere) int sizeY;
 
-	UPROPERTY(VisibleAnywhere) bool bBattleActive = true;
+	UPROPERTY(VisibleAnywhere) bool bBattleActive = false;
 	UPROPERTY(VisibleAnywhere) bool bPlayerTurn = true;
-	UPROPERTY(VisibleAnywhere) bool bEnemyTurn = false;
+	UPROPERTY(VisibleAnywhere) bool bEnemyTurn;
 };

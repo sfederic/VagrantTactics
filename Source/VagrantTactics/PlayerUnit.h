@@ -10,6 +10,8 @@ class UCameraComponent;
 class ABattleGrid;
 class AUnit;
 class UCameraShake;
+class UParticleSystem;
+class UUserWidget;
 
 //Player class.
 UCLASS()
@@ -41,14 +43,23 @@ public:
 	void StartCombat();
 	void ResetActionPointsToMax();
 	void Cancel();
+	void ResetCameraFocusAndFOV();
 
+	//PARTICLES
+	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
+
+	//CAMERA
 	UCameraComponent* camera;
 	FRotator cameraFocusRotation;
+	UPROPERTY(VisibleAnywhere) AActor* cameraObstructActor;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFocusLerpSpeed;
 	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;
-
 	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
+
+	//WIDGETS
+	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
+	UUserWidget* widgetActionPoints;
 
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;
@@ -59,7 +70,7 @@ public:
 	UPROPERTY(EditAnywhere) int attackPoints;
 
 	ABattleGrid* battleGrid;
-	AUnit* selectedUnit;
+	AActor* selectedUnit;
 
 	FVector nextLocation;
 	FRotator nextRotation;
