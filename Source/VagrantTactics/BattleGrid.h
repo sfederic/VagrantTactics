@@ -32,6 +32,8 @@ public:
 	void Init(); //Init() exists because of BeginPlay() order not being a thing. Have to rely on GameMode
 	void ActivateBattle();
 	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
+	void HideAllNodes();
+	void ShowAllNodes();
 	void HideNodes(TArray<FGridNode*>& nodesToHide);
 	void HideNodes(TArray<int32>& indices);
 	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);

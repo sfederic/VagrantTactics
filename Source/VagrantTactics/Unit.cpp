@@ -6,6 +6,7 @@
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AUnit::AUnit()
 {
@@ -22,11 +23,21 @@ void AUnit::BeginPlay()
 	nextMoveLocation = GetActorLocation();
 
 	bIsDestructible = true;
+
+	//Setup focus particle
+	particleFocusBeam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particleTemplateFocusBeam, FTransform(GetActorLocation()));
+	particleFocusBeam->SetHiddenInGame(true);
 }
 
 void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (actorToFocusOn && !particleFocusBeam->bHiddenInGame)
+	{
+		particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
+		particleFocusBeam->SetBeamEndPoint(0, actorToFocusOn->GetActorLocation());
+	}
 
 	//Movement path
 	if (pathNodes.Num() > 0)
@@ -57,6 +68,7 @@ void AUnit::Tick(float DeltaTime)
 void AUnit::ShowMovementPath(int movementPoints)
 {
 	battleGrid->ResetAllNodeValues();
+	battleGrid->HideAllNodes();
 
 	FGridNode* startingNode = battleGrid->GetNode(xIndex, yIndex);
 
@@ -82,6 +94,12 @@ void AUnit::ShowMovementPath(int movementPoints)
 	{
 		movementPathNodes.Add(node);
 	}
+}
+
+void AUnit::HideMovementPath()
+{
+	battleGrid->HideAllNodes();
+	//battleGrid->HideNodes(movementPathNodes);
 }
 
 void AUnit::MoveTo(FGridNode* destinationNode)
@@ -134,4 +152,23 @@ FGridNode* AUnit::FindPlayerNode()
 void AUnit::FindPointOfInterest()
 {
 
+}
+
+void AUnit::ShowUnitFocus()
+{
+	//Testing player focus
+	APawn* player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	actorToFocusOn = player;
+
+	particleFocusBeam->SetHiddenInGame(false);
+	particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
+	particleFocusBeam->SetBeamEndPoint(0, actorToFocusOn->GetActorLocation());
+}
+
+void AUnit::HideUnitFocus()
+{
+	particleFocusBeam->SetHiddenInGame(true);
+	particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
+	particleFocusBeam->SetBeamEndPoint(0, GetActorLocation());
 }

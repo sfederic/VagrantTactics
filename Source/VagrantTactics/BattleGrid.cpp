@@ -286,6 +286,42 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 	}
 }
 
+void ABattleGrid::HideAllNodes()
+{
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
+
+			FTransform transform;
+			instancedStaticMeshComponent->GetInstanceTransform(meshIndex, transform);
+			transform.SetScale3D(nodeHiddenScale);
+			instancedStaticMeshComponent->UpdateInstanceTransform(meshIndex, transform);
+		}
+	}
+}
+
+void ABattleGrid::ShowAllNodes()
+{
+	instancedStaticMeshComponent->MarkRenderStateDirty();
+
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
+
+			FTransform transform;
+			instancedStaticMeshComponent->GetInstanceTransform(meshIndex, transform);
+			transform.SetScale3D(nodeVisibleScale);
+			instancedStaticMeshComponent->UpdateInstanceTransform(meshIndex, transform);
+		}
+	}
+}
+
 void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.

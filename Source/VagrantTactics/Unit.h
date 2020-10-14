@@ -7,6 +7,9 @@
 #include "GridNode.h"
 #include "Unit.generated.h"
 
+class UParticleSystemComponent;
+class UParticleSystem;
+
 //Base class for all units.
 UCLASS()
 class VAGRANTTACTICS_API AUnit : public AGridActor
@@ -22,9 +25,17 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	void ShowMovementPath(int movementPoints);
+	void HideMovementPath();
 	void MoveTo(FGridNode* destinationNode);
 	FGridNode* FindPlayerNode();
 	void FindPointOfInterest();
+	void ShowUnitFocus();
+	void HideUnitFocus();
+
+	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
+
+	UParticleSystemComponent* particleFocusBeam;
+	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleTemplateFocusBeam;
 
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()

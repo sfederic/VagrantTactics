@@ -51,7 +51,6 @@ public:
 	//CAMERA
 	UCameraComponent* camera;
 	FRotator cameraFocusRotation;
-	UPROPERTY(VisibleAnywhere) AActor* cameraObstructActor;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFocusLerpSpeed;
 	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;

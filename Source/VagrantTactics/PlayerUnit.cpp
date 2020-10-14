@@ -70,25 +70,6 @@ void APlayerUnit::Tick(float DeltaTime)
 	
 	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 	camera->SetFieldOfView(FMath::FInterpTo(camera->FieldOfView, currentCameraFOV, DeltaTime, cameraFOVLerpSpeed));
-
-	//Camera obstruction bettwen focus/player and camera (walls, bigger enemies). 
-	FHitResult cameraObstructHit;
-	FCollisionQueryParams cameraObstructParams;
-	cameraObstructParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(cameraObstructHit, camera->GetComponentLocation(), GetActorLocation(), 
-		ECC_WorldStatic, cameraObstructParams))
-	{
-		cameraObstructActor = cameraObstructHit.GetActor();
-		cameraObstructActor->SetActorHiddenInGame(true);
-	}
-	else
-	{
-		if (cameraObstructActor)
-		{
-			cameraObstructActor->SetActorHiddenInGame(false);
-			cameraObstructActor = nullptr;
-		}
-	}
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -347,10 +328,6 @@ void APlayerUnit::Click()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Clicked Actor: %s | Index: %d"), *hit.GetActor()->GetName(), hit.Item);
 
-		//UParticleSystemComponent* particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particleSystemFocus, FTransform(GetActorLocation()));
-		//particleSystem->SetBeamSourcePoint(0, GetActorLocation(), 0);
-		//particleSystem->SetBeamEndPoint(0, hit.ImpactPoint);
-
 		if (hit.GetActor()->IsA<AGridActor>())
 		{
 			selectedUnit = hit.GetActor();
@@ -359,6 +336,9 @@ void APlayerUnit::Click()
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
 		if (unit)
 		{
+			unit->ShowUnitFocus();
+			unit->ShowMovementPath(unit->currentMovementPoints);
+
 			//Hide previous health bar widget
 			if (selectedUnit)
 			{
@@ -406,6 +386,13 @@ void APlayerUnit::Cancel()
 			{
 				selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
 			}
+		}
+
+		AUnit* unit = Cast<AUnit>(selectedUnit);
+		if (unit)
+		{
+			unit->HideUnitFocus();
+			unit->HideMovementPath();
 		}
 	}
 

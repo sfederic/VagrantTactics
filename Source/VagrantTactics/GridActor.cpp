@@ -9,6 +9,8 @@
 #include "DestructibleComponent.h"
 #include "HealthbarWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Unit.h"
 
 AGridActor::AGridActor()
 {
@@ -66,6 +68,12 @@ void AGridActor::Tick(float DeltaTime)
 			}
 			else
 			{
+				AUnit* unit = Cast<AUnit>(this);
+				if (unit)
+				{
+					unit->particleFocusBeam->DestroyComponent();
+				}
+
 				Destroy();
 			}
 
