@@ -9,7 +9,6 @@
 #include "DestructibleComponent.h"
 #include "HealthbarWidget.h"
 #include "Components/WidgetComponent.h"
-#include "Components/StaticMeshComponent.h"
 
 AGridActor::AGridActor()
 {
@@ -27,10 +26,16 @@ void AGridActor::BeginPlay()
 	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
 
 	//Setup health bar
-	healthbarWidgetComponent = FindComponentByClass<UWidgetComponent>();
-	healthbarWidgetComponent->SetHiddenInGame(true);
-	healthbarWidget = Cast<UHealthbarWidget>(healthbarWidgetComponent->GetUserWidgetObject());
-	healthbarWidget->attachedUnit = this;
+	if (bIsDestructible)
+	{
+		healthbarWidgetComponent = FindComponentByClass<UWidgetComponent>();
+		if (healthbarWidgetComponent)
+		{
+			healthbarWidgetComponent->SetHiddenInGame(true);
+			healthbarWidget = Cast<UHealthbarWidget>(healthbarWidgetComponent->GetUserWidgetObject());
+			healthbarWidget->attachedUnit = this;
+		}
+	}
 }
 
 void AGridActor::Tick(float DeltaTime)
@@ -52,10 +57,6 @@ void AGridActor::Tick(float DeltaTime)
 
 			if (Tags.Contains(GameplayTags::Destructible))
 			{
-				//Since Apex is messing with physics, have to have a proxy static mesh for now to work with grid node hiding.
-				//Component is being destroyed to remove physics mishaps, set hidden by default
-				FindComponentByClass<UStaticMeshComponent>()->DestroyComponent();
-
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
 				dc->ApplyDamage(1000.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 1000.f);
 

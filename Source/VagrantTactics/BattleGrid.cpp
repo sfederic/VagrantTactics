@@ -117,8 +117,8 @@ void ABattleGrid::Init()
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
-			//if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
-			//	ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
+			GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
+				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f)));
 
 			for(AGridActor* gridActor : allGridActors)
 			{
@@ -152,7 +152,24 @@ void ABattleGrid::Init()
 				}
 			}
 
+
+			if (hit.GetActor())
+			{
+				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
+				if(gridActor)
+				{
+					if (gridActor->bLargerThanUnitSquare)
+					{
+						gridActorToUpdate = gridActor;
+						node.bActive = false;
+						transform.SetScale3D(nodeHiddenScale);
+					}
+				}
+			}
+
+
 			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
+
 
 			if (gridActorToUpdate)
 			{
@@ -182,7 +199,10 @@ void ABattleGrid::ActivateBattle()
 		for (AActor* actor : outGridActors)
 		{
 			AGridActor* gridActor = Cast<AGridActor>(actor);
-			gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+			if (gridActor->bIsDestructible)
+			{
+				gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+			}
 		}
 	}
 	else if (!bBattleActive)
@@ -195,7 +215,10 @@ void ABattleGrid::ActivateBattle()
 		for (AActor* actor : outGridActors)
 		{
 			AGridActor* gridActor = Cast<AGridActor>(actor);
-			gridActor->healthbarWidgetComponent->SetHiddenInGame(true);
+			if (gridActor->bIsDestructible)
+			{
+				gridActor->healthbarWidgetComponent->SetHiddenInGame(true);
+			}
 		}
 	}
 }

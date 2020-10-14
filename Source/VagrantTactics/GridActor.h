@@ -41,4 +41,7 @@ public:
 	UPROPERTY(VisibleAnywhere) int yIndex;
 
 	UPROPERTY(EditAnywhere) bool bIsDestructible;
+
+	//Sets if the actor is larger than 1x1 grid unit and swaps its grid indices creation in BattleGrid for a Sweep trace
+	UPROPERTY(EditAnywhere) bool bLargerThanUnitSquare;
 };
