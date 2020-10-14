@@ -201,7 +201,12 @@ void ABattleGrid::ActivateBattle()
 			AGridActor* gridActor = Cast<AGridActor>(actor);
 			if (gridActor->bIsDestructible)
 			{
-				gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+				//NOTE: This was causing a lot of trouble before when the component was accesed without Find
+				UWidgetComponent* wc = gridActor->FindComponentByClass<UWidgetComponent>();
+				if (wc)
+				{
+					wc->SetHiddenInGame(false);
+				}
 			}
 		}
 	}
@@ -217,7 +222,11 @@ void ABattleGrid::ActivateBattle()
 			AGridActor* gridActor = Cast<AGridActor>(actor);
 			if (gridActor->bIsDestructible)
 			{
-				gridActor->healthbarWidgetComponent->SetHiddenInGame(true);
+				UWidgetComponent* wc = gridActor->FindComponentByClass<UWidgetComponent>();
+				if (wc)
+				{
+					wc->SetHiddenInGame(true);
+				}
 			}
 		}
 	}

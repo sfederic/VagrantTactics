@@ -399,7 +399,14 @@ void APlayerUnit::Cancel()
 {
 	if (selectedUnit)
 	{
-		selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+		AGridActor* gridActorToCancel = Cast<AGridActor>(selectedUnit);
+		if(gridActorToCancel)
+		{
+			if (gridActorToCancel->healthbarWidgetComponent)
+			{
+				selectedUnit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+			}
+		}
 	}
 
 	selectedUnit = nullptr;
