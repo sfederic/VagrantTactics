@@ -2,10 +2,10 @@
 
 #include "Unit.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PlayerUnit.h"
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
-#include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
 AUnit::AUnit()
@@ -47,6 +47,9 @@ void AUnit::Tick(float DeltaTime)
 			if (movementPathNodeIndex < pathNodes.Num())
 			{
 				nextMoveLocation = pathNodes[movementPathNodeIndex]->location;
+
+				SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextMoveLocation));
+
 				xIndex = pathNodes[movementPathNodeIndex]->xIndex;
 				yIndex = pathNodes[movementPathNodeIndex]->yIndex;
 				movementPathNodeIndex++;

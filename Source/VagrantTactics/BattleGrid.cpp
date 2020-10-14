@@ -401,6 +401,8 @@ void ABattleGrid::ChangeTurn()
 	bPlayerTurn = !bPlayerTurn;
 	bEnemyTurn = !bEnemyTurn;
 
+	HideAllNodes();
+
 	//Make sure turn bools don't overlap somehow
 	check(bPlayerTurn != bEnemyTurn);
 

@@ -98,6 +98,15 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerUnit::Move(FVector direction)
 {
+	if (battleGrid->bBattleActive)
+	{
+		if (!battleGrid->bPlayerTurn)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not player turn. Cannot move."));
+			return;
+		}
+	}
+
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
 		if (battleGrid->bBattleActive)
@@ -216,6 +225,12 @@ void APlayerUnit::Attack()
 {
 	if (battleGrid->bBattleActive)
 	{
+		if (!battleGrid->bPlayerTurn)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not player turn. Cannot move."));
+			return;
+		}
+
 		if (currentActionPoints < costToAttack)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Not enough AP to attack"));
