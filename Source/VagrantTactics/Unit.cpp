@@ -7,6 +7,7 @@
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Camera/CameraShake.h"
 
 AUnit::AUnit()
 {
@@ -19,6 +20,8 @@ void AUnit::BeginPlay()
 	Super::BeginPlay();
 	
 	currentMovementPoints = maxMovementPoints;
+	currentAttackDistancePoints = maxAttackDistancePoints;
+	currentAttackPoints = maxAttackPoints;
 
 	nextMoveLocation = GetActorLocation();
 
@@ -60,6 +63,9 @@ void AUnit::Tick(float DeltaTime)
 				movementPathNodeIndex = 0;
 				//bSetToMove = false;
 				UE_LOG(LogTemp, Warning, TEXT("move finished"));
+
+				Attack();
+
 				bTurnFinished = true;
 			}
 		}
@@ -174,4 +180,36 @@ void AUnit::HideUnitFocus()
 	particleFocusBeam->SetHiddenInGame(true);
 	particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
 	particleFocusBeam->SetBeamEndPoint(0, GetActorLocation());
+}
+
+//function covers Melee attack (adjacent grid node to unit)
+void AUnit::Attack()
+{
+	if (actorToFocusOn)
+	{
+		APlayerUnit* player = Cast<APlayerUnit>(actorToFocusOn);
+		if (player)
+		{
+			battleGrid->ResetAllNodeValues();
+
+			FGridNode* currentNode = battleGrid->GetNode(xIndex, yIndex);
+			TArray<FGridNode*> neighbourNodes;
+			battleGrid->GetNeighbouringNodes(currentNode, neighbourNodes);
+
+			FGridNode* targetNode = battleGrid->GetNode(player->xIndex, player->yIndex);
+			for(FGridNode* node : neighbourNodes)
+			{
+				if (node->Equals(targetNode))
+				{
+					UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), targetNode->location);
+
+					UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+
+					player->currentHealthPoints -= currentAttackPoints;
+
+					UE_LOG(LogTemp, Warning, TEXT("%s attacked."), *GetName());
+				}
+			}
+		}
+	}
 }

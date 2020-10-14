@@ -80,7 +80,10 @@ public:
 	const float moveDistance = 100.f;
 
 	UPROPERTY(EditAnywhere) int maxActionPoints;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly) int currentActionPoints;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) int currentActionPoints;
+
+	UPROPERTY(EditAnywhere) int maxHealthPoints;
+	UPROPERTY(VisibleAnywhere) int currentHealthPoints;
 
 	UPROPERTY(VisibleAnywhere) int xIndex;
 	UPROPERTY(VisibleAnywhere) int yIndex;

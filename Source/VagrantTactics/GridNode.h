@@ -18,6 +18,30 @@ struct FGridNode
 		location = FVector((float)x * 100.f, (float)y * 100.f, 0.f);
 	}
 	
+	bool Equals(int x, int y)
+	{
+		if ((x == xIndex) && (y == yIndex))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool Equals(FGridNode* node)
+	{
+		if ((node->xIndex == xIndex) && (node->yIndex == yIndex))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	float GetFCost()
 	{
 		return gCost + hCost;

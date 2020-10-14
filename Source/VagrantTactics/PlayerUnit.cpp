@@ -29,6 +29,7 @@ void APlayerUnit::BeginPlay()
 	nextRotation = GetActorRotation();
 
 	currentActionPoints = maxActionPoints;
+	currentHealthPoints = maxHealthPoints;
 
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	controller->bShowMouseCursor = true;

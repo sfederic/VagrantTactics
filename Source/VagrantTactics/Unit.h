@@ -9,6 +9,7 @@
 
 class UParticleSystemComponent;
 class UParticleSystem;
+class UCameraShake;
 
 //Base class for all units.
 UCLASS()
@@ -31,11 +32,14 @@ public:
 	void FindPointOfInterest();
 	void ShowUnitFocus();
 	void HideUnitFocus();
+	void Attack();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
 	UParticleSystemComponent* particleFocusBeam;
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleTemplateFocusBeam;
+
+	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
 
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()
@@ -48,7 +52,13 @@ public:
 	UPROPERTY(EditAnywhere) int turnSpeed;
 
 	UPROPERTY(EditAnywhere) int maxMovementPoints;
-	UPROPERTY(EditAnywhere) int currentMovementPoints;
+	UPROPERTY(VisibleAnywhere) int currentMovementPoints;
+
+	UPROPERTY(EditAnywhere) int maxAttackDistancePoints;
+	UPROPERTY(VisibleAnywhere) int currentAttackDistancePoints;
+
+	UPROPERTY(EditAnywhere) int maxAttackPoints;
+	UPROPERTY(VisibleAnywhere) int currentAttackPoints;
 
 	UPROPERTY(VisibleAnywhere) bool bSetToMove = false;
 	UPROPERTY(VisibleAnywhere) bool bTurnFinished = false;
