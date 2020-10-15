@@ -42,6 +42,10 @@ public:
 	void ChangeTurn();
 	void SortUnitsByTurnSpeed();
 	void RepopulateUnitArray();
+	
+	//Both functions are different from Hide/UnhideAllNodes as they're taking into account bActive from Node
+	void ToggleGridOn(); 
+	void ToggleGridOff(); 
 
 	TArray<GridRow> rows;
 
@@ -54,7 +58,7 @@ public:
 	FVector nodeVisibleScale = FVector(0.95f);
 	FVector nodeHiddenScale = FVector(0.f);
 
-	class UInstancedStaticMeshComponent* instancedStaticMeshComponent;
+	class UInstancedStaticMeshComponent* gridMesh;
 
 	UPROPERTY(EditAnywhere) int sizeX;
 	UPROPERTY(EditAnywhere) int sizeY;

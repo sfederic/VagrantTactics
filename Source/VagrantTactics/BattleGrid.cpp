@@ -80,8 +80,8 @@ FGridNode* ABattleGrid::GetNode(int x, int y)
 
 void ABattleGrid::Init()
 {
-	instancedStaticMeshComponent = FindComponentByClass<UInstancedStaticMeshComponent>();
-	check(instancedStaticMeshComponent);
+	gridMesh = FindComponentByClass<UInstancedStaticMeshComponent>();
+	check(gridMesh);
 	
 	TArray<AActor*> outGridActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
@@ -136,10 +136,11 @@ void ABattleGrid::Init()
 				}
 			}
 
-			//Deal with platforms
+			//Deal with platforms and holes in floor
 			{
 				FHitResult platformHit;
 				FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+				//FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
 				if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
 				{
 					if (platformHit.GetActor()->Tags.Contains(GameplayTags::Platform))
@@ -149,6 +150,14 @@ void ABattleGrid::Init()
 						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 						node.bActive = true;
 					}
+				}
+				else
+				{
+					//Hole in level floor
+					/*transform.SetLocation(FVector((float)x, (float)y, 0.f));
+					transform.SetScale3D(nodeHiddenScale);
+					node.location = transform.GetLocation();
+					node.bActive = false;*/
 				}
 			}
 
@@ -168,7 +177,7 @@ void ABattleGrid::Init()
 			}
 
 
-			int32 instancedMeshIndex = instancedStaticMeshComponent->AddInstance(transform);
+			int32 instancedMeshIndex = gridMesh->AddInstance(transform);
 
 
 			if (gridActorToUpdate)
@@ -191,9 +200,14 @@ void ABattleGrid::ActivateBattle()
 
 	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
 
+	//Player widgets
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
 	if (bBattleActive)
 	{
-		instancedStaticMeshComponent->SetHiddenInGame(false);
+		player->widgetActionPoints->AddToViewport();
+
+		gridMesh->SetHiddenInGame(false);
 
 		//Show all grid actor health bars on battle start
 		TArray<AActor*> outGridActors;
@@ -214,7 +228,9 @@ void ABattleGrid::ActivateBattle()
 	}
 	else if (!bBattleActive)
 	{
-		instancedStaticMeshComponent->SetHiddenInGame(true);
+		player->widgetActionPoints->RemoveFromViewport();
+
+		gridMesh->SetHiddenInGame(true);
 
 		//Hide all grid actor health bars on battle end
 		TArray<AActor*> outGridActors;
@@ -290,7 +306,8 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 
 void ABattleGrid::HideAllNodes()
 {
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->SetHiddenInGame(true);
+	gridMesh->MarkRenderStateDirty();
 
 	for (int x = 0; x < sizeX; x++)
 	{
@@ -299,16 +316,17 @@ void ABattleGrid::HideAllNodes()
 			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
 
 			FTransform transform;
-			instancedStaticMeshComponent->GetInstanceTransform(meshIndex, transform);
+			gridMesh->GetInstanceTransform(meshIndex, transform);
 			transform.SetScale3D(nodeHiddenScale);
-			instancedStaticMeshComponent->UpdateInstanceTransform(meshIndex, transform);
+			gridMesh->UpdateInstanceTransform(meshIndex, transform);
 		}
 	}
 }
 
 void ABattleGrid::ShowAllNodes()
 {
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->SetHiddenInGame(false);
+	gridMesh->MarkRenderStateDirty();
 
 	for (int x = 0; x < sizeX; x++)
 	{
@@ -317,9 +335,9 @@ void ABattleGrid::ShowAllNodes()
 			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
 
 			FTransform transform;
-			instancedStaticMeshComponent->GetInstanceTransform(meshIndex, transform);
+			gridMesh->GetInstanceTransform(meshIndex, transform);
 			transform.SetScale3D(nodeVisibleScale);
-			instancedStaticMeshComponent->UpdateInstanceTransform(meshIndex, transform);
+			gridMesh->UpdateInstanceTransform(meshIndex, transform);
 		}
 	}
 }
@@ -327,22 +345,22 @@ void ABattleGrid::ShowAllNodes()
 void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->MarkRenderStateDirty();
 
 	for (FGridNode* node : nodesToHide)
 	{
 		node->bActive = false;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		gridMesh->GetInstanceTransform(node->instancedMeshIndex, transform);
 		transform.SetScale3D(nodeHiddenScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+		gridMesh->UpdateInstanceTransform(node->instancedMeshIndex, transform);
 	}
 }
 
 void ABattleGrid::HideNodes(TArray<int32>& indices)
 {
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->MarkRenderStateDirty();
 
 	for (int i = 0; i < indices.Num(); i++)
 	{
@@ -350,30 +368,30 @@ void ABattleGrid::HideNodes(TArray<int32>& indices)
 		GetNode(node->xIndex, node->yIndex)->bActive = false;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);
+		gridMesh->GetInstanceTransform(indices[i], transform);
 		transform.SetScale3D(nodeHiddenScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(indices[i], transform);
+		gridMesh->UpdateInstanceTransform(indices[i], transform);
 	}
 }
 
 void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
 {
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->MarkRenderStateDirty();
 
 	for (FGridNode* node : nodesToUnhide)
 	{
 		node->bActive = true;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(node->instancedMeshIndex, transform);
+		gridMesh->GetInstanceTransform(node->instancedMeshIndex, transform);
 		transform.SetScale3D(nodeVisibleScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+		gridMesh->UpdateInstanceTransform(node->instancedMeshIndex, transform);
 	}
 }
 
 void ABattleGrid::UnhideNodes(TArray<int32>& indices)
 {
-	instancedStaticMeshComponent->MarkRenderStateDirty();
+	gridMesh->MarkRenderStateDirty();
 
 	for (int i = 0; i < indices.Num(); i++)
 	{
@@ -381,9 +399,9 @@ void ABattleGrid::UnhideNodes(TArray<int32>& indices)
 		GetNode(node->xIndex, node->yIndex)->bActive = true;
 
 		FTransform transform;
-		instancedStaticMeshComponent->GetInstanceTransform(indices[i], transform);
+		gridMesh->GetInstanceTransform(indices[i], transform);
 		transform.SetScale3D(nodeVisibleScale);
-		instancedStaticMeshComponent->UpdateInstanceTransform(indices[i], transform);
+		gridMesh->UpdateInstanceTransform(indices[i], transform);
 	}
 }
 
@@ -464,5 +482,49 @@ void ABattleGrid::RepopulateUnitArray()
 		unit->bTurnFinished = false;
 		unit->bSetToMove = false;
 		allUnits.Add(unit);
+	}
+}
+
+void ABattleGrid::ToggleGridOn()
+{
+	gridMesh->SetHiddenInGame(false);
+	gridMesh->MarkRenderStateDirty();
+
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
+
+			if (rows[x].columns[y].bActive)
+			{
+				FTransform transform;
+				gridMesh->GetInstanceTransform(meshIndex, transform);
+				transform.SetScale3D(nodeVisibleScale);
+				gridMesh->UpdateInstanceTransform(meshIndex, transform);
+			}
+		}
+	}
+}
+
+void ABattleGrid::ToggleGridOff()
+{
+	gridMesh->SetHiddenInGame(true);
+	gridMesh->MarkRenderStateDirty();
+
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			int32 meshIndex = rows[x].columns[y].instancedMeshIndex;
+
+			if (rows[x].columns[y].bActive)
+			{
+				FTransform transform;
+				gridMesh->GetInstanceTransform(meshIndex, transform);
+				transform.SetScale3D(nodeHiddenScale);
+				gridMesh->UpdateInstanceTransform(meshIndex, transform);
+			}
+		}
 	}
 }

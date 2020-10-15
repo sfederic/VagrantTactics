@@ -40,7 +40,7 @@ public:
 	void Guard();
 	void EndTurn();
 	void Click();
-	void StartCombat();
+	void PreviewBattleGrid();
 	void ResetActionPointsToMax();
 	void Cancel();
 	void ResetCameraFocusAndFOV();

@@ -90,7 +90,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	InputComponent->BindAction(TEXT("EndTurn"), EInputEvent::IE_Pressed, this, &APlayerUnit::EndTurn);
 	InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &APlayerUnit::Click);
-	InputComponent->BindAction(TEXT("StartCombat"), EInputEvent::IE_Pressed, this, &APlayerUnit::StartCombat);
+	InputComponent->BindAction(TEXT("PreviewBattleGrid"), EInputEvent::IE_Pressed, this, &APlayerUnit::PreviewBattleGrid);
 	InputComponent->BindAction(TEXT("Cancel"), EInputEvent::IE_Pressed, this, &APlayerUnit::Cancel);
 
 	//TODO: Debug input. Make sure to delete
@@ -370,18 +370,16 @@ void APlayerUnit::Click()
 	}
 }
 
-void APlayerUnit::StartCombat()
+void APlayerUnit::PreviewBattleGrid()
 {
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	gameMode->activeBattleGrid->ActivateBattle();
-
-	if (battleGrid->bBattleActive) //Battle ON
+	if (gameMode->activeBattleGrid->gridMesh->bHiddenInGame)
 	{
-		widgetActionPoints->AddToViewport();
+		gameMode->activeBattleGrid->ToggleGridOn();
 	}
-	else if (!battleGrid->bBattleActive) //Battle OFF
+	else
 	{
-		widgetActionPoints->RemoveFromViewport();
+		gameMode->activeBattleGrid->ToggleGridOff();
 	}
 }
 
