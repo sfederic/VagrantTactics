@@ -62,6 +62,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere) bool bSetToMove = false;
 	UPROPERTY(VisibleAnywhere) bool bTurnFinished = false;
+	UPROPERTY(VisibleAnywhere) bool bInBattle = false;
 
 	//Whether the unit is sheidled or can be attacked from cardinal directions.
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bFrontVulnerable = true;

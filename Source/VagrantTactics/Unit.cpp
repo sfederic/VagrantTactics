@@ -43,7 +43,7 @@ void AUnit::Tick(float DeltaTime)
 	}
 
 	//Movement path
-	if (pathNodes.Num() > 0)
+	if (pathNodes.Num() > 0 && bInBattle)
 	{
 		if ((GetActorLocation().Equals(nextMoveLocation)) && (bSetToMove) && (!bTurnFinished))
 		{

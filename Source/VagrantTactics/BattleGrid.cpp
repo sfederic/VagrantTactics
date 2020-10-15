@@ -189,6 +189,8 @@ void ABattleGrid::ActivateBattle()
 {
 	bBattleActive = !bBattleActive;
 
+	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
+
 	if (bBattleActive)
 	{
 		instancedStaticMeshComponent->SetHiddenInGame(false);
@@ -398,6 +400,12 @@ void ABattleGrid::ResetAllNodeValues()
 
 void ABattleGrid::ChangeTurn()
 {
+	if (!bBattleActive)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Battle not active. Cannot end turn."));
+		return;
+	}
+
 	bPlayerTurn = !bPlayerTurn;
 	bEnemyTurn = !bEnemyTurn;
 
