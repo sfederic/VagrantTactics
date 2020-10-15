@@ -12,6 +12,7 @@ class AUnit;
 class UCameraShake;
 class UParticleSystem;
 class UUserWidget;
+class AEntranceTrigger;
 
 //Player class.
 UCLASS()
@@ -59,6 +60,8 @@ public:
 	//WIDGETS
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
 	UUserWidget* widgetActionPoints;
+
+	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
 
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;

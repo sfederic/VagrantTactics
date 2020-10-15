@@ -13,6 +13,7 @@
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "EntranceTrigger.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -224,6 +225,14 @@ void APlayerUnit::RotateRight()
 
 void APlayerUnit::Attack()
 {
+	//Open doors
+	//TODO: this input setup is getting messy. Is there away to swap out Controllers or something?
+	if (overlappedEntrace)
+	{
+		UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->levelToMoveTo);
+		return;
+	}
+
 	if (battleGrid->bBattleActive)
 	{
 		if (!battleGrid->bPlayerTurn)
