@@ -15,6 +15,8 @@
 #include "Blueprint/UserWidget.h"
 #include "EntranceTrigger.h"
 #include "InteractWidget.h"
+#include "InteractDetailsWidget.h"
+#include "InteractTrigger.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -50,6 +52,9 @@ void APlayerUnit::BeginPlay()
 
 	widgetInteract = CreateWidget<UInteractWidget>(GetWorld(), classWidgetInteract);
 	widgetInteract->RemoveFromViewport();
+
+	widgetInteractDetails = CreateWidget<UInteractDetailsWidget>(GetWorld(), classWidgetInteractDetails);
+	widgetInteractDetails->RemoveFromViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -235,6 +240,19 @@ void APlayerUnit::Attack()
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->levelToMoveTo);
 		return;
+	}
+
+	//Check for interaction
+	if (overlappedInteractTrigger)
+	{
+		//interact widgets
+		widgetInteract->RemoveFromViewport();
+		widgetInteractDetails->detailsText = overlappedInteractTrigger->detailsText;
+		widgetInteractDetails->AddToViewport();
+
+		//Zoom in on inspected object
+		currentCameraFOV = cameraFOVAttack;
+		selectedUnit = overlappedInteractTrigger->connectedActor;
 	}
 
 	if (battleGrid->bBattleActive)

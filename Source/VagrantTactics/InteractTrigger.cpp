@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerUnit.h"
 #include "InteractWidget.h"
+#include "InteractDetailsWidget.h"
 
 AInteractTrigger::AInteractTrigger()
 {
@@ -31,6 +32,7 @@ void AInteractTrigger::Tick(float DeltaTime)
 void AInteractTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->overlappedInteractTrigger = this;
 	player->widgetInteract->interactText = interactText;
 	player->widgetInteract->AddToViewport();
 }
@@ -38,6 +40,8 @@ void AInteractTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 void AInteractTrigger::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->overlappedInteractTrigger = nullptr;
 	player->widgetInteract->interactText = FText();
 	player->widgetInteract->RemoveFromViewport();
+	player->widgetInteractDetails->RemoveFromViewport();
 }

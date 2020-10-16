@@ -14,6 +14,8 @@ class UParticleSystem;
 class UUserWidget;
 class AEntranceTrigger;
 class UInteractWidget;
+class UInteractDetailsWidget;
+class AInteractTrigger;
 
 //Player class.
 UCLASS()
@@ -65,7 +67,11 @@ public:
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UInteractWidget> classWidgetInteract;
 	UInteractWidget* widgetInteract;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UInteractDetailsWidget> classWidgetInteractDetails;
+	UInteractDetailsWidget* widgetInteractDetails;
+
 	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
+	UPROPERTY(VisibleAnywhere) AInteractTrigger* overlappedInteractTrigger;
 
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;

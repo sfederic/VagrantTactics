@@ -29,5 +29,12 @@ public:
 
 	class UBoxComponent* box;
 
+	//Initial interact prompt
 	UPROPERTY(EditAnywhere) FText interactText;
+
+	//Details once player interacts with object
+	UPROPERTY(EditAnywhere) FText detailsText;
+
+	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
+	UPROPERTY(EditAnywhere) AActor* connectedActor;
 };
