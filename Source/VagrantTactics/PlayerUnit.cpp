@@ -14,6 +14,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "EntranceTrigger.h"
+#include "InteractWidget.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -46,6 +47,9 @@ void APlayerUnit::BeginPlay()
 	//Create Widgets
 	widgetActionPoints = CreateWidget<UUserWidget>(GetWorld(), classWidgetActionPoints);
 	widgetActionPoints->RemoveFromViewport();
+
+	widgetInteract = CreateWidget<UInteractWidget>(GetWorld(), classWidgetInteract);
+	widgetInteract->RemoveFromViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)

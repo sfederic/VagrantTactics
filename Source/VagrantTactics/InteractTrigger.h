@@ -4,18 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "EntranceTrigger.generated.h"
+#include "InteractTrigger.generated.h"
 
-class UBoxComponent;
-
-//Trigger to doors in level between rooms.
+//Base class for interaction boxes. 
 UCLASS()
-class VAGRANTTACTICS_API AEntranceTrigger : public AActor
+class VAGRANTTACTICS_API AInteractTrigger : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AEntranceTrigger();
+	AInteractTrigger();
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,5 +27,7 @@ public:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(EditAnywhere) FName levelToMoveTo;
+	class UBoxComponent* box;
+
+	UPROPERTY(EditAnywhere) FText interactText;
 };

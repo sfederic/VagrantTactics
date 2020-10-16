@@ -13,6 +13,7 @@ class UCameraShake;
 class UParticleSystem;
 class UUserWidget;
 class AEntranceTrigger;
+class UInteractWidget;
 
 //Player class.
 UCLASS()
@@ -60,6 +61,9 @@ public:
 	//WIDGETS
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
 	UUserWidget* widgetActionPoints;
+
+	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UInteractWidget> classWidgetInteract;
+	UInteractWidget* widgetInteract;
 
 	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
 
