@@ -16,6 +16,7 @@ class AEntranceTrigger;
 class UInteractWidget;
 class UInteractDetailsWidget;
 class AInteractTrigger;
+class USpellBase;
 
 //Player class.
 UCLASS()
@@ -69,6 +70,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UInteractDetailsWidget> classWidgetInteractDetails;
 	UInteractDetailsWidget* widgetInteractDetails;
+
+	//SPELLS
+	UPROPERTY(EditAnywhere, Category="Spells") TArray<TSubclassOf<USpellBase>> spells;
 
 	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
 	UPROPERTY(VisibleAnywhere) AInteractTrigger* overlappedInteractTrigger;

@@ -17,6 +17,9 @@
 #include "InteractWidget.h"
 #include "InteractDetailsWidget.h"
 #include "InteractTrigger.h"
+#include "SpellBase.h"
+#include "SpellIce.h"
+#include "SpellInterface.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -28,6 +31,8 @@ APlayerUnit::APlayerUnit()
 void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 
 	nextLocation = GetActorLocation();
 	nextRotation = GetActorRotation();
@@ -398,6 +403,12 @@ void APlayerUnit::Click()
 			selectedUnit = unit;
 			unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
 		}
+
+		//Node clicked
+		auto spell = NewObject<USpellBase>(this, spells[0]);
+		ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
+		FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
+		spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex);
 	}
 }
 
