@@ -108,6 +108,10 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAction(TEXT("PreviewBattleGrid"), EInputEvent::IE_Pressed, this, &APlayerUnit::PreviewBattleGrid);
 	InputComponent->BindAction(TEXT("Cancel"), EInputEvent::IE_Pressed, this, &APlayerUnit::Cancel);
 
+	//Spells
+	InputComponent->BindAction(TEXT("Spell1"), EInputEvent::IE_Pressed, this, &APlayerUnit::ChangeSpellToIce);
+	InputComponent->BindAction(TEXT("Spell2"), EInputEvent::IE_Pressed, this, &APlayerUnit::ChangeSpellToFire);
+
 	//TODO: Debug input. Make sure to delete
 	InputComponent->BindAction(TEXT("RefreshAP"), EInputEvent::IE_Pressed, this, &APlayerUnit::ResetActionPointsToMax);
 }
@@ -383,6 +387,13 @@ void APlayerUnit::Click()
 		if (hit.GetActor()->IsA<AGridActor>())
 		{
 			selectedUnit = hit.GetActor();
+
+			auto spell = NewObject<USpellBase>(this, activeSpell);
+			ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
+			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
+			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
+
+			return;
 		}
 
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
@@ -407,10 +418,10 @@ void APlayerUnit::Click()
 		//Node clicked
 		if (hit.Item > 0) //-1 is the index for non instanced meshes
 		{
-			auto spell = NewObject<USpellBase>(this, spells[0]);
+			auto spell = NewObject<USpellBase>(this, activeSpell);
 			ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
 			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
-			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex);
+			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
 		}
 	}
 }
@@ -463,4 +474,14 @@ void APlayerUnit::ResetCameraFocusAndFOV()
 {
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
+}
+
+void APlayerUnit::ChangeSpellToIce()
+{
+	activeSpell = spells[0];
+}
+
+void APlayerUnit::ChangeSpellToFire()
+{
+	activeSpell = spells[1];
 }

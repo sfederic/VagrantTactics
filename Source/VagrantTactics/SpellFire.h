@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "SpellBase.h"
-#include "SpellIce.generated.h"
+#include "SpellFire.generated.h"
 
-class AActor;
+class UNiagaraSystem;
 
-//Spawns ice block in combat
+//Fireball spell on single target
 UCLASS()
-class VAGRANTTACTICS_API USpellIce : public USpellBase
+class VAGRANTTACTICS_API USpellFire : public USpellBase
 {
 	GENERATED_BODY()
 public:
 	virtual void CastSpell(int x, int y, AGridActor* target) override;
 
-	UPROPERTY(EditAnywhere) TSubclassOf<AActor> iceBlockToSpawn;
+	UPROPERTY(EditAnywhere) UNiagaraSystem* particleFire;
 };

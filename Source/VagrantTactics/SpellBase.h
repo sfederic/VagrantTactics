@@ -13,5 +13,5 @@ class VAGRANTTACTICS_API USpellBase : public UObject, public ISpellInterface
 {
 	GENERATED_BODY()
 public:
-	virtual void CastSpell(int x, int y) {};
+	virtual void CastSpell(int x, int y, AGridActor* target) {};
 };

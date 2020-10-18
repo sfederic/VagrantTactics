@@ -6,7 +6,7 @@
 #include "GridNode.h"
 #include "BattleGrid.h"
 
-void USpellIce::CastSpell(int x, int y)
+void USpellIce::CastSpell(int x, int y, AGridActor* target)
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	FGridNode* node = player->battleGrid->GetNode(x, y);

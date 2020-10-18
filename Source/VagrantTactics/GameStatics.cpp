@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
-AUnit* GameStatics::GetActorAtGridIndex(int x, int y)
+AGridActor* GameStatics::GetActorAtGridIndex(int x, int y)
 {
 	return nullptr;
 }

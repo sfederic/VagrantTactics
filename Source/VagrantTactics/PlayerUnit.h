@@ -49,6 +49,8 @@ public:
 	void ResetActionPointsToMax();
 	void Cancel();
 	void ResetCameraFocusAndFOV();
+	void ChangeSpellToIce();
+	void ChangeSpellToFire();
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -73,6 +75,8 @@ public:
 
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category="Spells") TArray<TSubclassOf<USpellBase>> spells;
+
+	UPROPERTY(VisibleAnywhere, Category = "Spells") TSubclassOf<USpellBase> activeSpell;
 
 	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
 	UPROPERTY(VisibleAnywhere) AInteractTrigger* overlappedInteractTrigger;

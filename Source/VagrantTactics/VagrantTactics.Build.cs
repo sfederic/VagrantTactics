@@ -8,7 +8,13 @@ public class VagrantTactics : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ApexDestruction" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core",
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"ApexDestruction", 
+			"Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
