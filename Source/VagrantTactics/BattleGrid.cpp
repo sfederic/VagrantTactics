@@ -342,6 +342,30 @@ void ABattleGrid::ShowAllNodes()
 	}
 }
 
+void ABattleGrid::HideNode(FGridNode* node)
+{
+	gridMesh->MarkRenderStateDirty();
+
+	node->bActive = false;
+
+	FTransform transform;
+	gridMesh->GetInstanceTransform(node->instancedMeshIndex, transform);
+	transform.SetScale3D(nodeHiddenScale);
+	gridMesh->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+}
+
+void ABattleGrid::UnhideNode(FGridNode* node)
+{
+	gridMesh->MarkRenderStateDirty();
+
+	node->bActive = true;
+
+	FTransform transform;
+	gridMesh->GetInstanceTransform(node->instancedMeshIndex, transform);
+	transform.SetScale3D(nodeVisibleScale);
+	gridMesh->UpdateInstanceTransform(node->instancedMeshIndex, transform);
+}
+
 void ABattleGrid::HideNodes(TArray<FGridNode*>& nodesToHide)
 {
 	//Instance meshes need to have render dirty flag set to update transform.

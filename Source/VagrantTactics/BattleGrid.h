@@ -34,6 +34,8 @@ public:
 	void GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>& outNodes);
 	void HideAllNodes();
 	void ShowAllNodes();
+	void HideNode(FGridNode* node);
+	void UnhideNode(FGridNode* node);
 	void HideNodes(TArray<FGridNode*>& nodesToHide);
 	void HideNodes(TArray<int32>& indices);
 	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);

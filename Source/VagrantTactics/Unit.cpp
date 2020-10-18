@@ -8,6 +8,7 @@
 #include "BattleGrid.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Camera/CameraShake.h"
+#include "GameStatics.h"
 
 AUnit::AUnit()
 {
@@ -108,7 +109,6 @@ void AUnit::ShowMovementPath(int movementPoints)
 void AUnit::HideMovementPath()
 {
 	battleGrid->HideAllNodes();
-	//battleGrid->HideNodes(movementPathNodes);
 }
 
 void AUnit::MoveTo(FGridNode* destinationNode)

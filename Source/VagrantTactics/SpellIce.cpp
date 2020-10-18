@@ -12,5 +12,6 @@ void USpellIce::CastSpell(int x, int y)
 	FGridNode* node = player->battleGrid->GetNode(x, y);
 	GetWorld()->SpawnActor<AActor>(iceBlockToSpawn, FTransform(node->location));
 
+	player->battleGrid->HideNode(node);
 	UE_LOG(LogTemp, Warning, TEXT("Ice block cast"));
 }

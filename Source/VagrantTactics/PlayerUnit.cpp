@@ -286,7 +286,7 @@ void APlayerUnit::Attack()
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 			if (gridActor)
 			{
-				if (battleGrid->bBattleActive)
+				//if (battleGrid->bBattleActive)
 				{
 					gridActor->currentHealth -= attackPoints;
 					currentActionPoints -= costToAttack;
@@ -405,10 +405,13 @@ void APlayerUnit::Click()
 		}
 
 		//Node clicked
-		auto spell = NewObject<USpellBase>(this, spells[0]);
-		ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
-		FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
-		spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex);
+		if (hit.Item > 0) //-1 is the index for non instanced meshes
+		{
+			auto spell = NewObject<USpellBase>(this, spells[0]);
+			ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
+			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
+			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex);
+		}
 	}
 }
 

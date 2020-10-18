@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Unit.h"
+#include "BattleGrid.h"
 
-//Just helper functions
 class GameStatics
 {
 public:
 	static AUnit* GetActorAtGridIndex(int x, int y);
+	//static ABattleGrid* GetActiveBattleGrid();
 };

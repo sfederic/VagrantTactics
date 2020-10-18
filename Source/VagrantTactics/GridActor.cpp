@@ -11,6 +11,8 @@
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Unit.h"
+#include "GameStatics.h"
+#include "VagrantTacticsGameModeBase.h"
 
 AGridActor::AGridActor()
 {
@@ -22,6 +24,13 @@ void AGridActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Setup battlegrid if actor is spawned after level begin
+	if (battleGrid == nullptr)
+	{
+		AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		battleGrid = gameMode->activeBattleGrid;
+	}
+
 	currentHealth = maxHealth;
 
 	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
@@ -53,6 +62,9 @@ void AGridActor::Tick(float DeltaTime)
 		{
 			battleGrid->UnhideNodes(connectedNodeIndices);
 			
+			//For single GridActors that are spawned after level creation
+			battleGrid->UnhideNode(battleGrid->GetNode(xIndex, yIndex));
+
 			//Reset player camera focus on Destroy
 			APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 			player->ResetCameraFocusAndFOV();
