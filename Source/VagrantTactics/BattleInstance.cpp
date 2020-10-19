@@ -32,8 +32,8 @@ void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedCom
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	gameMode->activeBattleGrid->ActivateBattle();
 
-	//for (AUnit* unit : unitsToActivateOnBattleStart)
+	for (AUnit* unit : unitsToActivateOnBattleStart)
 	{
-		//unit->bInBattle = true;
+		unit->bInBattle = true;
 	}
 }

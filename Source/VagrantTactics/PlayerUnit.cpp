@@ -394,12 +394,13 @@ void APlayerUnit::Click()
 		{
 			selectedUnit = hit.GetActor();
 
-			auto spell = NewObject<USpellBase>(this, activeSpell);
-			ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
-			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
-			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
-
-			return;
+			if (activeSpell)
+			{
+				auto spell = NewObject<USpellBase>(this, activeSpell);
+				ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
+				FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
+				spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
+			}
 		}
 
 		AUnit* unit = Cast<AUnit>(hit.GetActor());
