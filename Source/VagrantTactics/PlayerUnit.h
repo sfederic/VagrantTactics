@@ -62,6 +62,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;
 	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
+	const float maxCameraFOV = 90.f;
+	const float cameraFOVAttack = 45.f;
 
 	//WIDGETS
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
@@ -80,9 +82,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
 	UPROPERTY(VisibleAnywhere) AInteractTrigger* overlappedInteractTrigger;
-
-	const float maxCameraFOV = 90.f;
-	const float cameraFOVAttack = 45.f;
 
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToAttack;
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;

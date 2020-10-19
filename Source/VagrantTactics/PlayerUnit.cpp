@@ -382,6 +382,12 @@ void APlayerUnit::Click()
 	//TODO: get rid of the casting below and change it to a custom trace channel
 	if (controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_WorldStatic), true, hit))
 	{
+		if (hit.GetActor() == nullptr)
+		{
+			return;
+		}
+
+
 		UE_LOG(LogTemp, Warning, TEXT("Clicked Actor: %s | Index: %d"), *hit.GetActor()->GetName(), hit.Item);
 
 		if (hit.GetActor()->IsA<AGridActor>())
@@ -423,6 +429,10 @@ void APlayerUnit::Click()
 			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
 			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
 		}
+
+		//Handle generic actors in level to zoom onto and inspect from afar.
+		selectedUnit = hit.GetActor();
+		currentCameraFOV = cameraFOVAttack;
 	}
 }
 

@@ -143,12 +143,15 @@ void ABattleGrid::Init()
 				//FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
 				if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
 				{
-					if (platformHit.GetActor()->Tags.Contains(GameplayTags::Platform))
+					if (platformHit.GetActor())
 					{
-						transform.SetLocation(platformHit.ImpactPoint + FVector(0.f, 0.f, 5.f));
-						transform.SetScale3D(nodeVisibleScale);
-						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
-						node.bActive = true;
+						if (platformHit.GetActor()->Tags.Contains(GameplayTags::Platform))
+						{
+							transform.SetLocation(platformHit.ImpactPoint + FVector(0.f, 0.f, 5.f));
+							transform.SetScale3D(nodeVisibleScale);
+							node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+							node.bActive = true;
+						}
 					}
 				}
 				else
