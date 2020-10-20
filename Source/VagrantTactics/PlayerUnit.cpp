@@ -18,8 +18,7 @@
 #include "InteractDetailsWidget.h"
 #include "InteractTrigger.h"
 #include "SpellBase.h"
-#include "SpellIce.h"
-#include "SpellInterface.h"
+#include "GameplayTags.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -138,9 +137,21 @@ void APlayerUnit::Move(FVector direction)
 			}
 		}
 
-		currentCameraFOV = maxCameraFOV;
+		//Check for hit against fence or small walls between nodes
+		FHitResult fenceHit;
+		FCollisionQueryParams fenceParams;
+		fenceParams.AddIgnoredActor(this);
+		if (GetWorld()->LineTraceSingleByChannel(fenceHit, GetActorLocation(), GetActorLocation() + (direction * 100.f),
+			ECC_WorldStatic, fenceParams))
+		{
+			if (fenceHit.GetActor()->ActorHasTag(GameplayTags::Fence))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("fence or small wall hit"));
+				return;
+			}
+		}
 
-		//selectedUnit = nullptr;
+		currentCameraFOV = maxCameraFOV;
 
 		nextLocation += (direction * moveDistance);
 
