@@ -39,6 +39,10 @@ public:
 	void MoveBack();
 	void MoveLeft();
 	void MoveRight();
+	void MoveForwardHold(float val);
+	void MoveBackHold(float val);
+	void MoveLeftHold(float val);
+	void MoveRightHold(float val);
 	void RotateLeft();
 	void RotateRight();
 	void Attack();
@@ -94,7 +98,8 @@ public:
 	FVector nextLocation;
 	FRotator nextRotation;
 
-	UPROPERTY(EditAnywhere) float moveSpeed;
+	UPROPERTY(EditAnywhere) float moveSpeedDuringBattle;
+	UPROPERTY(EditAnywhere) float moveSpeedOutsideBattle;
 	UPROPERTY(EditAnywhere) float rotateSpeed;
 
 	const float moveDistance = 100.f;

@@ -69,11 +69,22 @@ void APlayerUnit::Tick(float DeltaTime)
 	xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
 	yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
 
+	//Set different move speeds for battle and exploration
+	float moveSpeed;
+	if (battleGrid->bBattleActive)
+	{
+		moveSpeed = moveSpeedDuringBattle;
+	}
+	else if (!battleGrid->bBattleActive)
+	{
+		moveSpeed = moveSpeedOutsideBattle;
+	}
+
 	//Lerp movement and rotation
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextLocation, DeltaTime, moveSpeed));
 	SetActorRotation(FMath::RInterpConstantTo(GetActorRotation(), nextRotation, DeltaTime, rotateSpeed));
 
-	//Camera 
+	//CAMERA
 	if (selectedUnit)
 	{
 		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), selectedUnit->GetActorLocation());
@@ -91,10 +102,17 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//Movement for battle (player movement is 1 node per unit)
 	InputComponent->BindAction(TEXT("Forward"), EInputEvent::IE_Pressed, this, &APlayerUnit::MoveForward);
 	InputComponent->BindAction(TEXT("Back"), EInputEvent::IE_Pressed, this, &APlayerUnit::MoveBack);
 	InputComponent->BindAction(TEXT("Left"), EInputEvent::IE_Pressed, this, &APlayerUnit::MoveLeft);
 	InputComponent->BindAction(TEXT("Right"), EInputEvent::IE_Pressed, this, &APlayerUnit::MoveRight);
+
+	//Movement outside of battle (player input is continuous)
+	InputComponent->BindAxis(TEXT("MoveForwardHold"), this, &APlayerUnit::MoveForwardHold);
+	InputComponent->BindAxis(TEXT("MoveBackHold"), this, &APlayerUnit::MoveBackHold);
+	InputComponent->BindAxis(TEXT("MoveRightHold"), this, &APlayerUnit::MoveRightHold);
+	InputComponent->BindAxis(TEXT("MoveLeftHold"), this, &APlayerUnit::MoveLeftHold);
 
 	InputComponent->BindAction(TEXT("RotateLeft"), EInputEvent::IE_Pressed, this, &APlayerUnit::RotateLeft);
 	InputComponent->BindAction(TEXT("RotateRight"), EInputEvent::IE_Pressed, this, &APlayerUnit::RotateRight);
@@ -221,22 +239,66 @@ void APlayerUnit::Move(FVector direction)
 
 void APlayerUnit::MoveForward()
 {
-	Move(GetActorForwardVector());
+	if (battleGrid->bBattleActive)
+	{
+		Move(GetActorForwardVector());
+	}
 }
 
 void APlayerUnit::MoveBack()
 {
-	Move(-GetActorForwardVector());
+	if (battleGrid->bBattleActive)
+	{
+		Move(-GetActorForwardVector());
+	}
 }
 
 void APlayerUnit::MoveLeft()
 {
-	Move(-GetActorRightVector());
+	if (battleGrid->bBattleActive)
+	{
+		Move(-GetActorRightVector());
+	}
 }
 
 void APlayerUnit::MoveRight()
 {
-	Move(GetActorRightVector());
+	if (battleGrid->bBattleActive)
+	{
+		Move(GetActorRightVector());
+	}
+}
+
+void APlayerUnit::MoveForwardHold(float val)
+{
+	if (!battleGrid->bBattleActive && val)
+	{
+		Move(GetActorForwardVector());
+	}
+}
+
+void APlayerUnit::MoveBackHold(float val)
+{
+	if (!battleGrid->bBattleActive && val)
+	{
+		Move(-GetActorForwardVector());
+	}
+}
+
+void APlayerUnit::MoveRightHold(float val)
+{
+	if (!battleGrid->bBattleActive && val)
+	{
+		Move(GetActorRightVector());
+	}
+}
+
+void APlayerUnit::MoveLeftHold(float val)
+{
+	if (!battleGrid->bBattleActive && val)
+	{
+		Move(-GetActorRightVector());
+	}
 }
 
 void APlayerUnit::RotateLeft()
