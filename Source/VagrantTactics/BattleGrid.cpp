@@ -112,13 +112,28 @@ void ABattleGrid::Init()
 
 			FHitResult hit;
 			FCollisionQueryParams params;
-			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 300.f);
 
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
-			GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
-				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f)));
+			//Box sweep above node
+			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
+				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
+			{
+				node.bActive = false;
+				transform.SetScale3D(nodeHiddenScale);
+
+				//The weird if checks here are to check for BSP geom
+				if (hit.GetActor())
+				{
+					if (hit.GetActor()->ActorHasTag(GameplayTags::Player))
+					{
+						node.bActive = true;
+						transform.SetScale3D(nodeVisibleScale);
+					}
+				}
+			}
 
 			for(AGridActor* gridActor : allGridActors)
 			{

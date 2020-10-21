@@ -11,5 +11,6 @@ UCLASS(Blueprintable, BlueprintType)
 class VAGRANTTACTICS_API ADefaultWorldSettings : public AWorldSettings
 {
 	GENERATED_BODY()
-	
+public:
+	//ADefaultWorldSettings();
 };
