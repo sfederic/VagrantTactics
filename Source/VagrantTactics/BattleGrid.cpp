@@ -112,22 +112,23 @@ void ABattleGrid::Init()
 
 			FHitResult hit;
 			FCollisionQueryParams params;
-			FVector endHit = transform.GetLocation() + FVector(0.f, 0.f, 300.f);
+			FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
 
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
-			//Box sweep above node
-			if (GetWorld()->SweepSingleByChannel(hit, transform.GetLocation(), endHit, FQuat::Identity,
+			if (GetWorld()->SweepSingleByChannel(hit, startHit, transform.GetLocation() + FVector(0.f, 0.f, 50.f), FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
 			{
 				node.bActive = false;
 				transform.SetScale3D(nodeHiddenScale);
 
 				//The weird if checks here are to check for BSP geom
-				if (hit.GetActor())
+				AActor* hitActor = hit.GetActor();
+				if (hitActor)
 				{
-					if (hit.GetActor()->ActorHasTag(GameplayTags::Player))
+					if (hitActor->ActorHasTag(GameplayTags::Player) || hitActor->ActorHasTag(GameplayTags::Unit)
+						|| hitActor->ActorHasTag(GameplayTags::NonObstruct))
 					{
 						node.bActive = true;
 						transform.SetScale3D(nodeVisibleScale);
@@ -154,9 +155,9 @@ void ABattleGrid::Init()
 			//Deal with platforms and holes in floor
 			{
 				FHitResult platformHit;
-				FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+				FVector startPlatformHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
 				//FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
-				if (GetWorld()->LineTraceSingleByChannel(platformHit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
+				if (GetWorld()->LineTraceSingleByChannel(platformHit, startPlatformHit, transform.GetLocation(), ECC_WorldStatic, params))
 				{
 					if (platformHit.GetActor())
 					{

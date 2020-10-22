@@ -180,6 +180,10 @@ void APlayerUnit::Move(FVector direction)
 		xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
 		yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
 
+		//Test rotation on movement
+		FindComponentByClass<UStaticMeshComponent>()->SetWorldRotation(
+			UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
+
 		//return out of function if player is on grid boundary
 		if (direction.Equals(-FVector::ForwardVector))
 		{
