@@ -17,6 +17,8 @@ class UInteractWidget;
 class UInteractDetailsWidget;
 class AInteractTrigger;
 class USpellBase;
+class AGridActor;
+class UIntuition;
 
 //Player class.
 UCLASS()
@@ -92,8 +94,12 @@ public:
 
 	UPROPERTY(EditAnywhere) int attackPoints;
 
+	//TODO: think about moving to GameInstance
+	//INTUITIONS 
+	UPROPERTY(VisibleAnywhere) TArray<UIntuition*> intuitions;
+
 	ABattleGrid* battleGrid;
-	AActor* selectedUnit;
+	AGridActor* selectedUnit;
 
 	FVector nextLocation;
 	FRotator nextRotation;

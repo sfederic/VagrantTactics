@@ -472,7 +472,7 @@ void APlayerUnit::Click()
 
 		if (hit.GetActor()->IsA<AGridActor>())
 		{
-			selectedUnit = hit.GetActor();
+			selectedUnit = Cast<AGridActor>(hit.GetActor());
 
 			if (activeSpell)
 			{
@@ -512,8 +512,11 @@ void APlayerUnit::Click()
 		}
 
 		//Handle generic actors in level to zoom onto and inspect from afar.
-		selectedUnit = hit.GetActor();
-		currentCameraFOV = cameraFOVAttack;
+		if (hit.GetActor()->IsA<AGridActor>())
+		{
+			selectedUnit = Cast<AGridActor>(hit.GetActor());
+			currentCameraFOV = cameraFOVAttack;
+		}
 	}
 }
 

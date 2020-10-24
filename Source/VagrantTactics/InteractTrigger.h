@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "InteractTrigger.generated.h"
 
+class AGridActor;
+
 //Base class for interaction boxes. 
 UCLASS()
 class VAGRANTTACTICS_API AInteractTrigger : public AActor
@@ -36,5 +38,5 @@ public:
 	UPROPERTY(EditAnywhere) FText detailsText;
 
 	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
-	UPROPERTY(EditAnywhere) AActor* connectedActor;
+	UPROPERTY(EditAnywhere) AGridActor* connectedActor;
 };

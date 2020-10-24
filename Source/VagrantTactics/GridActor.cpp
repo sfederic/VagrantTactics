@@ -13,6 +13,12 @@
 #include "Unit.h"
 #include "GameStatics.h"
 #include "VagrantTacticsGameModeBase.h"
+#include "IntuitionComponent.h"
+
+void AGridActor::AddIntuition()
+{
+
+}
 
 AGridActor::AGridActor()
 {
@@ -72,7 +78,7 @@ void AGridActor::Tick(float DeltaTime)
 			if (Tags.Contains(GameplayTags::Destructible))
 			{
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
-				dc->ApplyDamage(1000.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 1000.f);
+				dc->ApplyDamage(500.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 500.f);
 
 				healthbarWidgetComponent->SetHiddenInGame(true);
 
@@ -87,6 +93,19 @@ void AGridActor::Tick(float DeltaTime)
 				}
 
 				Destroy();
+			}
+
+			//Check for Intuition
+			UIntuitionComponent* intuitionComponent = FindComponentByClass<UIntuitionComponent>();
+			if (intuitionComponent)
+			{
+				UIntuition* newIntuition = NewObject<UIntuition>(player, intuitionComponent->intuitionClass);
+				IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(newIntuition);
+				if (intuitionInterface)
+				{
+					intuitionInterface->AddIntuition();
+				}
+				player->intuitions.Add(newIntuition);
 			}
 
 			bIsDestructible = false;

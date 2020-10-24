@@ -5,14 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GridNode.h" 
+#include "IntuitionInterface.h"
 #include "GridActor.generated.h"
 
 class UHealthbarWidget;
 class UWidgetComponent;
 
 //Base class for static actors in level.
+//Grid Actors can also have Intuitions connected to them (i.e player gains Intuition on inspection/kill)
 UCLASS()
-class VAGRANTTACTICS_API AGridActor : public AActor
+class VAGRANTTACTICS_API AGridActor : public AActor, public IIntuitionInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +26,7 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	virtual void AddIntuition() override;
 	void SetIndices();
 
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
