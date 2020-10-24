@@ -54,6 +54,7 @@ public:
 	void PreviewBattleGrid();
 	void ResetActionPointsToMax();
 	void Cancel();
+	void ShowIntuitions();
 	void ResetCameraFocusAndFOV();
 	void ChangeSpellToIce();
 	void ChangeSpellToFire();
@@ -73,13 +74,16 @@ public:
 
 	//WIDGETS
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
-	UUserWidget* widgetActionPoints;
+	UPROPERTY() UUserWidget* widgetActionPoints;
 
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UInteractWidget> classWidgetInteract;
-	UInteractWidget* widgetInteract;
+	UPROPERTY() UInteractWidget* widgetInteract;
 
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UInteractDetailsWidget> classWidgetInteractDetails;
-	UInteractDetailsWidget* widgetInteractDetails;
+	UPROPERTY() UInteractDetailsWidget* widgetInteractDetails;
+
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classIntuitionsWidget;
+	UPROPERTY() UUserWidget* intuitionsWidget;
 
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category="Spells") TArray<TSubclassOf<USpellBase>> spells;
@@ -96,7 +100,7 @@ public:
 
 	//TODO: think about moving to GameInstance
 	//INTUITIONS 
-	UPROPERTY(VisibleAnywhere) TArray<UIntuition*> intuitions;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
 
 	ABattleGrid* battleGrid;
 	AGridActor* selectedUnit;

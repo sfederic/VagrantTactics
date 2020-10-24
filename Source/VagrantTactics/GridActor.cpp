@@ -105,7 +105,9 @@ void AGridActor::Tick(float DeltaTime)
 				{
 					intuitionInterface->AddIntuition();
 				}
+
 				player->intuitions.Add(newIntuition);
+				GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
 			}
 
 			bIsDestructible = false;

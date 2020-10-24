@@ -124,6 +124,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &APlayerUnit::Click);
 	InputComponent->BindAction(TEXT("PreviewBattleGrid"), EInputEvent::IE_Pressed, this, &APlayerUnit::PreviewBattleGrid);
 	InputComponent->BindAction(TEXT("Cancel"), EInputEvent::IE_Pressed, this, &APlayerUnit::Cancel);
+	InputComponent->BindAction(TEXT("ShowIntuitions"), EInputEvent::IE_Pressed, this, &APlayerUnit::ShowIntuitions);
 
 	//Spells
 	InputComponent->BindAction(TEXT("Spell1"), EInputEvent::IE_Pressed, this, &APlayerUnit::ChangeSpellToIce);
@@ -562,6 +563,21 @@ void APlayerUnit::Cancel()
 
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
+}
+
+void APlayerUnit::ShowIntuitions()
+{
+	//TODO: Keep an eye on this. Don't know how UE handles Widgets with GC
+	if (intuitionsWidget == nullptr)
+	{
+		intuitionsWidget = CreateWidget<UUserWidget>(GetWorld(), classIntuitionsWidget);
+		intuitionsWidget->AddToViewport();
+	}
+	else
+	{
+		intuitionsWidget->RemoveFromViewport();
+		intuitionsWidget = nullptr;
+	}
 }
 
 void APlayerUnit::ResetCameraFocusAndFOV()
