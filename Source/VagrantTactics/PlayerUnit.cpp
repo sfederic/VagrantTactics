@@ -42,17 +42,34 @@ void APlayerUnit::BeginPlay()
 	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
 
 	//Setup player spawn point from level entrances
-	TArray<AActor*> spawnPoints;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), spawnPoints);
-	for (AActor* spawnPoint : spawnPoints)
+	//Needs to handle both AEntraceTriggers and APlayerStarts (player starts because of blocked off entraces)
+	TArray<AActor*> entraceTriggers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), entraceTriggers);
+	for (AActor* spawnPoint : entraceTriggers)
 	{
-		AEntranceTrigger* playerStart = Cast<AEntranceTrigger>(spawnPoint);
-		if (playerStart->connectedLevel == previousLevelMovedFrom)
+		AEntranceTrigger* entraceTrigger = Cast<AEntranceTrigger>(spawnPoint);
+		if (entraceTrigger->connectedLevel == previousLevelMovedFrom)
 		{
-			SetActorLocation(spawnPoint->GetActorLocation());
+			SetActorLocation(entraceTrigger->GetActorLocation());
+			SetActorRotation(entraceTrigger->GetActorRotation());
 			break;
 		}
 	}
+
+	TArray<AActor*> playerStarts;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+	for (AActor* spawnPoint : playerStarts)
+	{
+		APlayerStart* playerStart = Cast<APlayerStart>(spawnPoint);
+		if (playerStart->PlayerStartTag == previousLevelMovedFrom)
+		{
+			SetActorLocation(playerStart->GetActorLocation());
+			SetActorRotation(playerStart->GetActorRotation());
+			break;
+		}
+	}
+
+
 
 	nextLocation = GetActorLocation();
 	nextRotation = GetActorRotation();
@@ -60,8 +77,12 @@ void APlayerUnit::BeginPlay()
 	currentActionPoints = maxActionPoints;
 	currentHealthPoints = maxHealthPoints;
 
+	//Components
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	controller->bShowMouseCursor = true;
+
+	mesh = FindComponentByClass<UStaticMeshComponent>();
+	check(mesh);
 
 	//Main camera setup
 	camera = FindComponentByClass<UCameraComponent>();
@@ -120,6 +141,22 @@ void APlayerUnit::Tick(float DeltaTime)
 	
 	camera->SetWorldRotation(FMath::RInterpTo(camera->GetComponentRotation(), cameraFocusRotation, DeltaTime, cameraFocusLerpSpeed));
 	camera->SetFieldOfView(FMath::FInterpTo(camera->FieldOfView, currentCameraFOV, DeltaTime, cameraFOVLerpSpeed));
+
+	//Interact trigger direction check - Check if player's forward is same as Triggers (way of getting around directional focus)
+	if (overlappedInteractTrigger)
+	{
+		if (mesh->GetForwardVector().Equals(overlappedInteractTrigger->GetActorForwardVector()))
+		{
+			bCanInteractWithTriggersConnection = true;
+			if (!widgetInteract->IsInViewport()) { widgetInteract->AddToViewport(); }
+			widgetInteract->interactText = overlappedInteractTrigger->interactText;
+		}
+	}
+	else
+	{
+		bCanInteractWithTriggersConnection = false;
+		//if (widgetInteract->IsInViewport()) { widgetInteract->RemoveFromViewport(); }
+	}
 }
 
 void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -181,7 +218,7 @@ void APlayerUnit::Move(FVector direction)
 		}
 
 		//Check for hit against fence or small walls between nodes
-		/*FHitResult fenceHit;
+		FHitResult fenceHit;
 		FCollisionQueryParams fenceParams;
 		fenceParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(fenceHit, GetActorLocation(), GetActorLocation() + (direction * 100.f),
@@ -195,7 +232,7 @@ void APlayerUnit::Move(FVector direction)
 					return;
 				}
 			}
-		}*/
+		}
 
 		currentCameraFOV = maxCameraFOV;
 
@@ -206,8 +243,7 @@ void APlayerUnit::Move(FVector direction)
 		yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
 
 		//Test rotation on movement
-		FindComponentByClass<UStaticMeshComponent>()->SetWorldRotation(
-			UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
+		mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
 
 		//return out of function if player is on grid boundary
 		if (direction.Equals(-FVector::ForwardVector))
@@ -358,20 +394,25 @@ void APlayerUnit::Attack()
 		APlayerController* controller = Cast<APlayerController>(GetController());
 		DisableInput(controller);
 
+		widgetInteract->RemoveFromViewport();
+
 		return;
 	}
 
 	//Check for interaction
 	if (overlappedInteractTrigger)
 	{
-		//interact widgets
-		widgetInteract->RemoveFromViewport();
-		widgetInteractDetails->detailsText = overlappedInteractTrigger->detailsText;
-		widgetInteractDetails->AddToViewport();
+		if (bCanInteractWithTriggersConnection)
+		{
+			//interact widgets
+			widgetInteract->RemoveFromViewport();
+			widgetInteractDetails->detailsText = overlappedInteractTrigger->detailsText;
+			widgetInteractDetails->AddToViewport();
 
-		//Zoom in on inspected object
-		currentCameraFOV = cameraFOVAttack;
-		selectedUnit = overlappedInteractTrigger->connectedActor;
+			//Zoom in on inspected object
+			currentCameraFOV = cameraFOVAttack;
+			selectedUnit = overlappedInteractTrigger->connectedActor;
+		}
 	}
 
 	if (battleGrid->bBattleActive)
@@ -593,6 +634,8 @@ void APlayerUnit::Cancel()
 
 	selectedUnit = nullptr;
 	currentCameraFOV = maxCameraFOV;
+
+	if (widgetInteractDetails->IsInViewport()) { widgetInteractDetails->RemoveFromViewport(); }
 }
 
 void APlayerUnit::ShowIntuitions()

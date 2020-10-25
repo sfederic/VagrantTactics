@@ -14,7 +14,7 @@ struct GridRow
 	TArray<FGridNode> columns;
 };
 
-//Grid that spawns around enemies and player for battle.
+//Grid that spawns around enemies and player for battle. BattleGrid always needs to be at world origin (0, 0, 0). 
 UCLASS()
 class VAGRANTTACTICS_API ABattleGrid : public AActor
 {

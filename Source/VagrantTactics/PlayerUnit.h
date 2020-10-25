@@ -19,6 +19,7 @@ class AInteractTrigger;
 class USpellBase;
 class AGridActor;
 class UIntuition;
+class UStaticMeshComponent;
 
 //Player class.
 UCLASS()
@@ -106,8 +107,11 @@ public:
 	//INTUITIONS 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
 
+	//COMPONENTS
+	UStaticMeshComponent* mesh;
+
 	ABattleGrid* battleGrid;
-	AGridActor* selectedUnit;
+	AActor* selectedUnit;
 
 	FVector nextLocation;
 	FRotator nextRotation;
@@ -123,9 +127,11 @@ public:
 	UPROPERTY(EditAnywhere) int maxActionPoints;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) int currentActionPoints;
 
-	UPROPERTY(EditAnywhere) int maxHealthPoints;
-	UPROPERTY(VisibleAnywhere) int currentHealthPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int maxHealthPoints;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) int currentHealthPoints;
 
 	UPROPERTY(VisibleAnywhere) int xIndex;
 	UPROPERTY(VisibleAnywhere) int yIndex;
+
+	UPROPERTY(VisibleAnywhere) bool bCanInteractWithTriggersConnection;
 };

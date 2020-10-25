@@ -4,6 +4,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerUnit.h"
+#include "InteractWidget.h"
 
 AEntranceTrigger::AEntranceTrigger()
 {
@@ -32,6 +33,14 @@ void AEntranceTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (player)
 	{
 		player->overlappedEntrace = this;
+		if (player->widgetInteract)
+		{
+			if (!player->widgetInteract->IsInViewport())
+			{
+				player->widgetInteract->interactText = FText::FromString(TEXT("Open"));
+				player->widgetInteract->AddToViewport();
+			}
+		}
 	}
 }
 
@@ -41,5 +50,12 @@ void AEntranceTrigger::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	if (player)
 	{
 		player->overlappedEntrace = nullptr;
+		if (player->widgetInteract)
+		{
+			if (player->widgetInteract->IsInViewport())
+			{
+				player->widgetInteract->RemoveFromViewport();
+			}
+		}
 	}
 }

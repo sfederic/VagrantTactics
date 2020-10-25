@@ -38,5 +38,5 @@ public:
 	UPROPERTY(EditAnywhere) FText detailsText;
 
 	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
-	UPROPERTY(EditAnywhere) AGridActor* connectedActor;
+	UPROPERTY(EditAnywhere) AActor* connectedActor;
 };
