@@ -19,6 +19,9 @@
 #include "InteractTrigger.h"
 #include "SpellBase.h"
 #include "GameplayTags.h"
+#include "GameFramework/PlayerStart.h" 
+#include "MainGameInstance.h"
+#include "TimerManager.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -31,7 +34,25 @@ void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	//Opening camera fadein
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 1.f, FColor::Black, true, true);
+
+	//Get previous level name for debugging purposes
+	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
+
+	//Setup player spawn point from level entrances
+	TArray<AActor*> spawnPoints;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), spawnPoints);
+	for (AActor* spawnPoint : spawnPoints)
+	{
+		APlayerStart* playerStart = Cast<APlayerStart>(spawnPoint);
+		if (playerStart->PlayerStartTag == previousLevelMovedFrom)
+		{
+			SetActorLocation(spawnPoint->GetActorLocation());
+			break;
+		}
+	}
 
 	nextLocation = GetActorLocation();
 	nextRotation = GetActorRotation();
@@ -59,6 +80,9 @@ void APlayerUnit::BeginPlay()
 
 	widgetInteractDetails = CreateWidget<UInteractDetailsWidget>(GetWorld(), classWidgetInteractDetails);
 	widgetInteractDetails->RemoveFromViewport();
+
+	timeOfDayWidget = CreateWidget<UUserWidget>(GetWorld(), classTimeOfDayWidget);
+	timeOfDayWidget->AddToViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -328,7 +352,12 @@ void APlayerUnit::Attack()
 	//TODO: this input setup is getting messy. Is there away to swap out Controllers or something?
 	if (overlappedEntrace)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->levelToMoveTo);
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FColor::Black, true, true);
+		FTimerHandle timerHandle;
+		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::MoveToLevel, 2.0f, false);
+		APlayerController* controller = Cast<APlayerController>(GetController());
+		DisableInput(controller);
+
 		return;
 	}
 
@@ -365,7 +394,8 @@ void APlayerUnit::Attack()
 		FHitResult hit;
 		FCollisionQueryParams hitParams;
 		hitParams.AddIgnoredActor(this);
-		FVector endHit = GetActorLocation() + GetActorForwardVector() * moveDistance;
+		//TODO: cache mesh below 
+		FVector endHit = GetActorLocation() + (FindComponentByClass<UStaticMeshComponent>()->GetForwardVector() * moveDistance);
 		if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
 		{
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
@@ -594,4 +624,12 @@ void APlayerUnit::ChangeSpellToIce()
 void APlayerUnit::ChangeSpellToFire()
 {
 	activeSpell = spells[1];
+}
+
+void APlayerUnit::MoveToLevel()
+{
+	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	gameInstance->previousLevelMovedFrom = *UGameplayStatics::GetCurrentLevelName(GetWorld());
+	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
+	UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->levelToMoveTo);
 }

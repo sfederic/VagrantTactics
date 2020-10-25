@@ -16,6 +16,7 @@ class VAGRANTTACTICS_API AVagrantTacticsGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+	AVagrantTacticsGameModeBase();
 	virtual void BeginPlay() override;
 
 	UPROPERTY() TArray<AGridActor*> gridActors;

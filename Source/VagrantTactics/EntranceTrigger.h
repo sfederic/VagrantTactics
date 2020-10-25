@@ -29,5 +29,7 @@ public:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UBoxComponent* box;
+
 	UPROPERTY(EditAnywhere) FName levelToMoveTo;
 };

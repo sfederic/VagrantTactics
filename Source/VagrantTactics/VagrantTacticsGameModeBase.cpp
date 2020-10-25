@@ -5,6 +5,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "BattleGrid.h"
 #include "Unit.h"
+#include "PlayerUnit.h"
+
+AVagrantTacticsGameModeBase::AVagrantTacticsGameModeBase()
+{
+
+}
 
 void AVagrantTacticsGameModeBase::BeginPlay()
 {

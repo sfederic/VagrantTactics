@@ -58,6 +58,7 @@ public:
 	void ResetCameraFocusAndFOV();
 	void ChangeSpellToIce();
 	void ChangeSpellToFire();
+	void MoveToLevel();
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -85,6 +86,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classIntuitionsWidget;
 	UPROPERTY() UUserWidget* intuitionsWidget;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classTimeOfDayWidget;
+	UPROPERTY() UUserWidget* timeOfDayWidget;
+
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category="Spells") TArray<TSubclassOf<USpellBase>> spells;
 
@@ -107,6 +111,8 @@ public:
 
 	FVector nextLocation;
 	FRotator nextRotation;
+
+	UPROPERTY(VisibleAnywhere) FName previousLevelMovedFrom;
 
 	UPROPERTY(EditAnywhere) float moveSpeedDuringBattle;
 	UPROPERTY(EditAnywhere) float moveSpeedOutsideBattle;
