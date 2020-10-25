@@ -10,8 +10,7 @@
 UENUM(BlueprintType)
 enum class EIntuitionID : uint8
 {
-	None,
-	Crate
+	NonStoryEffect
 };
 
 //Event based buffs the player collects in-game
