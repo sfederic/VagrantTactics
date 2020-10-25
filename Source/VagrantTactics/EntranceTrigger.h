@@ -31,5 +31,5 @@ public:
 
 	UBoxComponent* box;
 
-	UPROPERTY(EditAnywhere) FName levelToMoveTo;
+	UPROPERTY(EditAnywhere) FName connectedLevel;
 };

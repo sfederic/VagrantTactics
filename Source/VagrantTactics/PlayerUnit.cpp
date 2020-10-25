@@ -43,11 +43,11 @@ void APlayerUnit::BeginPlay()
 
 	//Setup player spawn point from level entrances
 	TArray<AActor*> spawnPoints;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), spawnPoints);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), spawnPoints);
 	for (AActor* spawnPoint : spawnPoints)
 	{
-		APlayerStart* playerStart = Cast<APlayerStart>(spawnPoint);
-		if (playerStart->PlayerStartTag == previousLevelMovedFrom)
+		AEntranceTrigger* playerStart = Cast<AEntranceTrigger>(spawnPoint);
+		if (playerStart->connectedLevel == previousLevelMovedFrom)
 		{
 			SetActorLocation(spawnPoint->GetActorLocation());
 			break;
@@ -631,5 +631,5 @@ void APlayerUnit::MoveToLevel()
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	gameInstance->previousLevelMovedFrom = *UGameplayStatics::GetCurrentLevelName(GetWorld());
 	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
-	UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->levelToMoveTo);
+	UGameplayStatics::OpenLevel(GetWorld(), overlappedEntrace->connectedLevel);
 }
