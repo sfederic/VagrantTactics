@@ -32,7 +32,7 @@ void AConversationInstance::Tick(float DeltaTime)
 
 void AConversationInstance::ShowNextDialogueLine()
 {
-	if (conversationOrderIndex >= (conversationRows.Num() - 1))
+	if (conversationOrderIndex >= conversationRows.Num())
 	{
 		if (conversationOrderIndex > 0)
 		{
