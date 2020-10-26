@@ -196,6 +196,17 @@ void ABattleGrid::Init()
 			}
 
 
+
+			//Check for hole in floor
+			FHitResult holeHit;
+			if (!GetWorld()->LineTraceSingleByChannel(holeHit, transform.GetLocation(), 
+				transform.GetLocation() - FVector(0.f, 0.f, 100.f), ECC_WorldStatic))
+			{
+				node.bActive = false;
+				transform.SetScale3D(nodeHiddenScale);
+			}
+
+
 			int32 instancedMeshIndex = gridMesh->AddInstance(transform);
 
 

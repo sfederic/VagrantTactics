@@ -40,7 +40,7 @@ void AConversationInstance::ShowNextDialogueLine()
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
-		return;
+		Destroy();
 	}
 
 	FTimerHandle handle;
