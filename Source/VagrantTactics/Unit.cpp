@@ -30,7 +30,10 @@ void AUnit::BeginPlay()
 
 	//Setup focus particle
 	particleFocusBeam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particleTemplateFocusBeam, FTransform(GetActorLocation()));
-	particleFocusBeam->SetHiddenInGame(true);
+	if (particleFocusBeam)
+	{
+		particleFocusBeam->SetHiddenInGame(true);
+	}
 }
 
 void AUnit::Tick(float DeltaTime)

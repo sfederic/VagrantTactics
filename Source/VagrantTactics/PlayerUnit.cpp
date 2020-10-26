@@ -43,19 +43,6 @@ void APlayerUnit::BeginPlay()
 
 	//Setup player spawn point from level entrances
 	//Needs to handle both AEntraceTriggers and APlayerStarts (player starts because of blocked off entraces)
-	TArray<AActor*> entraceTriggers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), entraceTriggers);
-	for (AActor* spawnPoint : entraceTriggers)
-	{
-		AEntranceTrigger* entraceTrigger = Cast<AEntranceTrigger>(spawnPoint);
-		if (entraceTrigger->connectedLevel == previousLevelMovedFrom)
-		{
-			SetActorLocation(entraceTrigger->GetActorLocation());
-			SetActorRotation(entraceTrigger->GetActorRotation());
-			break;
-		}
-	}
-
 	TArray<AActor*> playerStarts;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
 	for (AActor* spawnPoint : playerStarts)
@@ -72,7 +59,19 @@ void APlayerUnit::BeginPlay()
 			break;
 		}
 	}
-
+	
+	TArray<AActor*> entraceTriggers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), entraceTriggers);
+	for (AActor* spawnPoint : entraceTriggers)
+	{
+		AEntranceTrigger* entraceTrigger = Cast<AEntranceTrigger>(spawnPoint);
+		if (entraceTrigger->connectedLevel == previousLevelMovedFrom)
+		{
+			SetActorLocation(entraceTrigger->GetActorLocation());
+			SetActorRotation(entraceTrigger->GetActorRotation());
+			break;
+		}
+	}
 
 
 	nextLocation = GetActorLocation();
