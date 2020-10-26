@@ -61,10 +61,6 @@ void APlayerUnit::BeginPlay()
 	for (AActor* spawnPoint : playerStarts)
 	{
 		APlayerStart* playerStart = Cast<APlayerStart>(spawnPoint);
-
-		SetActorLocation(playerStart->GetActorLocation());
-		SetActorRotation(playerStart->GetActorRotation());
-
 		if (playerStart->PlayerStartTag == previousLevelMovedFrom)
 		{
 			SetActorLocation(playerStart->GetActorLocation());
