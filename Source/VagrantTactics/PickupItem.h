@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "InteractTrigger.generated.h"
+#include "PickupItem.generated.h"
 
-class AGridActor;
+class UBoxComponent;
 
-//Base class for interaction boxes. 
+//Item that units and player can pickup and use as active inventory
 UCLASS()
-class VAGRANTTACTICS_API AInteractTrigger : public AActor
+class VAGRANTTACTICS_API APickupItem : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AInteractTrigger();
+	APickupItem();
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,17 +29,8 @@ public:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	class UBoxComponent* box;
-
-	//Initial interact prompt
+	//Text to display on player's Interact Widget
 	UPROPERTY(EditAnywhere) FText interactText;
 
-	//Details once player interacts with object
-	UPROPERTY(EditAnywhere) FText detailsText;
-
-	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
-	UPROPERTY(EditAnywhere) AActor* connectedActor;
-
-	//Denotes whether the connectedActor can be picked up and added to player mesh socket
-	UPROPERTY(EditAnywhere) bool bPickupConnectedActor;
+	UBoxComponent* box;
 };

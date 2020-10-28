@@ -20,6 +20,7 @@ class USpellBase;
 class AGridActor;
 class UIntuition;
 class UStaticMeshComponent;
+class APickupItem;
 
 //Player class.
 UCLASS()
@@ -91,13 +92,15 @@ public:
 	UPROPERTY() UUserWidget* timeOfDayWidget;
 
 	//SPELLS
-	UPROPERTY(EditAnywhere, Category="Spells") TArray<TSubclassOf<USpellBase>> spells;
-
+	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;
 	UPROPERTY(VisibleAnywhere, Category = "Spells") TSubclassOf<USpellBase> activeSpell;
 
-	UPROPERTY(VisibleAnywhere) AEntranceTrigger* overlappedEntrace;
-	UPROPERTY(VisibleAnywhere) AInteractTrigger* overlappedInteractTrigger;
+	//OVERLAPS
+	UPROPERTY(VisibleAnywhere, Category = "Overlaps") AEntranceTrigger* overlappedEntrace;
+	UPROPERTY(VisibleAnywhere, Category = "Overlaps") AInteractTrigger* overlappedInteractTrigger;
+	UPROPERTY(VisibleAnywhere, Category = "Overlaps") APickupItem* overlappedPickupItem;
 
+	//AP COSTS
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToAttack;
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;
 
@@ -134,4 +137,7 @@ public:
 	UPROPERTY(VisibleAnywhere) int yIndex;
 
 	UPROPERTY(VisibleAnywhere) bool bCanInteractWithTriggersConnection;
+
+	UPROPERTY(VisibleAnywhere) bool bHoldingItem;
+	UPROPERTY(VisibleAnywhere) AActor* holdingItemActor;
 };

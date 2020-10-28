@@ -22,6 +22,10 @@
 #include "GameFramework/PlayerStart.h" 
 #include "MainGameInstance.h"
 #include "TimerManager.h"
+#include "Engine/StaticMeshSocket.h" 
+#include "Blueprint/WidgetLayoutLibrary.h" 
+#include "Components/BoxComponent.h"
+#include "PickupItem.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -397,6 +401,9 @@ void APlayerUnit::Attack()
 		APlayerController* controller = Cast<APlayerController>(GetController());
 		DisableInput(controller);
 
+		//TODO: This works roughly to remove all NPC dialogue while moving level, but new dialogue will still pop up
+		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+
 		widgetInteract->RemoveFromViewport();
 
 		return;
@@ -415,7 +422,40 @@ void APlayerUnit::Attack()
 			//Zoom in on inspected object
 			currentCameraFOV = cameraFOVAttack;
 			selectedUnit = overlappedInteractTrigger->connectedActor;
+
+			//Handle items to add to player's hand during combat
+			if (overlappedInteractTrigger->bPickupConnectedActor)
+			{
+				const UStaticMeshSocket* socket = mesh->GetSocketByName(TEXT("LH_Item"));
+				if (socket)
+				{
+					socket->AttachActor(overlappedInteractTrigger->connectedActor, mesh);
+					holdingItemActor = overlappedInteractTrigger->connectedActor;
+					overlappedInteractTrigger->Destroy();
+
+					selectedUnit = nullptr;
+					bHoldingItem = true;
+					return;
+				}
+			}
 		}
+	}
+
+	//Deal with pikcup item that is on battlegrid
+	if (overlappedPickupItem)
+	{
+		const UStaticMeshSocket* socket = mesh->GetSocketByName(TEXT("LH_Item"));
+		if (socket)
+		{
+			socket->AttachActor((AActor*)overlappedPickupItem, mesh);
+			holdingItemActor = (AActor*)overlappedPickupItem;
+			overlappedPickupItem->box->Deactivate();
+
+			selectedUnit = nullptr;
+			bHoldingItem = true;
+			return;
+		}
+
 	}
 
 	if (battleGrid->bBattleActive)
@@ -544,6 +584,17 @@ void APlayerUnit::Click()
 
 
 		UE_LOG(LogTemp, Warning, TEXT("Clicked Actor: %s | Index: %d"), *hit.GetActor()->GetName(), hit.Item);
+
+
+		//Testing throw item at clicked node
+		if (bHoldingItem)
+		{
+			holdingItemActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			holdingItemActor->SetActorLocation(battleGrid->nodeMap.Find(hit.Item)->location);
+			bHoldingItem = false;
+			return;
+		}
+
 
 		if (hit.GetActor()->IsA<AGridActor>())
 		{
