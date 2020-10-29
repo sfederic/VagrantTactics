@@ -19,7 +19,11 @@ void APickupItem::BeginPlay()
 	box = FindComponentByClass<UBoxComponent>();
 	box->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::OnBeginOverlap);
 	box->OnComponentEndOverlap.AddDynamic(this, &APickupItem::OnEndOverlap);
-	//box->Deactivate();
+
+	if (bDisableBoxComponentOnSpawn)
+	{
+		box->Deactivate();
+	}
 }
 
 void APickupItem::Tick(float DeltaTime)
@@ -31,21 +35,33 @@ void APickupItem::Tick(float DeltaTime)
 void APickupItem::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	if (player->holdingItemActor != this)
+	if (player)
 	{
-		player->overlappedPickupItem = this;
-		player->widgetInteract->interactText = interactText;
-		player->widgetInteract->AddToViewport();
+		if (player->holdingItemActor != this)
+		{
+			player->overlappedPickupItem = this;
+			player->widgetInteract->interactText = interactText;
+			if (!player->widgetInteract->IsInViewport())
+			{
+				player->widgetInteract->AddToViewport();
+			}
+		}
 	}
 }
 
 void APickupItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	if (player->holdingItemActor != this)
+	if (player)
 	{
-		player->overlappedPickupItem = nullptr;
-		player->widgetInteract->interactText = FText();
-		player->widgetInteract->RemoveFromViewport();
+		if (player->holdingItemActor != this)
+		{
+			player->overlappedPickupItem = nullptr;
+			player->widgetInteract->interactText = FText();
+			if (player->widgetInteract->IsInViewport())
+			{
+				player->widgetInteract->RemoveFromViewport();
+			}
+		}
 	}
 }

@@ -36,4 +36,6 @@ void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		unit->bInBattle = true;
 	}
+
+	Destroy();
 }

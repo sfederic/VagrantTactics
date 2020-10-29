@@ -336,7 +336,7 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 
 void ABattleGrid::HideAllNodes()
 {
-	gridMesh->SetHiddenInGame(true);
+	//gridMesh->SetHiddenInGame(true);
 	gridMesh->MarkRenderStateDirty();
 
 	for (int x = 0; x < sizeX; x++)
@@ -481,7 +481,7 @@ void ABattleGrid::ChangeTurn()
 	bPlayerTurn = !bPlayerTurn;
 	bEnemyTurn = !bEnemyTurn;
 
-	HideAllNodes();
+	//HideAllNodes();
 
 	//Make sure turn bools don't overlap somehow
 	check(bPlayerTurn != bEnemyTurn);

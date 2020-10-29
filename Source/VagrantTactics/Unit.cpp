@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Unit.h"
@@ -69,6 +70,13 @@ void AUnit::Tick(float DeltaTime)
 				UE_LOG(LogTemp, Warning, TEXT("move finished"));
 
 				Attack();
+
+				//TODO: This is only going to work niceley when one enemy is in the battle.
+				//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
+				ShowMovementPath(currentMovementPoints);
+
+				//Deactive current standing node
+				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
 
 				bTurnFinished = true;
 			}
@@ -153,6 +161,12 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 
 	Algo::Reverse(pathNodes);
 	movementPathNodes.Empty();
+
+	//Activate previous standing node 
+	if (pathNodes.Num() > 0)
+	{
+		battleGrid->UnhideNode(battleGrid->GetNode(xIndex, yIndex));
+	}
 }
 
 FGridNode* AUnit::FindPlayerNode()
@@ -204,7 +218,7 @@ void AUnit::Attack()
 			{
 				if (node->Equals(targetNode))
 				{
-					UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), targetNode->location);
+					SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), targetNode->location));
 
 					UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
 

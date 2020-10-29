@@ -33,4 +33,6 @@ public:
 	UPROPERTY(EditAnywhere) FText interactText;
 
 	UBoxComponent* box;
+
+	UPROPERTY(EditAnywhere) bool bDisableBoxComponentOnSpawn;
 };

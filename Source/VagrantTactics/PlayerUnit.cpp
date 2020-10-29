@@ -447,12 +447,20 @@ void APlayerUnit::Attack()
 		const UStaticMeshSocket* socket = mesh->GetSocketByName(TEXT("LH_Item"));
 		if (socket)
 		{
+			overlappedPickupItem->box->Deactivate();
+
+			//Upcasting here to AActor removes its "class" 
 			socket->AttachActor((AActor*)overlappedPickupItem, mesh);
 			holdingItemActor = (AActor*)overlappedPickupItem;
-			overlappedPickupItem->box->Deactivate();
 
 			selectedUnit = nullptr;
 			bHoldingItem = true;
+
+			if (widgetInteract->IsInViewport())
+			{
+				widgetInteract->RemoveFromViewport();
+			}
+
 			return;
 		}
 
@@ -574,8 +582,8 @@ void APlayerUnit::Click()
 	APlayerController* controller = Cast<APlayerController>(GetController());
 	FHitResult hit;
 
-	//TODO: get rid of the casting below and change it to a custom trace channel
-	if (controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_WorldStatic), true, hit))
+	//GameTraceChannel1 = AGridActor's
+	if (controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1), true, hit))
 	{
 		if (hit.GetActor() == nullptr)
 		{
@@ -591,7 +599,10 @@ void APlayerUnit::Click()
 		{
 			holdingItemActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			holdingItemActor->SetActorLocation(battleGrid->nodeMap.Find(hit.Item)->location);
+
 			bHoldingItem = false;
+			overlappedPickupItem = nullptr;
+			holdingItemActor = nullptr;
 			return;
 		}
 
@@ -615,6 +626,8 @@ void APlayerUnit::Click()
 			unit->ShowUnitFocus();
 			unit->ShowMovementPath(unit->currentMovementPoints);
 
+			battleGrid->gridMesh->SetHiddenInGame(false);
+
 			//Hide previous health bar widget
 			if (selectedUnit)
 			{
@@ -631,10 +644,13 @@ void APlayerUnit::Click()
 		//Node clicked
 		if (hit.Item > 0) //-1 is the index for non instanced meshes
 		{
-			auto spell = NewObject<USpellBase>(this, activeSpell);
-			ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
-			FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
-			spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
+			if (activeSpell)
+			{
+				auto spell = NewObject<USpellBase>(this, activeSpell);
+				ISpellInterface* spellInterface = Cast<ISpellInterface>(spell);
+				FGridNode* hitNode = battleGrid->nodeMap.Find(hit.Item);
+				spellInterface->CastSpell(hitNode->xIndex, hitNode->yIndex, Cast<AGridActor>(hit.GetActor()));
+			}
 		}
 
 		//Handle generic actors in level to zoom onto and inspect from afar.

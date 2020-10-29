@@ -90,6 +90,7 @@ void AGridActor::Tick(float DeltaTime)
 				if (unit)
 				{
 					unit->particleFocusBeam->DestroyComponent();
+					battleGrid->HideNodes(unit->movementPathNodes);
 				}
 
 				Destroy();
