@@ -224,17 +224,19 @@ void ABattleGrid::Init()
 	}
 }
 
+//Both starts and ends battle
 void ABattleGrid::ActivateBattle()
 {
 	bBattleActive = !bBattleActive;
-
-	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
 
 	//Player widgets
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	if (bBattleActive)
 	{
+		GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
+
+
 		player->widgetActionPoints->AddToViewport();
 
 		gridMesh->SetHiddenInGame(false);
@@ -258,6 +260,8 @@ void ABattleGrid::ActivateBattle()
 	}
 	else if (!bBattleActive)
 	{
+		GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Blue, TEXT("Battle Ended"));
+
 		player->widgetActionPoints->RemoveFromViewport();
 
 		gridMesh->SetHiddenInGame(true);

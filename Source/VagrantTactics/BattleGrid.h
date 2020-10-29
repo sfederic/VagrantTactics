@@ -54,7 +54,7 @@ public:
 	//Keep in mind because of the USTRUCT() serialization fuckery, have to manually copy GridNode values across through Find()s
 	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
-	UPROPERTY(VisibleAnywhere) TArray<AUnit*> allUnits;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TArray<AUnit*> allUnits;
 	int activeUnitIndex;
 
 	FVector nodeVisibleScale = FVector(0.95f);

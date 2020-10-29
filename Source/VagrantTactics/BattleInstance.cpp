@@ -25,6 +25,21 @@ void ABattleInstance::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//End battle if all units destroyed
+	for(int i = 0; i < unitsToActivateOnBattleStart.Num(); i++)
+	{
+		if (unitsToActivateOnBattleStart[i] != nullptr)
+		{
+			break;
+		}
+
+		if (i == (unitsToActivateOnBattleStart.Num() - 1))
+		{
+			AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			gameMode->activeBattleGrid->ActivateBattle();
+			Destroy();
+		}
+	}
 }
 
 void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -32,10 +47,15 @@ void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedCom
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	gameMode->activeBattleGrid->ActivateBattle();
 
-	for (AUnit* unit : unitsToActivateOnBattleStart)
+	for (int i = 0; i < unitsToActivateOnBattleStart.Num(); i++)
 	{
-		unit->bInBattle = true;
+		unitsToActivateOnBattleStart[i]->bInBattle = true;
 	}
 
-	Destroy();
+	/*for (AUnit* unit : unitsToActivateOnBattleStart)
+	{
+		unit->bInBattle = true;
+	}*/
+
+	box->DestroyComponent();
 }

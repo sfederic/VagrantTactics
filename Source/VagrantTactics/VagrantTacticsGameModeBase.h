@@ -21,5 +21,5 @@ public:
 
 	UPROPERTY() TArray<AGridActor*> gridActors;
 	UPROPERTY() TArray<AUnit*> units;
-	ABattleGrid* activeBattleGrid;
+	UPROPERTY(BlueprintReadOnly) ABattleGrid* activeBattleGrid;
 };

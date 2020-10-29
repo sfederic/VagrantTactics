@@ -114,7 +114,7 @@ public:
 	UStaticMeshComponent* mesh;
 
 	ABattleGrid* battleGrid;
-	AActor* selectedUnit;
+	UPROPERTY(BlueprintReadWrite) AActor* selectedUnit;
 
 	FVector nextLocation;
 	FRotator nextRotation;
