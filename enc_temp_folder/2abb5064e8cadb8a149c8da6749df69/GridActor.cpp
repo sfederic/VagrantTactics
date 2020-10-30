@@ -92,7 +92,6 @@ void AGridActor::Tick(float DeltaTime)
 				{
 					unit->particleFocusBeam->DestroyComponent();
 					battleGrid->HideNodes(unit->movementPathNodes);
-					battleGrid->ResetAllNodeValues();
 					
 					TArray<AActor*> outBattleInstance;
 					UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleInstance::StaticClass(), outBattleInstance);
