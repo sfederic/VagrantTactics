@@ -25,7 +25,7 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	void ShowMovementPath(int movementPoints);
+	UFUNCTION(BlueprintCallable) void ShowMovementPath();
 	void HideMovementPath();
 	void MoveTo(FGridNode* destinationNode);
 	FGridNode* FindPlayerNode();
@@ -44,6 +44,7 @@ public:
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()
 
+	//For displaying enemy name on UI widgets
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) FText unitName;
 
 	FVector nextMoveLocation;

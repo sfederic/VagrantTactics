@@ -624,7 +624,7 @@ void APlayerUnit::Click()
 		if (unit)
 		{
 			unit->ShowUnitFocus();
-			unit->ShowMovementPath(unit->currentMovementPoints);
+			unit->ShowMovementPath();
 
 			battleGrid->gridMesh->SetHiddenInGame(false);
 

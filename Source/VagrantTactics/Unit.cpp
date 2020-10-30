@@ -56,6 +56,8 @@ void AUnit::Tick(float DeltaTime)
 			{
 				nextMoveLocation = pathNodes[movementPathNodeIndex]->location;
 
+				//FRotator lookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextMoveLocation);
+				//lookAtRotation.Yaw = 0.f;
 				SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextMoveLocation));
 
 				xIndex = pathNodes[movementPathNodeIndex]->xIndex;
@@ -73,7 +75,7 @@ void AUnit::Tick(float DeltaTime)
 
 				//TODO: This is only going to work niceley when one enemy is in the battle.
 				//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
-				ShowMovementPath(currentMovementPoints);
+				ShowMovementPath();
 
 				//Deactive current standing node
 				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
@@ -86,8 +88,10 @@ void AUnit::Tick(float DeltaTime)
 	SetActorLocation(FMath::VInterpConstantTo(GetActorLocation(), nextMoveLocation, DeltaTime, moveSpeed));
 }
 
-void AUnit::ShowMovementPath(int movementPoints)
+void AUnit::ShowMovementPath()
 {
+	int movementPoints = currentMovementPoints;
+
 	battleGrid->ResetAllNodeValues();
 	battleGrid->HideAllNodes();
 

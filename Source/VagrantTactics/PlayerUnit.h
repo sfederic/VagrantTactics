@@ -91,6 +91,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classTimeOfDayWidget;
 	UPROPERTY() UUserWidget* timeOfDayWidget;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classEnemyTurnOrderWidget;
+	UPROPERTY() UUserWidget* widgetEnemyTurnOrder;
+
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;
 	UPROPERTY(VisibleAnywhere, Category = "Spells") TSubclassOf<USpellBase> activeSpell;

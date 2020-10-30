@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "VagrantTacticsGameModeBase.h"
 #include "BattleGrid.h"
+#include "PlayerUnit.h"
+#include "Blueprint/UserWidget.h"
 
 ABattleInstance::ABattleInstance()
 {
@@ -19,6 +21,18 @@ void ABattleInstance::BeginPlay()
 	
 	box = FindComponentByClass<UBoxComponent>();
 	box->OnComponentBeginOverlap.AddDynamic(this, &ABattleInstance::ActivateBattleOnOverlap);
+
+	//Populate unit array
+	unitsToActivateOnBattleStart.Empty();
+
+	TArray<AActor*> outUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+	for (AActor* actor : outUnits)
+	{
+		unitsToActivateOnBattleStart.Add(Cast<AUnit>(actor));
+	}
+
+	numOfUnitsAlive = unitsToActivateOnBattleStart.Num();
 }
 
 void ABattleInstance::Tick(float DeltaTime)
@@ -26,19 +40,22 @@ void ABattleInstance::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//End battle if all units destroyed
-	for(int i = 0; i < unitsToActivateOnBattleStart.Num(); i++)
+	if(numOfUnitsAlive <= 0)
 	{
-		if (unitsToActivateOnBattleStart[i] != nullptr)
+		AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		gameMode->activeBattleGrid->ActivateBattle();
+
+		//Remove enemy turn order widget from viewport
+		APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		if (player)
 		{
-			break;
+			if (player->widgetEnemyTurnOrder->IsInViewport())
+			{
+				player->widgetEnemyTurnOrder->RemoveFromViewport();
+			}
 		}
 
-		if (i == (unitsToActivateOnBattleStart.Num() - 1))
-		{
-			AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-			gameMode->activeBattleGrid->ActivateBattle();
-			Destroy();
-		}
+		Destroy();
 	}
 }
 
@@ -52,10 +69,13 @@ void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedCom
 		unitsToActivateOnBattleStart[i]->bInBattle = true;
 	}
 
-	/*for (AUnit* unit : unitsToActivateOnBattleStart)
+	//Add enemy turn order widget to viewport
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (player)
 	{
-		unit->bInBattle = true;
-	}*/
+		player->widgetEnemyTurnOrder = CreateWidget<UUserWidget>(GetWorld(), player->classEnemyTurnOrderWidget);
+		player->widgetEnemyTurnOrder->AddToViewport();
+	}
 
 	box->DestroyComponent();
 }

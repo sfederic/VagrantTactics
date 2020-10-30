@@ -47,7 +47,7 @@ void ABattleGrid::Tick(float DeltaTime)
 				if (allUnits[activeUnitIndex]->pathNodes.Num() < 1)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("move to hit again"));
-					allUnits[activeUnitIndex]->ShowMovementPath(allUnits[activeUnitIndex]->currentMovementPoints);
+					allUnits[activeUnitIndex]->ShowMovementPath();
 					allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindPlayerNode());
 				}
 			}
@@ -236,7 +236,6 @@ void ABattleGrid::ActivateBattle()
 	{
 		GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
 
-
 		player->widgetActionPoints->AddToViewport();
 
 		gridMesh->SetHiddenInGame(false);
@@ -265,6 +264,9 @@ void ABattleGrid::ActivateBattle()
 		player->widgetActionPoints->RemoveFromViewport();
 
 		gridMesh->SetHiddenInGame(true);
+
+		ResetAllNodeValues();
+		ActivateAllNodes();
 
 		//Hide all grid actor health bars on battle end
 		TArray<AActor*> outGridActors;
@@ -372,6 +374,17 @@ void ABattleGrid::ShowAllNodes()
 			gridMesh->GetInstanceTransform(meshIndex, transform);
 			transform.SetScale3D(nodeVisibleScale);
 			gridMesh->UpdateInstanceTransform(meshIndex, transform);
+		}
+	}
+}
+
+void ABattleGrid::ActivateAllNodes()
+{
+	for (int x = 0; x < sizeX; x++)
+	{
+		for (int y = 0; y < sizeY; y++)
+		{
+			rows[x].columns[y].bActive = true;
 		}
 	}
 }

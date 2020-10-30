@@ -27,7 +27,9 @@ public:
 	UFUNCTION() 
 	void ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(EditAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
+	UPROPERTY(VisibleAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
+
+	UPROPERTY(VisibleAnywhere) int numOfUnitsAlive;
 
 	UBoxComponent* box;
 };

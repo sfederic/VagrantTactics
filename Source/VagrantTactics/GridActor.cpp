@@ -14,6 +14,7 @@
 #include "GameStatics.h"
 #include "VagrantTacticsGameModeBase.h"
 #include "IntuitionComponent.h"
+#include "BattleInstance.h"
 
 void AGridActor::AddIntuition()
 {
@@ -91,6 +92,11 @@ void AGridActor::Tick(float DeltaTime)
 				{
 					unit->particleFocusBeam->DestroyComponent();
 					battleGrid->HideNodes(unit->movementPathNodes);
+					
+					TArray<AActor*> outBattleInstance;
+					UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleInstance::StaticClass(), outBattleInstance);
+					ABattleInstance* battleInstance = Cast<ABattleInstance>(outBattleInstance[0]);
+					battleInstance->numOfUnitsAlive--;
 				}
 
 				Destroy();
