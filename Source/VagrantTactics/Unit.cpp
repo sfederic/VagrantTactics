@@ -10,6 +10,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Camera/CameraShake.h"
 #include "GameStatics.h"
+#include "SkillBase.h"
 
 AUnit::AUnit()
 {
@@ -90,6 +91,23 @@ void AUnit::Tick(float DeltaTime)
 
 void AUnit::ShowMovementPath()
 {
+	//Handle if unit is charging skill
+	if (bChargingSkill)
+	{
+		battleGrid->ResetAllNodeValues();
+		battleGrid->HideAllNodes();
+
+		auto skill = NewObject<USkillBase>(this, skillClasses[0]);
+		ISkillInterface* skillInterface = Cast<ISkillInterface>(skill);
+		skillInterface->UseSkill(0, 0, this, nullptr);
+
+		battleGrid->UnhideNodes(attackPathNodes);
+
+		return;
+	}
+
+
+	//Handle normal movement range
 	int movementPoints = currentMovementPoints;
 
 	battleGrid->ResetAllNodeValues();

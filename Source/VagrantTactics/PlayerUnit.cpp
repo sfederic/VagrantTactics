@@ -476,22 +476,24 @@ void APlayerUnit::Attack()
 
 	//Talk to NPC
 	//TODO: see if GetNode() would work better in these cases
-	FHitResult talkHit;
-	FCollisionQueryParams talkParams;
-	talkParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(talkHit, GetActorLocation(), GetActorLocation() + (mesh->GetForwardVector() * 150.f),
-		ECC_WorldStatic, talkParams))
 	{
-		AActor* talkHitActor = talkHit.GetActor();
-		if (talkHitActor) 
+		FHitResult talkHit;
+		FCollisionQueryParams talkParams;
+		talkParams.AddIgnoredActor(this);
+		if (GetWorld()->LineTraceSingleByChannel(talkHit, GetActorLocation(), GetActorLocation() + (mesh->GetForwardVector() * 150.f),
+			ECC_WorldStatic, talkParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("hit talk actor : %s"), *talkHitActor->GetName());
-
-			USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
-			if (sc)
+			AActor* talkHitActor = talkHit.GetActor();
+			if (talkHitActor)
 			{
-				sc->ShowDialogue();
-				return;
+				UE_LOG(LogTemp, Warning, TEXT("hit talk actor : %s"), *talkHitActor->GetName());
+
+				USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
+				if (sc)
+				{
+					sc->ShowDialogue();
+					return;
+				}
 			}
 		}
 	}

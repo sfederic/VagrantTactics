@@ -10,6 +10,8 @@
 class UParticleSystemComponent;
 class UParticleSystem;
 class UCameraShake;
+class USkillBase;
+class USpellBase;
 
 //Base class for all units.
 UCLASS()
@@ -43,6 +45,11 @@ public:
 
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()
+	TArray<FGridNode*> attackPathNodes; //Nodes that a charged attack will hit on next turn.
+
+	UPROPERTY(EditAnywhere, Category = "Skills") TArray<TSubclassOf<USkillBase>> skillClasses;
+
+	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spellClasses;
 
 	//For displaying enemy name on UI widgets
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) FText unitName;
@@ -72,4 +79,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bBackVulnerable = true;
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bLeftVulnerable = true;
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bRightVulnerable = true;
+
+	UPROPERTY(VisibleAnywhere) bool bChargingSkill = true;
 };

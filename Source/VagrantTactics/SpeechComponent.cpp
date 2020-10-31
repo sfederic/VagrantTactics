@@ -5,6 +5,8 @@
 #include "SpeechWidget.h"
 #include "ConversationTable.h"
 #include "TimerManager.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 USpeechComponent::USpeechComponent()
 {
@@ -36,6 +38,13 @@ void USpeechComponent::ShowDialogue()
 	widgetComponent->SetHiddenInGame(false);
 	speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
 	speechWidget->dialogueLine = dialogueText;
+
+	//Rotate towards player (like in the old SNES games)
+	APawn* player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (player)
+	{
+		GetOwner()->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), player->GetActorLocation()));
+	}
 
 	//Set timer to hide dialogue
 	FTimerHandle handle;
