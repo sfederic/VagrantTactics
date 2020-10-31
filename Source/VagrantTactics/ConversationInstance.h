@@ -34,5 +34,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UDataTable* conversationTable;
 
+	UPROPERTY(EditAnywhere) float timeBetweenTextChanges = 3.f;
+
 	int conversationOrderIndex = 0;
 };

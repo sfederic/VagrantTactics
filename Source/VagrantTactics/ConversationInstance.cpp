@@ -21,7 +21,7 @@ void AConversationInstance::BeginPlay()
 	conversationTable->GetAllRows(contextString, conversationRows);
 
 	FTimerHandle handle;
-	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, 2.f, false);
+	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, timeBetweenTextChanges, false);
 }
 
 void AConversationInstance::Tick(float DeltaTime)
@@ -41,10 +41,11 @@ void AConversationInstance::ShowNextDialogueLine()
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
 		Destroy();
+		return;
 	}
 
 	FTimerHandle handle;
-	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, 2.f, false);
+	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, timeBetweenTextChanges, false);
 
 	if (npcConversationOrder.Num() > 0)
 	{

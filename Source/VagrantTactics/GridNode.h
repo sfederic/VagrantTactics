@@ -8,7 +8,12 @@ struct FGridNode
 {
 	GENERATED_BODY()
 
-	FGridNode() {}
+	FGridNode() 
+	{
+		xIndex = 0;
+		yIndex = 0;
+	}
+
 	FGridNode(int x, int y, int32 instancedMeshIndex_)
 	{
 		xIndex = x;

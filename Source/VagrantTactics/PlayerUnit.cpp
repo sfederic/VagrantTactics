@@ -26,6 +26,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h" 
 #include "Components/BoxComponent.h"
 #include "PickupItem.h"
+#include "SpeechComponent.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -47,7 +48,7 @@ void APlayerUnit::BeginPlay()
 
 	//Setup player spawn point from level entrances
 	//Needs to handle both AEntraceTriggers and APlayerStarts (player starts because of blocked off entraces)
-	TArray<AActor*> playerStarts;
+	/*TArray<AActor*> playerStarts;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
 	for (AActor* spawnPoint : playerStarts)
 	{
@@ -62,7 +63,7 @@ void APlayerUnit::BeginPlay()
 			SetActorRotation(playerStart->GetActorRotation());
 			break;
 		}
-	}
+	}*/
 	
 	TArray<AActor*> entraceTriggers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEntranceTrigger::StaticClass(), entraceTriggers);
@@ -86,7 +87,10 @@ void APlayerUnit::BeginPlay()
 
 	//Components
 	APlayerController* controller = Cast<APlayerController>(GetController());
-	controller->bShowMouseCursor = true;
+	if (controller)
+	{
+		controller->bShowMouseCursor = true;
+	}
 
 	mesh = FindComponentByClass<UStaticMeshComponent>();
 	check(mesh);
@@ -96,18 +100,22 @@ void APlayerUnit::BeginPlay()
 	cameraFocusRotation = camera->GetComponentRotation();
 	currentCameraFOV = camera->FieldOfView;
 
-	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	battleGrid = gameMode->activeBattleGrid;
+	//TODO: gamemodes StartPlay() isn't called before APlayerUnit::BeginPlay() on build. Have to resort to GetAllActors for now
+	/*AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (gameMode)
+	{
+		battleGrid = gameMode->activeBattleGrid;
+	}*/
+	TArray<AActor*> battleGridOut;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleGrid::StaticClass(), battleGridOut);
+	battleGrid = Cast<ABattleGrid>(battleGridOut[0]);
 
 	//Create Widgets
 	widgetActionPoints = CreateWidget<UUserWidget>(GetWorld(), classWidgetActionPoints);
-	widgetActionPoints->RemoveFromViewport();
 
 	widgetInteract = CreateWidget<UInteractWidget>(GetWorld(), classWidgetInteract);
-	widgetInteract->RemoveFromViewport();
 
 	widgetInteractDetails = CreateWidget<UInteractDetailsWidget>(GetWorld(), classWidgetInteractDetails);
-	widgetInteractDetails->RemoveFromViewport();
 
 	timeOfDayWidget = CreateWidget<UUserWidget>(GetWorld(), classTimeOfDayWidget);
 	timeOfDayWidget->AddToViewport();
@@ -464,6 +472,28 @@ void APlayerUnit::Attack()
 			return;
 		}
 
+	}
+
+	//Talk to NPC
+	//TODO: see if GetNode() would work better in these cases
+	FHitResult talkHit;
+	FCollisionQueryParams talkParams;
+	talkParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(talkHit, GetActorLocation(), GetActorLocation() + (mesh->GetForwardVector() * 150.f),
+		ECC_WorldStatic, talkParams))
+	{
+		AActor* talkHitActor = talkHit.GetActor();
+		if (talkHitActor) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("hit talk actor : %s"), *talkHitActor->GetName());
+
+			USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
+			if (sc)
+			{
+				sc->ShowDialogue();
+				return;
+			}
+		}
 	}
 
 	if (battleGrid->bBattleActive)
