@@ -11,6 +11,8 @@
 #include "Camera/CameraShake.h"
 #include "GameStatics.h"
 #include "SkillBase.h"
+#include "TimerManager.h"
+#include "UnitSkillWidget.h"
 
 AUnit::AUnit()
 {
@@ -81,17 +83,22 @@ void AUnit::Tick(float DeltaTime)
 				USkillBase* skillToUse = CycleThroughAttackChoices(actorToFocusOn);
 				if (skillToUse)
 				{
+					//Sort of a testing case
+					battleGrid->HideAllNodes();
 					battleGrid->UnhideNodes(attackPathNodes);
-					//ISkillInterface* skillInterface = Cast<ISkillInterface>(skillToUse);
+
+					activeSkill = skillToUse;
+
+					HighlightUnitOnSkillUse();
 				}
 				else
 				{
 					Attack();
-				}
 
-				//TODO: This is only going to work niceley when one enemy is in the battle.
-				//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
-				ShowMovementPath();
+					//TODO: This is only going to work niceley when one enemy is in the battle.
+					//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
+					ShowMovementPath();
+				}
 
 				//Deactive current standing node
 				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
@@ -268,6 +275,18 @@ void AUnit::Attack()
 	}
 }
 
+//Zoom in on unit, end turn after animation done and set widget to show skill name
+void AUnit::HighlightUnitOnSkillUse()
+{
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->ZoomInOnTarget(Cast<AActor>(this));
+	player->widgetUnitSkill->skillNameToDisplay = FText(activeSkill->skillName);
+	player->widgetUnitSkill->AddToViewport();
+
+	FTimerHandle handle;
+	GetWorldTimerManager().SetTimer(handle, this, &AUnit::FinishDisplayingSkill, 2.0f, false);
+}
+
 //State AI function for checking whether a target is within the range of any unit spells/skills 
 USkillBase* AUnit::CycleThroughAttackChoices(AActor* target)
 {
@@ -282,4 +301,11 @@ USkillBase* AUnit::CycleThroughAttackChoices(AActor* target)
 	}
 
 	return nullptr;
+}
+
+void AUnit::FinishDisplayingSkill()
+{
+	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	player->ResetCameraFocusAndFOV();
+	player->widgetUnitSkill->RemoveFromViewport();
 }

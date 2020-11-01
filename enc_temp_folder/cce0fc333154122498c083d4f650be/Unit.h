@@ -34,7 +34,7 @@ public:
 	void FindPointOfInterest();
 	void ShowUnitFocus();
 	void HideUnitFocus();
-	bool Attack();
+	void Attack();
 	void HighlightUnitOnSkillUse();
 	USkillBase* CycleThroughAttackChoices(AActor* target);
 	void FinishDisplayingSkill();

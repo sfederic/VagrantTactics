@@ -21,6 +21,7 @@ class AGridActor;
 class UIntuition;
 class UStaticMeshComponent;
 class APickupItem;
+class UUnitSkillWidget;
 
 //Player class.
 UCLASS()
@@ -61,6 +62,7 @@ public:
 	void ChangeSpellToIce();
 	void ChangeSpellToFire();
 	void MoveToLevel();
+	void ZoomInOnTarget(AActor* target);
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -93,6 +95,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classEnemyTurnOrderWidget;
 	UPROPERTY() UUserWidget* widgetEnemyTurnOrder;
+
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUnitSkillWidget> classUnitSkillWidget;
+	UPROPERTY() UUnitSkillWidget* widgetUnitSkill;
 
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;

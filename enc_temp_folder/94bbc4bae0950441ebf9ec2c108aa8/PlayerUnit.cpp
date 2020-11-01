@@ -785,5 +785,5 @@ void APlayerUnit::MoveToLevel()
 void APlayerUnit::ZoomInOnTarget(AActor* target)
 {
 	selectedUnit = target;
-	currentCameraFOV = cameraFOVAttack;
+	camera->SetFieldOfView(cameraFOVAttack);
 }
