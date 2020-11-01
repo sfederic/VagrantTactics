@@ -14,5 +14,8 @@ class VAGRANTTACTICS_API USkillBase : public UObject, public ISkillInterface
 {
 	GENERATED_BODY()
 public:
-	virtual void UseSkill(int x, int y, AUnit* owner, AGridActor* target) {}
+	virtual void UseSkill(int x, int y, AUnit* owner, AActor* target) {}
+
+	//To be displayed on UI on skill activation
+	UPROPERTY(EditAnywhere) FText skillName;
 };

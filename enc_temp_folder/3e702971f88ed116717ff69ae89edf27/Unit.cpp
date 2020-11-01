@@ -81,18 +81,17 @@ void AUnit::Tick(float DeltaTime)
 				USkillBase* skillToUse = CycleThroughAttackChoices(actorToFocusOn);
 				if (skillToUse)
 				{
-					//Sort of a testing case
-					battleGrid->HideAllNodes();
 					battleGrid->UnhideNodes(attackPathNodes);
+					//ISkillInterface* skillInterface = Cast<ISkillInterface>(skillToUse);
 				}
 				else
 				{
 					Attack();
-
-					//TODO: This is only going to work niceley when one enemy is in the battle.
-					//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
-					ShowMovementPath();
 				}
+
+				//TODO: This is only going to work niceley when one enemy is in the battle.
+				//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
+				ShowMovementPath();
 
 				//Deactive current standing node
 				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));

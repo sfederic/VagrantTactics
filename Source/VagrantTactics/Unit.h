@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "GridActor.h"
 #include "GridNode.h"
+#include "SkillBase.h"
 #include "Unit.generated.h"
 
 class UParticleSystemComponent;
 class UParticleSystem;
 class UCameraShake;
-class USkillBase;
 class USpellBase;
 
 //Base class for all units.
@@ -35,6 +35,7 @@ public:
 	void ShowUnitFocus();
 	void HideUnitFocus();
 	void Attack();
+	USkillBase* CycleThroughAttackChoices(AActor* target);
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
@@ -48,6 +49,7 @@ public:
 	TArray<FGridNode*> attackPathNodes; //Nodes that a charged attack will hit on next turn.
 
 	UPROPERTY(EditAnywhere, Category = "Skills") TArray<TSubclassOf<USkillBase>> skillClasses;
+	UPROPERTY(VisibleAnywhere, Category = "Skills") TArray<USkillBase*> skills;
 
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spellClasses;
 
@@ -80,5 +82,5 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bLeftVulnerable = true;
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bRightVulnerable = true;
 
-	UPROPERTY(VisibleAnywhere) bool bChargingSkill = true;
+	UPROPERTY(VisibleAnywhere) bool bChargingSkill;
 };

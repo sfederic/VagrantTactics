@@ -9,6 +9,7 @@ class USkillInterface : public UInterface
 };
 
 class AGridActor;
+class AActor;
 class AUnit;
 
 class ISkillInterface
@@ -17,5 +18,5 @@ class ISkillInterface
 
 public:
     //arguments are for the grid node index. 
-    virtual void UseSkill(int x, int y, AUnit* owner, AGridActor* target) = 0;
+    virtual void UseSkill(int x, int y, AUnit* owner, AActor* target) = 0;
 };

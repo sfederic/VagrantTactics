@@ -12,5 +12,5 @@ class VAGRANTTACTICS_API USkillLineAttack : public USkillBase
 {
 	GENERATED_BODY()
 public:
-	virtual void UseSkill(int x, int y, AUnit* owner, AGridActor* target);
+	virtual void UseSkill(int x, int y, AUnit* owner, AActor* target);
 };

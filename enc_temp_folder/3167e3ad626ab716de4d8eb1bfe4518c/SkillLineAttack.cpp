@@ -23,7 +23,7 @@ void USkillLineAttack::UseSkill(int x, int y, AUnit* owner, AActor* target)
 
 		ABattleGrid* battleGrid = owner->battleGrid;
 
-		const int attackRange = 5;
+		const int attackRange = 3;
 
 		//Get line based on forward direction
 		FVector forwardVec = owner->GetActorForwardVector();
