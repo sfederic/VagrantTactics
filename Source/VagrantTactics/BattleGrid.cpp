@@ -48,7 +48,7 @@ void ABattleGrid::Tick(float DeltaTime)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("move to hit again"));
 					allUnits[activeUnitIndex]->ShowMovementPath();
-					allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindPlayerNode());
+					allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindTargetFocusNode());
 				}
 			}
 
@@ -73,8 +73,8 @@ void ABattleGrid::Tick(float DeltaTime)
 
 FGridNode* ABattleGrid::GetNode(int x, int y)
 {
-	check(x < sizeX);
-	check(y < sizeY);
+	check(x < sizeX && x > -1);
+	check(y < sizeY && y > -1) ;
 	return &rows[x].columns[y];
 }
 
@@ -460,7 +460,7 @@ void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
 	}
 }
 
-void ABattleGrid::UnhideNodes(TArray<int32>& indices)
+void ABattleGrid::UnhideNodes(TArray<int32>& indices, bool bShow)
 {
 	gridMesh->MarkRenderStateDirty();
 
@@ -469,10 +469,13 @@ void ABattleGrid::UnhideNodes(TArray<int32>& indices)
 		FGridNode* node = nodeMap.Find(indices[i]);
 		GetNode(node->xIndex, node->yIndex)->bActive = true;
 
-		FTransform transform;
-		gridMesh->GetInstanceTransform(indices[i], transform);
-		transform.SetScale3D(nodeVisibleScale);
-		gridMesh->UpdateInstanceTransform(indices[i], transform);
+		if (bShow)
+		{
+			FTransform transform;
+			gridMesh->GetInstanceTransform(indices[i], transform);
+			transform.SetScale3D(nodeVisibleScale);
+			gridMesh->UpdateInstanceTransform(indices[i], transform);
+		}
 	}
 }
 

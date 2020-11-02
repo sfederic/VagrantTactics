@@ -39,8 +39,9 @@ public:
 	void HideMovementPath();
 	void MoveTo(FGridNode* destinationNode);
 	FGridNode* FindPlayerNode();
+	FGridNode* FindTargetFocusNode();
 	void FindPointOfInterest();
-	void ShowUnitFocus();
+	UFUNCTION(BlueprintCallable) void ShowUnitFocus();
 	void HideUnitFocus();
 	bool Attack();
 	void HighlightUnitOnSkillUse();
@@ -63,6 +64,9 @@ public:
 	USkillBase* activeSkill;
 
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spellClasses;
+
+	//Collection of tags that the unit can focus on per turn
+	UPROPERTY(EditAnywhere) TArray<FName> focusTags;
 
 	//AI state of unit
 	UPROPERTY(EditAnywhere) EUnitState unitState;

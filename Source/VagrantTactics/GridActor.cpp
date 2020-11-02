@@ -67,10 +67,11 @@ void AGridActor::Tick(float DeltaTime)
 	{
 		if (currentHealth <= 0)
 		{
-			battleGrid->UnhideNodes(connectedNodeIndices);
-			
+			battleGrid->UnhideNodes(connectedNodeIndices, false);
+
 			//For single GridActors that are spawned after level creation
-			battleGrid->UnhideNode(battleGrid->GetNode(xIndex, yIndex));
+			//battleGrid->UnhideNode(battleGrid->GetNode(xIndex, yIndex));
+			battleGrid->GetNode(xIndex, yIndex)->bActive = true;
 
 			//Reset player camera focus on Destroy
 			APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -79,10 +80,11 @@ void AGridActor::Tick(float DeltaTime)
 			if (Tags.Contains(GameplayTags::Destructible))
 			{
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
-				dc->ApplyDamage(500.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 500.f);
+				dc->ApplyDamage(100.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 100.f);
 
 				healthbarWidgetComponent->SetHiddenInGame(true);
 
+				Tags.Empty();
 				SetLifeSpan(5.0f);
 			}
 			else

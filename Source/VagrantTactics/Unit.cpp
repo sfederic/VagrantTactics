@@ -13,6 +13,7 @@
 #include "SkillBase.h"
 #include "TimerManager.h"
 #include "UnitSkillWidget.h"
+#include "GameplayTags.h"
 
 AUnit::AUnit()
 {
@@ -55,6 +56,25 @@ void AUnit::Tick(float DeltaTime)
 		particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
 		particleFocusBeam->SetBeamEndPoint(0, actorToFocusOn->GetActorLocation());
 	}
+
+
+	//Get all actors to focus on that match with unit tags to focus on
+	for (int focusTagIndex = 0; focusTagIndex < focusTags.Num(); focusTagIndex++)
+	{
+		TArray<AActor*> focusActors;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), focusTags[focusTagIndex], focusActors);
+		for (AActor* actor : focusActors)
+		{
+			actorToFocusOn = actor;
+			unitState = EUnitState::Flee;
+		}
+
+		if (focusActors.Num() == 0)
+		{
+			actorToFocusOn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		}
+	}
+
 
 	//Movement path
 	if (pathNodes.Num() > 0 && bInBattle)
@@ -200,7 +220,7 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 		float highestHCost = -1.f;
 		for (int i = 0; i < movementPathNodes.Num(); i++)
 		{
-			if (movementPathNodes[i]->hCost > highestHCost)
+			if (movementPathNodes[i]->hCost >= highestHCost)
 			{
 				highestHCost = movementPathNodes[i]->hCost;
 				highestHCostIndex = i;
@@ -211,17 +231,21 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 	FGridNode* nextNode = nullptr;
 	switch (unitState)
 	{
-	case EUnitState::Chase:	nextNode = movementPathNodes[lowestHCostIndex];
-	case EUnitState::Flee: nextNode = movementPathNodes[highestHCostIndex];
+	case EUnitState::Chase:	nextNode = movementPathNodes[lowestHCostIndex]; break;
+	case EUnitState::Flee: nextNode = movementPathNodes[highestHCostIndex]; break;
 	case EUnitState::Wander: 
 		int randomNodeIndex = FMath::RandRange(0, movementPathNodes.Num() - 1);
 		nextNode = movementPathNodes[randomNodeIndex];
+		break;
 	}
 
 	while (nextNode != startingNode)
 	{
-		nextNode = nextNode->parentNode;
-		pathNodes.Add(nextNode);
+		if (nextNode->parentNode)
+		{
+			nextNode = nextNode->parentNode;
+			pathNodes.Add(nextNode);
+		}
 	}
 
 	Algo::Reverse(pathNodes);
@@ -238,6 +262,16 @@ FGridNode* AUnit::FindPlayerNode()
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	return battleGrid->GetNode(player->xIndex, player->yIndex);
+}
+
+FGridNode* AUnit::FindTargetFocusNode()
+{
+	//TODO: keep an eye on this. Non-standard way getting around xIndex/yIndex for now
+	FVector loc = actorToFocusOn->GetActorLocation();
+	int x = FMath::RoundToInt(loc.X / 100.f);
+	int y = FMath::RoundToInt(loc.Y / 100.f);
+
+	return battleGrid->GetNode(x, y);
 }
 
 void AUnit::FindPointOfInterest()
