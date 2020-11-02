@@ -14,8 +14,12 @@ class VAGRANTTACTICS_API USkillBase : public UObject, public ISkillInterface
 {
 	GENERATED_BODY()
 public:
+	virtual void ChargeSkill(int x, int y, AUnit* owner, AActor* target) {}
 	virtual void UseSkill(int x, int y, AUnit* owner, AActor* target) {}
 
 	//To be displayed on UI on skill activation
 	UPROPERTY(EditAnywhere) FText skillName;
+
+	//Whether a skill takes up a unit turn 
+	UPROPERTY(EditAnywhere) bool bIsChargingSkill;
 };

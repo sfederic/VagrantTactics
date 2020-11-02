@@ -37,21 +37,28 @@ void ABattleGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//TODO: I fucking hate this code. Can't I use events somehow?
 	//Iterate through enemy turn list based on highest speed first
 	if (bEnemyTurn)
 	{
-		if (allUnits.Num() > 0)
+		if (allUnits.Num() > 0 )
 		{
-			if ((!allUnits[activeUnitIndex]->bSetToMove) /*&& (allUnits[activeUnitIndex]->pathNodes.Num() == 0)*/)
+			if (!allUnits[activeUnitIndex]->bTurnFinished && !allUnits[activeUnitIndex]->bCurrentlyMoving)
 			{
-				if (allUnits[activeUnitIndex]->pathNodes.Num() < 1)
+				if (allUnits[activeUnitIndex]->bSetToUseSkill)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("move to hit again"));
-					allUnits[activeUnitIndex]->ShowMovementPath();
-					allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindTargetFocusNode());
+					allUnits[activeUnitIndex]->UseSkill();
+				}
+				else if (((!allUnits[activeUnitIndex]->bSetToMove) ))
+				{
+					if (allUnits[activeUnitIndex]->pathNodes.Num() < 1)
+					{
+						allUnits[activeUnitIndex]->ShowMovementPath();
+						allUnits[activeUnitIndex]->MoveTo(allUnits[activeUnitIndex]->FindTargetFocusNode());
+					}
 				}
 			}
-
+			
 			if (allUnits[activeUnitIndex]->bTurnFinished)
 			{
 				if (activeUnitIndex < (allUnits.Num() - 1))
@@ -61,9 +68,12 @@ void ABattleGrid::Tick(float DeltaTime)
 				else
 				{
 					//End loop 
-					activeUnitIndex = 0;
 					allUnits[activeUnitIndex]->bSetToMove = false;
-					allUnits[activeUnitIndex]->bTurnFinished = true;
+					allUnits[activeUnitIndex]->bTurnFinished = false;
+					allUnits[activeUnitIndex]->bCurrentlyMoving = false;
+
+					activeUnitIndex = 0;
+
 					ChangeTurn();
 				}
 			}

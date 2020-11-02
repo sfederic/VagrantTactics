@@ -6,24 +6,49 @@
 #include "GridNode.h"
 #include "BattleGrid.h"
 
-//Skill forms a line in front of unit. Think SAM attacks in Tactics.
+//Skill forms a line in front of unit. Think SAM skills in Tactics.
 void USkillLineAttack::UseSkill(int x, int y, AUnit* owner, AActor* target)
+{
+	//Check if attack hits
+	{
+		if (target->IsA<APlayerUnit>())
+		{
+			APlayerUnit* player = Cast<APlayerUnit>(target);
+			FGridNode* targetNode = owner->battleGrid->GetNode(player->xIndex, player->yIndex);
+			if (owner->attackPathNodes.Contains(targetNode))
+			{
+				player->currentHealthPoints -= attackDamage;
+			}
+		}
+		else if (target->IsA<AGridActor>())
+		{
+			AGridActor* gridActor = Cast<AGridActor>(target);
+			FGridNode* targetNode = owner->battleGrid->GetNode(gridActor->xIndex, gridActor->yIndex);
+			if (owner->attackPathNodes.Contains(targetNode))
+			{
+				gridActor->currentHealth -= attackDamage;
+			}
+		}
+	}
+}
+
+void USkillLineAttack::ChargeSkill(int x, int y, AUnit* owner, AActor* target)
 {
 	TArray<FGridNode*> attackPathNodes;
 
-	if (owner)
+	if (bIsChargingSkill)
 	{
 		owner->bChargingSkill = true;
+	}
 
+	if (owner)
+	{
 		if (owner->actorToFocusOn == nullptr)
 		{
 			return;
 		}
 
-
 		ABattleGrid* battleGrid = owner->battleGrid;
-
-		const int attackRange = 5;
 
 		//Get line based on forward direction
 		FVector forwardVec = owner->GetActorForwardVector();
@@ -69,7 +94,7 @@ void USkillLineAttack::UseSkill(int x, int y, AUnit* owner, AActor* target)
 			}
 		}
 	}
-		
+
 	owner->attackPathNodes.Empty();
 	owner->attackPathNodes = attackPathNodes;
 }

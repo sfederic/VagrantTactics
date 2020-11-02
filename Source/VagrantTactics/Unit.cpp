@@ -51,6 +51,7 @@ void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Particle beam Focus 
 	if (actorToFocusOn && !particleFocusBeam->bHiddenInGame)
 	{
 		particleFocusBeam->SetBeamSourcePoint(0, GetActorLocation(), 0);
@@ -75,10 +76,11 @@ void AUnit::Tick(float DeltaTime)
 		}
 	}
 
-
-	//Movement path
+	//Movement path logic
 	if (pathNodes.Num() > 0 && bInBattle)
 	{
+		bCurrentlyMoving = true;
+
 		if ((GetActorLocation().Equals(nextMoveLocation)) && (bSetToMove) && (!bTurnFinished))
 		{
 			if (movementPathNodeIndex < pathNodes.Num())
@@ -91,7 +93,7 @@ void AUnit::Tick(float DeltaTime)
 				yIndex = pathNodes[movementPathNodeIndex]->yIndex;
 				movementPathNodeIndex++;
 			}
-			else if (movementPathNodeIndex >= (pathNodes.Num())) //END OF MOVE
+			else if (movementPathNodeIndex >= pathNodes.Num()) //END OF MOVE
 			{
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
@@ -101,8 +103,6 @@ void AUnit::Tick(float DeltaTime)
 				if (Attack())
 				{
 					ShowMovementPath();
-
-					bTurnFinished = true;
 				}
 				else //If melee doessn't hit, move to skills
 				{
@@ -113,13 +113,16 @@ void AUnit::Tick(float DeltaTime)
 						battleGrid->UnhideNodes(attackPathNodes);
 
 						activeSkill = skillToUse;
-
+						
 						HighlightUnitOnSkillUse();
 					}
 				}
 
 				//Deactive current standing node
 				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
+
+				bCurrentlyMoving = false;
+				bTurnFinished = true;
 			}
 		}
 	}
@@ -132,16 +135,11 @@ void AUnit::ShowMovementPath()
 	//Handle if unit is charging skill
 	if (bChargingSkill)
 	{
-		/*battleGrid->ResetAllNodeValues();
+		battleGrid->ResetAllNodeValues();
 		battleGrid->HideAllNodes();
-
-		auto skill = NewObject<USkillBase>(this, skillClasses[0]);
-		ISkillInterface* skillInterface = Cast<ISkillInterface>(skill);
-		skillInterface->UseSkill(0, 0, this, nullptr);
-
 		battleGrid->UnhideNodes(attackPathNodes);
 
-		return;*/
+		return;
 	}
 
 
@@ -184,6 +182,16 @@ void AUnit::HideMovementPath()
 
 void AUnit::MoveTo(FGridNode* destinationNode)
 {
+	if (movementPathNodes.Num() == 0)
+	{
+		return;
+	}
+
+	if (bChargingSkill)
+	{
+		return;
+	}
+
 	bSetToMove = true;
 
 	//Set player camera focus
@@ -353,9 +361,10 @@ USkillBase* AUnit::CycleThroughAttackChoices(AActor* target)
 	//Test case for skills
 	for (int i = 0; i < skills.Num(); i++)
 	{
-		//auto skill = NewObject<USkillBase>(this, skillClasses[i]);
 		ISkillInterface* skillInterface = Cast<ISkillInterface>(skills[i]);
-		skillInterface->UseSkill(xIndex, yIndex, this, target);
+		skillInterface->ChargeSkill(xIndex, yIndex, this, target);
+
+		bSetToUseSkill = true;
 
 		return skills[i];
 	}
@@ -370,4 +379,20 @@ void AUnit::FinishDisplayingSkill()
 	player->widgetUnitSkill->RemoveFromViewport();
 
 	bTurnFinished = true;
+}
+
+void AUnit::UseSkill()
+{
+	if (bSetToUseSkill && (attackPathNodes.Num() > 0))
+	{
+		ISkillInterface* skillInterface = Cast<ISkillInterface>(activeSkill);
+		skillInterface->UseSkill(xIndex, yIndex, this, actorToFocusOn);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s skill used %s"), *GetName(), *activeSkill->skillName.ToString());
+
+		attackPathNodes.Empty();
+
+		bTurnFinished = true;
+		bSetToUseSkill = false;
+	}
 }

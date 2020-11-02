@@ -17,6 +17,9 @@ class ISkillInterface
     GENERATED_BODY()
 
 public:
-    //arguments are for the grid node index. 
+    //Executes skill effect
     virtual void UseSkill(int x, int y, AUnit* owner, AActor* target) = 0;
+
+    //Primes skill and sets up attack nodes (usually called before UseSkill() if a charge skill)
+    virtual void ChargeSkill(int x, int y, AUnit* owner, AActor* target) = 0;
 };

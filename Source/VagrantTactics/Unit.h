@@ -47,6 +47,7 @@ public:
 	void HighlightUnitOnSkillUse();
 	USkillBase* CycleThroughAttackChoices(AActor* target);
 	void FinishDisplayingSkill();
+	void UseSkill();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
@@ -91,6 +92,8 @@ public:
 	UPROPERTY(VisibleAnywhere) int currentAttackPoints;
 
 	UPROPERTY(VisibleAnywhere) bool bSetToMove = false;
+	UPROPERTY(VisibleAnywhere) bool bCurrentlyMoving = false;
+	UPROPERTY(VisibleAnywhere) bool bSetToUseSkill = false;
 	UPROPERTY(VisibleAnywhere) bool bTurnFinished = false;
 	UPROPERTY(VisibleAnywhere) bool bInBattle = false;
 
