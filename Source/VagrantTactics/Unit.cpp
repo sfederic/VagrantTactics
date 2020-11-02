@@ -65,8 +65,6 @@ void AUnit::Tick(float DeltaTime)
 			{
 				nextMoveLocation = pathNodes[movementPathNodeIndex]->location;
 
-				//FRotator lookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextMoveLocation);
-				//lookAtRotation.Yaw = 0.f;
 				SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextMoveLocation));
 
 				xIndex = pathNodes[movementPathNodeIndex]->xIndex;
@@ -77,14 +75,11 @@ void AUnit::Tick(float DeltaTime)
 			{
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
-				//bSetToMove = false;
 				UE_LOG(LogTemp, Warning, TEXT("%s move finished."), *this->GetName());
 
 				//Initial melee attack
 				if (Attack())
 				{
-					//TODO: This is only going to work niceley when one enemy is in the battle.
-					//Otherwise you need to figure out how to mesh this with player's 'selectedUnit'
 					ShowMovementPath();
 
 					bTurnFinished = true;
@@ -184,19 +179,44 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 		movementPathNodes[i]->hCost = FVector::Distance(destinationNode->location, movementPathNodes[i]->location);
 	}
 
-	//Find lowest distance to end
+	//Find lowest distance to 'end' based on UnitState
+	int highestHCostIndex = 0;
 	int lowestHCostIndex = 0;
-	float lowestHCost = TNumericLimits<float>::Max();
-	for (int i = 0; i < movementPathNodes.Num(); i++)
+
+	if (unitState == EUnitState::Chase)
 	{
-		if (movementPathNodes[i]->hCost < lowestHCost)
+		float lowestHCost = TNumericLimits<float>::Max();
+		for (int i = 0; i < movementPathNodes.Num(); i++)
 		{
-			lowestHCost = movementPathNodes[i]->hCost;
-			lowestHCostIndex = i;
+			if (movementPathNodes[i]->hCost < lowestHCost)
+			{
+				lowestHCost = movementPathNodes[i]->hCost;
+				lowestHCostIndex = i;
+			}
+		}
+	}
+	else if (unitState == EUnitState::Flee)
+	{
+		float highestHCost = -1.f;
+		for (int i = 0; i < movementPathNodes.Num(); i++)
+		{
+			if (movementPathNodes[i]->hCost > highestHCost)
+			{
+				highestHCost = movementPathNodes[i]->hCost;
+				highestHCostIndex = i;
+			}
 		}
 	}
 
-	FGridNode* nextNode = movementPathNodes[lowestHCostIndex];
+	FGridNode* nextNode = nullptr;
+	switch (unitState)
+	{
+	case EUnitState::Chase:	nextNode = movementPathNodes[lowestHCostIndex];
+	case EUnitState::Flee: nextNode = movementPathNodes[highestHCostIndex];
+	case EUnitState::Wander: 
+		int randomNodeIndex = FMath::RandRange(0, movementPathNodes.Num() - 1);
+		nextNode = movementPathNodes[randomNodeIndex];
+	}
 
 	while (nextNode != startingNode)
 	{

@@ -13,6 +13,14 @@ class UParticleSystem;
 class UCameraShake;
 class USpellBase;
 
+UENUM(BlueprintType)
+enum class EUnitState : uint8
+{
+	Chase, //Persue either an attack target or target of interest
+	Flee, //Move further away from target
+	Wander //Moves to random node
+};
+
 //Base class for all units.
 UCLASS()
 class VAGRANTTACTICS_API AUnit : public AGridActor
@@ -55,6 +63,9 @@ public:
 	USkillBase* activeSkill;
 
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spellClasses;
+
+	//AI state of unit
+	UPROPERTY(EditAnywhere) EUnitState unitState;
 
 	//For displaying enemy name on UI widgets
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) FText unitName;
