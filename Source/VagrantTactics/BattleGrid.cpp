@@ -127,11 +127,14 @@ void ABattleGrid::Init()
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
-			if (GetWorld()->SweepSingleByChannel(hit, startHit, transform.GetLocation() + FVector(0.f, 0.f, 50.f), FQuat::Identity,
-				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(32.f))))
+			//Get the base foundation of the grid (lowest level)
+			if(GetWorld()->LineTraceSingleByChannel(hit, startHit, transform.GetLocation(), 
+				ECC_WorldStatic, params))
 			{
-				node.bActive = false;
-				transform.SetScale3D(nodeHiddenScale);
+				node.bActive = true;
+				transform.SetScale3D(nodeVisibleScale);
+				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, 1.f));
+				node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 
 				//The weird if checks here are to check for BSP geom
 				AActor* hitActor = hit.GetActor();
@@ -144,6 +147,15 @@ void ABattleGrid::Init()
 						transform.SetScale3D(nodeVisibleScale);
 					}
 				}
+			}
+
+			//Check for any obstacles on top of base via box sweep
+			if (GetWorld()->SweepSingleByChannel(hit, startHit, node.location, FQuat::Identity,
+				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(40.f))))
+			{
+				node.bActive = false;
+				transform.SetScale3D(nodeHiddenScale);
+				node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 			}
 
 			for(AGridActor* gridActor : allGridActors)
