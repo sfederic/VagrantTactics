@@ -394,5 +394,6 @@ void AUnit::UseSkill()
 
 		bTurnFinished = true;
 		bSetToUseSkill = false;
+		bChargingSkill = false;
 	}
 }
