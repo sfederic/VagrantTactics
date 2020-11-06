@@ -11,6 +11,7 @@ namespace GameplayTags
 	static const FName Destructible = TEXT("Destructible");
 	static const FName Fence = TEXT("Fence"); //Whether or not a wall in-game is acting as a barrier between grid nodes
 	static const FName NonObstruct = TEXT("NonObstruct"); //Static mesh that will let a node be placed (grass, fence, torch)
+	static const FName Obstruct = TEXT("Obstruct"); //Static mesh that will NOT let a node be placed (barrel, chest)
 }
 
 //Tags for items and actors units can focus on

@@ -148,6 +148,11 @@ void ABattleGrid::Init()
 						transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -LevelGridValues::nodeHeightOffset));
 						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 					}
+					else if (hitActor->ActorHasTag(GameplayTags::Obstruct))
+					{
+						node.bActive = false;
+						transform.SetScale3D(nodeHiddenScale);
+					}
 				}
 
 			}
