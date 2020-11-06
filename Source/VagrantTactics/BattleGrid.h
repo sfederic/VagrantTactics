@@ -69,4 +69,7 @@ public:
 	UPROPERTY(VisibleAnywhere) bool bBattleActive = false;
 	UPROPERTY(VisibleAnywhere) bool bPlayerTurn = true;
 	UPROPERTY(VisibleAnywhere) bool bEnemyTurn;
+
+	//Testing to see if battlegrid can be places at other points to reuse levels
+	UPROPERTY(EditAnywhere) bool bIsSetAtWorldOrigin = true;
 };

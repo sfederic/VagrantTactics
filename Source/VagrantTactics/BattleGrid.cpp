@@ -83,8 +83,12 @@ void ABattleGrid::Tick(float DeltaTime)
 
 FGridNode* ABattleGrid::GetNode(int x, int y)
 {
-	check(x < sizeX && x > -1);
-	check(y < sizeY && y > -1) ;
+	if (bIsSetAtWorldOrigin)
+	{
+		check(x < sizeX&& x > -1);
+		check(y < sizeY&& y > -1);
+	}
+
 	return &rows[x].columns[y];
 }
 
@@ -133,7 +137,7 @@ void ABattleGrid::Init()
 			{
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
-				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, 1.f));
+				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, -LevelGridValues::nodeHeightOffset));
 				//node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 				node.location = transform.GetLocation();
 
@@ -146,7 +150,7 @@ void ABattleGrid::Init()
 						node.bActive = true;
 						transform.SetScale3D(nodeVisibleScale);
 						transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -LevelGridValues::nodeHeightOffset));
-						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+						node.location = transform.GetLocation();
 					}
 					else if (hitActor->ActorHasTag(GameplayTags::Obstruct))
 					{
@@ -230,16 +234,14 @@ void ABattleGrid::Init()
 				}
 			}
 
-
-
 			//Check for hole in floor
-			FHitResult holeHit;
+			/*FHitResult holeHit;
 			if (!GetWorld()->LineTraceSingleByChannel(holeHit, transform.GetLocation(), 
 				transform.GetLocation() - FVector(0.f, 0.f, 100.f), ECC_WorldStatic))
 			{
 				node.bActive = false;
 				transform.SetScale3D(nodeHiddenScale);
-			}
+			}*/
 
 
 			int32 instancedMeshIndex = gridMesh->AddInstance(transform);
