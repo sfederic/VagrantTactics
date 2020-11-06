@@ -134,9 +134,9 @@ void ABattleGrid::Init()
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
 				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, 1.f));
-				node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+				//node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
+				node.location = transform.GetLocation();
 
-				//The weird if checks here are to check for BSP geom
 				AActor* hitActor = hit.GetActor();
 				if (hitActor)
 				{
@@ -145,18 +145,26 @@ void ABattleGrid::Init()
 					{
 						node.bActive = true;
 						transform.SetScale3D(nodeVisibleScale);
+						transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -LevelGridValues::nodeHeightOffset));
+						node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
 					}
 				}
+
 			}
 
 			//Check for any obstacles on top of base via box sweep
-			if (GetWorld()->SweepSingleByChannel(hit, startHit, node.location, FQuat::Identity,
+			/*if (GetWorld()->SweepSingleByChannel(hit, startHit, node.location, FQuat::Identity,
 				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(40.f))))
 			{
-				node.bActive = false;
-				transform.SetScale3D(nodeHiddenScale);
-				node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
-			}
+				if (hit.GetActor())
+				{
+					if (hit.GetActor()->ActorHasTag(GameplayTags::Player))
+					{
+						node.bActive = true;
+						transform.SetScale3D(nodeVisibleScale);
+					}
+				}
+			}*/
 
 			for(AGridActor* gridActor : allGridActors)
 			{
