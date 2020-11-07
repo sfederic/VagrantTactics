@@ -136,8 +136,8 @@ void ABattleGrid::Init()
 			{
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
-				transform.SetLocation(hit.ImpactPoint - FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset));
-				node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, 0.f);
+				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, 1.f));
+				node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, hit.ImpactPoint.Z + 50.f);
 
 				AActor* hitActor = hit.GetActor();
 				if (hitActor)
@@ -151,6 +151,7 @@ void ABattleGrid::Init()
 						node.bActive = true;
 						transform.SetScale3D(nodeVisibleScale);
 						transform.SetLocation(node.location - FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset));
+						node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, 0.f);
 					}
 					else if (hitActor->ActorHasTag(GameplayTags::Obstruct))
 					{
