@@ -150,7 +150,17 @@ void APlayerUnit::Tick(float DeltaTime)
 	//CAMERA
 	if (selectedUnit)
 	{
-		cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), selectedUnit->GetActorLocation());
+		if (selectedUnit->ActorHasTag(GameplayTags::Speech))
+		{
+			//TODO: that Find() is expensive in a tick here
+			//cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(),
+			//	selectedUnit->FindComponentByClass<UWidgetComponent>()->GetComponentLocation());
+			//currentCameraFOV = cameraFOVAttack;
+		}
+		else
+		{
+			cameraFocusRotation = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), selectedUnit->GetActorLocation());
+		}
 	}
 	else
 	{
@@ -495,6 +505,7 @@ void APlayerUnit::Attack()
 				if (sc)
 				{
 					sc->ShowDialogue();
+					//selectedUnit = talkHitActor;
 					return;
 				}
 			}

@@ -126,31 +126,31 @@ void ABattleGrid::Init()
 
 			FHitResult hit;
 			FCollisionQueryParams params;
-			FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+			FVector startHit = node.location + FVector(0.f, 0.f, 1000.f);
 
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
 			//Get the base foundation of the grid (lowest level)
-			if(GetWorld()->LineTraceSingleByChannel(hit, startHit, transform.GetLocation(), 
-				ECC_WorldStatic, params))
+			if(GetWorld()->LineTraceSingleByChannel(hit, startHit, node.location, ECC_WorldStatic, params))
 			{
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
-				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, -LevelGridValues::nodeHeightOffset));
-				//node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
-				node.location = transform.GetLocation();
+				transform.SetLocation(hit.ImpactPoint - FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset));
+				node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, 0.f);
 
 				AActor* hitActor = hit.GetActor();
 				if (hitActor)
 				{
+					node.bActive = false;
+					transform.SetScale3D(nodeHiddenScale);
+
 					if (hitActor->ActorHasTag(GameplayTags::Player) || hitActor->ActorHasTag(GameplayTags::Unit)
 						|| hitActor->ActorHasTag(GameplayTags::NonObstruct))
 					{
 						node.bActive = true;
 						transform.SetScale3D(nodeVisibleScale);
-						transform.SetLocation(FVector((float)x * 100.f, (float)y * 100.f, -LevelGridValues::nodeHeightOffset));
-						node.location = transform.GetLocation();
+						transform.SetLocation(node.location - FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset));
 					}
 					else if (hitActor->ActorHasTag(GameplayTags::Obstruct))
 					{
@@ -158,7 +158,6 @@ void ABattleGrid::Init()
 						transform.SetScale3D(nodeHiddenScale);
 					}
 				}
-
 			}
 
 			//Check for any obstacles on top of base via box sweep
@@ -235,13 +234,13 @@ void ABattleGrid::Init()
 			}
 
 			//Check for hole in floor
-			/*FHitResult holeHit;
+			FHitResult holeHit;
 			if (!GetWorld()->LineTraceSingleByChannel(holeHit, transform.GetLocation(), 
 				transform.GetLocation() - FVector(0.f, 0.f, 100.f), ECC_WorldStatic))
 			{
 				node.bActive = false;
 				transform.SetScale3D(nodeHiddenScale);
-			}*/
+			}
 
 
 			int32 instancedMeshIndex = gridMesh->AddInstance(transform);
