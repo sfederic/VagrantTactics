@@ -7,17 +7,20 @@ void ANPCUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bSetToMoveDuringConversation)
+	if (pointToMoveTo)
 	{
-		nextMoveLocation = pointToMoveTo->GetActorLocation();
-		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), pointToMoveTo->GetActorLocation()));
+		if (bSetToMoveDuringConversation)
+		{
+			nextMoveLocation = pointToMoveTo->GetActorLocation();
+			SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), pointToMoveTo->GetActorLocation()));
 
-		bSetToMoveDuringConversation = false;
-	}
+			bSetToMoveDuringConversation = false;
+		}
 
-	//Disolve actor when reaches destination
-	if (GetActorLocation().Equals(pointToMoveTo->GetActorLocation()))
-	{
-		Destroy();
+		//Disolve actor when reaches destination
+		if (GetActorLocation().Equals(pointToMoveTo->GetActorLocation()))
+		{
+			Destroy();
+		}
 	}
 }

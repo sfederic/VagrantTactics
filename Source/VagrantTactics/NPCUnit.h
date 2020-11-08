@@ -7,6 +7,8 @@
 #include "NPCUnit.generated.h"
 
 class USpeechWidget;
+class UDataTable;
+class AConversationInstance;
 
 //Just a unit with speech
 UCLASS()
@@ -21,6 +23,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	USpeechWidget* speechWidget;
+
+	UPROPERTY(EditAnywhere) UDataTable* speechTable;
+
+	UPROPERTY(EditAnywhere) AConversationInstance* conversationInstance;
 
 	bool bSetToMoveDuringConversation = false;
 };

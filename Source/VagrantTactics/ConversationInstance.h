@@ -24,10 +24,11 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	void ShowNextDialogueLine();
+	void ShowNextDialogueLineOnTimer();
+	void ShowNextDialogueLineOnPlayerInput();
 
 	UPROPERTY(EditAnywhere)
-	TArray<ANPCUnit*> npcConversationOrder;
+	TArray<AActor*> npcConversationOrder;
 
 	TArray<FConversationTable*> conversationRows;
 
@@ -38,4 +39,7 @@ public:
 	UPROPERTY(EditAnywhere) float initialTimeForConversationStart = 1.0f;
 
 	int conversationOrderIndex = 0;
+
+	//Whether the player has input in the dialogue (for button presses, etc.)
+	UPROPERTY(EditAnywhere) bool bIsPlayerConnected;
 };

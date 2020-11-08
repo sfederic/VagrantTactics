@@ -131,10 +131,6 @@ void AConversationInstance::ShowNextDialogueLineOnPlayerInput()
 			npcConversationOrder[conversationOrderIndex]->FindComponentByClass<UWidgetComponent>();
 		widgetComponent->SetHiddenInGame(false);
 
-		//Set player camera focus on current actor speaking
-		APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		player->conversationWidgetFocus = widgetComponent->GetComponentLocation();
-
 		USpeechWidget* speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
 
 		speechWidget->dialogueLine = conversationRows[conversationOrderIndex]->dialogueLine;

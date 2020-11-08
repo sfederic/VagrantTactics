@@ -77,7 +77,6 @@ public:
 	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;
-	const float cameraFOVConversation = 60.f;
 
 	//WIDGETS
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;

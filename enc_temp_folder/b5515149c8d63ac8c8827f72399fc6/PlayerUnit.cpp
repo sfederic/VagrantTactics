@@ -465,7 +465,8 @@ void APlayerUnit::Attack()
 							npc->conversationInstance->ShowNextDialogueLineOnPlayerInput();
 							connectedConversationInstance = npc->conversationInstance;
 							bInConversation = true;
-							currentCameraFOV = cameraFOVConversation;
+							currentCameraFOV = cameraFOVAttack;
+							conversationWidgetFocus = npc->FindComponentByClass<UWidgetComponent>()->GetComponentLocation();
 							return;
 						}
 					}
