@@ -113,7 +113,7 @@ void AUnit::Tick(float DeltaTime)
 						battleGrid->UnhideNodes(attackPathNodes);
 
 						activeSkill = skillToUse;
-						
+
 						HighlightUnitOnSkillUse();
 					}
 				}

@@ -14,7 +14,13 @@ class VAGRANTTACTICS_API ANPCUnit : public AUnit
 {
 	GENERATED_BODY()
 public:
+	virtual void Tick(float DeltaTime) override;
+
+	//Testing variable to try out movement scripting during dialogue
+	UPROPERTY(EditAnywhere) AActor* pointToMoveTo;
 
 	UPROPERTY(BlueprintReadWrite)
 	USpeechWidget* speechWidget;
+
+	bool bSetToMoveDuringConversation = false;
 };

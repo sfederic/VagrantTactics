@@ -21,7 +21,7 @@ void AConversationInstance::BeginPlay()
 	conversationTable->GetAllRows(contextString, conversationRows);
 
 	FTimerHandle handle;
-	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, timeBetweenTextChanges, false);
+	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLine, initialTimeForConversationStart, false);
 }
 
 void AConversationInstance::Tick(float DeltaTime)
@@ -40,6 +40,13 @@ void AConversationInstance::ShowNextDialogueLine()
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
+
+		//Testing case for moving NPCs at end of conversation
+		for (ANPCUnit* npc : npcConversationOrder)
+		{
+			npc->bSetToMoveDuringConversation = true;
+		}
+
 		Destroy();
 		return;
 	}

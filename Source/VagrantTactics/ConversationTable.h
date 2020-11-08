@@ -10,10 +10,6 @@ struct FConversationTable : public FTableRowBase
 {
 	GENERATED_BODY()
 public:
-
-	UPROPERTY(EditAnywhere)
-	ANPCUnit* npc;
-
 	//Name of character saying the line
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText speakerName;
