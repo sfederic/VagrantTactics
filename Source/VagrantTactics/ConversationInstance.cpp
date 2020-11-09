@@ -19,8 +19,11 @@ void AConversationInstance::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	FString contextString;
-	conversationTable->GetAllRows(contextString, conversationRows);
+	if (conversationTable)
+	{
+		FString contextString;
+		conversationTable->GetAllRows(contextString, conversationRows);
+	}
 
 	if (!bIsPlayerConnected)
 	{

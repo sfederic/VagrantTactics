@@ -104,4 +104,5 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Attack Directions") bool bRightVulnerable = true;
 
 	UPROPERTY(VisibleAnywhere) bool bChargingSkill;
+	UPROPERTY(EditAnywhere) bool bCanEnterBattle = true;
 };

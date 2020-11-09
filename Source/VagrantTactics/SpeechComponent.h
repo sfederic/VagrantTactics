@@ -24,12 +24,13 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void ShowDialogue();
+	void ShowDialogue(bool bStartCombat);
 	void HideDialogue();
 
 	UPROPERTY(EditAnywhere) UDataTable* conversationTable;
 
 	UPROPERTY(EditAnywhere) FText dialogueText;
+	UPROPERTY(EditAnywhere) FText startCombatText;
 
 	UWidgetComponent* widgetComponent;
 	USpeechWidget* speechWidget;

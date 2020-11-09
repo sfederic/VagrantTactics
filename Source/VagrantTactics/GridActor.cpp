@@ -98,8 +98,12 @@ void AGridActor::Tick(float DeltaTime)
 					
 					TArray<AActor*> outBattleInstance;
 					UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleInstance::StaticClass(), outBattleInstance);
-					ABattleInstance* battleInstance = Cast<ABattleInstance>(outBattleInstance[0]);
-					battleInstance->numOfUnitsAlive--;
+					//TODO: with fighting enemies with a non-battle instance, need to fix this somehow.
+					if (outBattleInstance.Num() > 0)
+					{
+						ABattleInstance* battleInstance = Cast<ABattleInstance>(outBattleInstance[0]);
+						battleInstance->numOfUnitsAlive--;
+					}
 				}
 
 				Destroy();

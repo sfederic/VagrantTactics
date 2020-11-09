@@ -51,8 +51,8 @@ public:
 	void MoveRightHold(float val);
 	void RotateLeft();
 	void RotateRight();
-	void Attack();
-	void Guard();
+	void PrimaryAction();
+	void SecondaryAction();
 	void EndTurn();
 	void Click();
 	void PreviewBattleGrid();
@@ -147,6 +147,9 @@ public:
 	UPROPERTY(VisibleAnywhere) int yIndex;
 
 	UPROPERTY(VisibleAnywhere) bool bCanInteractWithTriggersConnection;
+
+	//Needed a bool to tell if player was not in battle, but able to discern between PrimaryAction() presses
+	UPROPERTY(VisibleAnywhere) bool bWeaponUnsheathed = false;
 
 	//ITEMS
 	UPROPERTY(VisibleAnywhere) bool bHoldingItem;

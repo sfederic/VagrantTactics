@@ -212,8 +212,8 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAction(TEXT("RotateLeft"), EInputEvent::IE_Pressed, this, &APlayerUnit::RotateLeft);
 	InputComponent->BindAction(TEXT("RotateRight"), EInputEvent::IE_Pressed, this, &APlayerUnit::RotateRight);
 
-	InputComponent->BindAction(TEXT("PrimaryAction"), EInputEvent::IE_Pressed, this, &APlayerUnit::Attack);
-	InputComponent->BindAction(TEXT("SecondaryAction"), EInputEvent::IE_Pressed, this, &APlayerUnit::Guard);
+	InputComponent->BindAction(TEXT("PrimaryAction"), EInputEvent::IE_Pressed, this, &APlayerUnit::PrimaryAction);
+	InputComponent->BindAction(TEXT("SecondaryAction"), EInputEvent::IE_Pressed, this, &APlayerUnit::SecondaryAction);
 
 	InputComponent->BindAction(TEXT("EndTurn"), EInputEvent::IE_Pressed, this, &APlayerUnit::EndTurn);
 	InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &APlayerUnit::Click);
@@ -277,13 +277,12 @@ void APlayerUnit::Move(FVector direction)
 		currentCameraFOV = maxCameraFOV;
 
 		nextLocation += (direction * moveDistance);
+		mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
 
 		//Set grid indices
 		xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
 		yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
 
-		//Test rotation on movement
-		mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
 
 		//return out of function if player is on grid boundary
 		if (direction.Equals(-FVector::ForwardVector))
@@ -434,8 +433,14 @@ void APlayerUnit::RotateRight()
 	}
 }
 
-void APlayerUnit::Attack()
+void APlayerUnit::PrimaryAction()
 {
+	//Attack target if weapon unsheathed and not in battle
+	if (bWeaponUnsheathed)
+	{
+		goto Attack;
+	}
+
 	if (connectedConversationInstance)
 	{
 		connectedConversationInstance->ShowNextDialogueLineOnPlayerInput();
@@ -443,6 +448,7 @@ void APlayerUnit::Attack()
 	}
 
 	//Talk to NPC
+	if(!battleGrid->bBattleActive && !bWeaponUnsheathed)
 	{
 		FHitResult talkHit;
 		FCollisionQueryParams talkParams;
@@ -465,6 +471,7 @@ void APlayerUnit::Attack()
 							npc->conversationInstance->ShowNextDialogueLineOnPlayerInput();
 							connectedConversationInstance = npc->conversationInstance;
 							bInConversation = true;
+							npc->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(npc->GetActorLocation(), this->GetActorLocation()));
 							currentCameraFOV = cameraFOVConversation;
 							return;
 						}
@@ -475,8 +482,7 @@ void APlayerUnit::Attack()
 					USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
 					if (sc)
 					{
-						sc->ShowDialogue();
-						//selectedUnit = talkHitActor;
+						sc->ShowDialogue(false);
 						return;
 					}
 				}
@@ -579,6 +585,8 @@ void APlayerUnit::Attack()
 		}
 	}
 
+	Attack:
+
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
 		FHitResult hit;
@@ -654,12 +662,29 @@ void APlayerUnit::Attack()
 						}
 					}
 				}
+
+				//Case for initiating combat with NPCs outside of battle
+				ANPCUnit* npcToStartCombatWith = Cast<ANPCUnit>(gridActor);
+				if(npcToStartCombatWith)
+				{
+					if (!npcToStartCombatWith->bInBattle)
+					{
+						npcToStartCombatWith->bInBattle = true;
+						battleGrid->ActivateBattle();
+
+						USpeechComponent* sc = npcToStartCombatWith->FindComponentByClass<USpeechComponent>();
+						if (sc)
+						{
+							sc->ShowDialogue(true);
+						}
+					}
+				}
 			}
 		}
 	}
 }
 
-void APlayerUnit::Guard()
+void APlayerUnit::SecondaryAction()
 {
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
@@ -765,10 +790,12 @@ void APlayerUnit::PreviewBattleGrid()
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (gameMode->activeBattleGrid->gridMesh->bHiddenInGame)
 	{
+		bWeaponUnsheathed = true;
 		gameMode->activeBattleGrid->ToggleGridOn();
 	}
 	else
 	{
+		bWeaponUnsheathed = false;
 		gameMode->activeBattleGrid->ToggleGridOff();
 	}
 }

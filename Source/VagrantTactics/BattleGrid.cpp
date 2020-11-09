@@ -23,11 +23,13 @@ void ABattleGrid::BeginPlay()
 	//Get all units and sort
 	TArray<AActor*> outUnits;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
-	allUnits.Reserve(outUnits.Num());
 	for (AActor* actor : outUnits)
 	{
 		AUnit* unit = Cast<AUnit>(actor);
-		allUnits.Add(unit);
+		if (unit->bCanEnterBattle)
+		{
+			allUnits.Add(unit);
+		}
 	}
 
 	SortUnitsByTurnSpeed();
@@ -292,6 +294,15 @@ void ABattleGrid::ActivateBattle()
 					wc->SetHiddenInGame(false);
 				}
 			}
+		}
+
+		//Set all unit focus at start of battle
+		TArray<AActor*> outUnits;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+		for (AActor* actor : outUnits)
+		{
+			AUnit* unit = Cast<AUnit>(actor);
+			unit->ShowUnitFocus();
 		}
 	}
 	else if (!bBattleActive)

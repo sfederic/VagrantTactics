@@ -6,9 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SpeechWidget.generated.h"
 
-/**
- * 
- */
+//Component that hold various speech data for a unit
 UCLASS()
 class VAGRANTTACTICS_API USpeechWidget : public UUserWidget
 {
@@ -17,6 +15,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText speakerName;
 
+	//Normal dialogue line
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText dialogueLine;
+
+	//Line enemy says during combat initiation
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText startCombatLine;
 };

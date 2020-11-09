@@ -33,11 +33,18 @@ void USpeechComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void USpeechComponent::ShowDialogue()
+void USpeechComponent::ShowDialogue(bool bStartCombat)
 {
 	widgetComponent->SetHiddenInGame(false);
 	speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
-	speechWidget->dialogueLine = dialogueText;
+	if (bStartCombat)
+	{
+		speechWidget->dialogueLine = startCombatText;
+	}
+	else
+	{
+		speechWidget->dialogueLine = dialogueText;
+	}
 
 	//Rotate towards player (like in the old SNES games)
 	APawn* player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
