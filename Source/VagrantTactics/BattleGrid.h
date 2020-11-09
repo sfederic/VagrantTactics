@@ -56,6 +56,7 @@ public:
 	UPROPERTY() TMap<int32, FGridNode> nodeMap;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TArray<AUnit*> allUnits;
+	UPROPERTY(VisibleAnywhere) int numOfUnitsAlive;
 	int activeUnitIndex;
 
 	FVector nodeVisibleScale = FVector(0.95f);

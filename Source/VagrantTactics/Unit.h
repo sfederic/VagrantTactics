@@ -48,6 +48,7 @@ public:
 	USkillBase* CycleThroughAttackChoices(AActor* target);
 	void FinishDisplayingSkill();
 	void UseSkill();
+	void ActivateForBattle();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 

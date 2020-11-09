@@ -20,3 +20,8 @@ namespace ItemTags
 {
 	static const FName Burning = TEXT("Burning"); //Causing units to flee
 }
+
+namespace ComponentTags
+{
+	static const FName HealthBar = TEXT("HealthBar");
+}

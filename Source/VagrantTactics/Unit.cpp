@@ -14,6 +14,9 @@
 #include "TimerManager.h"
 #include "UnitSkillWidget.h"
 #include "GameplayTags.h"
+#include "HealthbarWidget.h"
+#include "SpeechComponent.h"
+#include "Components/WidgetComponent.h"
 
 AUnit::AUnit()
 {
@@ -395,5 +398,22 @@ void AUnit::UseSkill()
 		bTurnFinished = true;
 		bSetToUseSkill = false;
 		bChargingSkill = false;
+	}
+}
+
+void AUnit::ActivateForBattle()
+{
+	if (!bInBattle)
+	{
+		bInBattle = true;
+		healthbarWidgetComponent->SetHiddenInGame(false);
+
+		battleGrid->ActivateBattle();
+
+		USpeechComponent* sc = FindComponentByClass<USpeechComponent>();
+		if (sc)
+		{
+			sc->ShowDialogue(true);
+		}
 	}
 }

@@ -43,10 +43,16 @@ void AGridActor::BeginPlay()
 	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
 	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
 
+	//Setup widgets
+	TArray<UActorComponent*> widgets;
+	GetComponents(UWidgetComponent::StaticClass(), widgets);
+
+	TArray<UActorComponent*> outHealthBar = GetComponentsByTag(UWidgetComponent::StaticClass(), ComponentTags::HealthBar);
+
 	//Setup health bar
 	if (bIsDestructible)
 	{
-		healthbarWidgetComponent = FindComponentByClass<UWidgetComponent>();
+		healthbarWidgetComponent = Cast<UWidgetComponent>(outHealthBar[0]);
 		if (healthbarWidgetComponent)
 		{
 			healthbarWidgetComponent->SetHiddenInGame(true);
@@ -103,6 +109,14 @@ void AGridActor::Tick(float DeltaTime)
 					{
 						ABattleInstance* battleInstance = Cast<ABattleInstance>(outBattleInstance[0]);
 						battleInstance->numOfUnitsAlive--;
+					}
+					else if (battleGrid)
+					{
+						battleGrid->numOfUnitsAlive--;
+						if (battleGrid->numOfUnitsAlive <= 0)
+						{
+							battleGrid->ActivateBattle();
+						}
 					}
 				}
 

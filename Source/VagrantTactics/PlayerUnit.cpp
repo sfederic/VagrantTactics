@@ -667,17 +667,7 @@ void APlayerUnit::PrimaryAction()
 				ANPCUnit* npcToStartCombatWith = Cast<ANPCUnit>(gridActor);
 				if(npcToStartCombatWith)
 				{
-					if (!npcToStartCombatWith->bInBattle)
-					{
-						npcToStartCombatWith->bInBattle = true;
-						battleGrid->ActivateBattle();
-
-						USpeechComponent* sc = npcToStartCombatWith->FindComponentByClass<USpeechComponent>();
-						if (sc)
-						{
-							sc->ShowDialogue(true);
-						}
-					}
+					npcToStartCombatWith->ActivateForBattle();
 				}
 			}
 		}

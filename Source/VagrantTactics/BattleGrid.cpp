@@ -32,6 +32,8 @@ void ABattleGrid::BeginPlay()
 		}
 	}
 
+	numOfUnitsAlive = outUnits.Num();
+
 	SortUnitsByTurnSpeed();
 }
 
