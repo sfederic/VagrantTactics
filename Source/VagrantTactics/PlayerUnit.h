@@ -51,6 +51,7 @@ public:
 	void MoveRightHold(float val);
 	void RotateLeft();
 	void RotateRight();
+	void Rotate(float angle);
 	void PrimaryAction();
 	void SecondaryAction();
 	void EndTurn();
@@ -64,6 +65,7 @@ public:
 	void ChangeSpellToFire();
 	void MoveToLevel();
 	void ZoomInOnTarget(AActor* target);
+	void ResetGuardWindow();
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -165,7 +167,7 @@ public:
 	UPROPERTY(VisibleAnywhere) bool bInConversation = false;
 	FVector conversationWidgetFocus;
 
-	//GUARDING
+	//GUARDING & DODGING
 	UPROPERTY(VisibleAnywhere) bool bGuardWindowActive = false;
 	UPROPERTY(VisibleAnywhere) float guardWindowTimerMax;
 	UPROPERTY(VisibleAnywhere) float currentGuardWindowTimer;

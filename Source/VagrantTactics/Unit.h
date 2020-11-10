@@ -109,4 +109,6 @@ public:
 	UPROPERTY(VisibleAnywhere) bool bChargingSkill;
 	UPROPERTY(EditAnywhere) bool bCanEnterBattle = true;
 	UPROPERTY(VisibleAnywhere) bool bWindingUpAttack = false;
+
+	FGridNode* meleeAttackNodeTarget;
 };

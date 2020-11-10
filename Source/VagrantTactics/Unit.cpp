@@ -325,6 +325,7 @@ bool AUnit::Attack()
 			battleGrid->GetNeighbouringNodes(currentNode, neighbourNodes);
 
 			FGridNode* targetNode = battleGrid->GetNode(player->xIndex, player->yIndex);
+			meleeAttackNodeTarget = targetNode;
 			for(FGridNode* node : neighbourNodes)
 			{
 				if (node->Equals(targetNode))
@@ -334,6 +335,8 @@ bool AUnit::Attack()
 					FTimerHandle timerHandle;
 					GetWorldTimerManager().SetTimer(timerHandle, this, &AUnit::WindUpAttack, attackWindUpTime, false);
 					
+					player->currentCameraFOV = player->cameraFOVAttack;
+
 					player->bGuardWindowActive = true;
 					player->guardWindowTimerMax = attackWindUpTime;
 					player->widgetGuard->AddToViewport();
@@ -424,19 +427,28 @@ void AUnit::ActivateForBattle()
 //This function is to wait for unit attack animation to play out and give player guard chances
 void AUnit::WindUpAttack()
 {
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
 	APlayerUnit* player = Cast<APlayerUnit>(actorToFocusOn);
+	player->ResetCameraFocusAndFOV();
 
-	int damage = currentAttackPoints - player->guardPoints;
-	if (damage < 0) { damage = 0; }
-	player->currentHealthPoints -= damage;
+	//Check for doedge (if player is still in attack node paths)
+	if (!meleeAttackNodeTarget->Equals(player->xIndex, player->yIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s attack missed."), *GetName());
+	}
+	else //Attack hits
+	{
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s attacked."), *GetName());
+		int damage = currentAttackPoints - player->guardPoints;
+		if (damage < 0) { damage = 0; }
+		player->currentHealthPoints -= damage;
+
+		UE_LOG(LogTemp, Warning, TEXT("%s attacked."), *GetName());
+	}
 
 	battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
 
 	bWindingUpAttack = false;
-
 	bCurrentlyMoving = false;
 	bTurnFinished = true;
 }

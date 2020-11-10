@@ -165,9 +165,7 @@ void APlayerUnit::Tick(float DeltaTime)
 		}
 		else if (currentGuardWindowTimer > guardWindowTimerMax)
 		{
-			bGuardWindowActive = false;
-			currentGuardWindowTimer = 0.f;
-			widgetGuard->RemoveFromViewport();
+			ResetGuardWindow();
 		}
 	}
 
@@ -278,10 +276,18 @@ void APlayerUnit::Move(FVector direction)
 	{
 		if (!battleGrid->bPlayerTurn)
 		{
+			if (bGuardWindowActive)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player Move dodge!."));
+				goto Move;
+			}
+
 			UE_LOG(LogTemp, Warning, TEXT("Not player turn. Cannot move."));
 			return;
 		}
 	}
+
+	Move:
 
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
@@ -314,7 +320,12 @@ void APlayerUnit::Move(FVector direction)
 		currentCameraFOV = maxCameraFOV;
 
 		nextLocation += (direction * moveDistance);
-		mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
+
+		//This is here to giev the player dodge a more visual effect instead of the usual walk direction effect
+		if (!bGuardWindowActive)
+		{
+			mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), nextLocation));
+		}
 
 		//Set grid indices
 		xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
@@ -444,19 +455,15 @@ void APlayerUnit::MoveLeftHold(float val)
 
 void APlayerUnit::RotateLeft()
 {
-	if (bInConversation)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot turn. Player in conversation."));
-		return;
-	}
-
-	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
-	{
-		nextRotation.Yaw -= 90.f;
-	}
+	Rotate(-90.f);
 }
 
 void APlayerUnit::RotateRight()
+{
+	Rotate(90.f);
+}
+
+void APlayerUnit::Rotate(float angle)
 {
 	if (bInConversation)
 	{
@@ -464,9 +471,24 @@ void APlayerUnit::RotateRight()
 		return;
 	}
 
+	if (!battleGrid->bPlayerTurn)
+	{
+		if (bGuardWindowActive)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player rotate dodge!"));
+			ResetGuardWindow();
+			goto Turn;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Cannot turn. Not Player turn."));
+		return;
+	}
+
+Turn:
+
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
-		nextRotation.Yaw += 90.f;
+		nextRotation.Yaw += angle;
 	}
 }
 
@@ -910,4 +932,12 @@ void APlayerUnit::ZoomInOnTarget(AActor* target)
 {
 	selectedUnit = target;
 	currentCameraFOV = cameraFOVAttack;
+}
+
+//Keep in mind that window here means 'period of time', not anything widget related
+void APlayerUnit::ResetGuardWindow()
+{
+	bGuardWindowActive = false;
+	currentGuardWindowTimer = 0.f;
+	widgetGuard->RemoveFromViewport();
 }
