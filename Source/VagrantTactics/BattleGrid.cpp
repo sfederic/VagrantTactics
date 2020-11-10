@@ -111,6 +111,14 @@ void ABattleGrid::Init()
 		allGridActors.Add(gridActor);
 	}
 
+	//Getting all units to ignore for traces
+	TArray<AActor*> outUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+
+	FCollisionQueryParams params;
+	params.AddIgnoredActors(outUnits);
+	params.AddIgnoredActor(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
 	//Populate grid and setup instances
 	for (int x = 0; x < sizeX; x++)
 	{
@@ -129,7 +137,7 @@ void ABattleGrid::Init()
 			transform.SetScale3D(nodeVisibleScale);
 
 			FHitResult hit;
-			FCollisionQueryParams params;
+
 			FVector startHit = node.location + FVector(0.f, 0.f, 1000.f);
 
 			//Grid actor that will update connected node indices later
@@ -312,6 +320,7 @@ void ABattleGrid::ActivateBattle()
 		GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Blue, TEXT("Battle Ended"));
 
 		player->widgetActionPoints->RemoveFromViewport();
+		player->bWeaponUnsheathed = false;
 
 		gridMesh->SetHiddenInGame(true);
 

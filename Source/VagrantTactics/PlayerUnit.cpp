@@ -49,6 +49,26 @@ void APlayerUnit::BeginPlay()
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
 
+	//Setup meshes
+	//TODO: I can never figure out a good way to handle multiple components. 
+	TArray<UActorComponent*> outMeshes;
+	GetComponents(UStaticMeshComponent::StaticClass(), outMeshes);
+	for (UActorComponent* component : outMeshes)
+	{
+		if (component->GetName() == TEXT("Mesh"))
+		{
+			mesh = Cast<UStaticMeshComponent>(component);
+		}
+		else if (component->GetName() == TEXT("Sword"))
+		{
+			meshSword = Cast<UStaticMeshComponent>(component);
+			meshSword->SetVisibility(false);
+		}
+	}
+
+	if (!mesh) { UE_LOG(LogTemp, Warning, TEXT("Main mesh component not set for player")); }
+	if (!meshSword) { UE_LOG(LogTemp, Warning, TEXT("Main mesh component not set for player")); }
+
 	//Setup player spawn point from level entrances
 	//Needs to handle both AEntraceTriggers and APlayerStarts (player starts because of blocked off entraces)
 	/*TArray<AActor*> playerStarts;
@@ -438,6 +458,7 @@ void APlayerUnit::PrimaryAction()
 	//Attack target if weapon unsheathed and not in battle
 	if (bWeaponUnsheathed)
 	{
+		//TODO: Player can't go through doors if weapon is out
 		goto Attack;
 	}
 
@@ -496,7 +517,6 @@ void APlayerUnit::PrimaryAction()
 	}
 
 	//Open doors
-	//TODO: this input setup is getting messy. Is there away to swap out Controllers or something?
 	if (overlappedEntrace)
 	{
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FColor::Black, true, true);
@@ -781,11 +801,13 @@ void APlayerUnit::PreviewBattleGrid()
 	if (gameMode->activeBattleGrid->gridMesh->bHiddenInGame)
 	{
 		bWeaponUnsheathed = true;
+		meshSword->SetVisibility(true);
 		gameMode->activeBattleGrid->ToggleGridOn();
 	}
 	else
 	{
 		bWeaponUnsheathed = false;
+		meshSword->SetVisibility(false);
 		gameMode->activeBattleGrid->ToggleGridOff();
 	}
 }

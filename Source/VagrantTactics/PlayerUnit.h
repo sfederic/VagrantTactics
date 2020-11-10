@@ -120,8 +120,9 @@ public:
 	//INTUITIONS 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
 
-	//COMPONENTS
+	//MESHES
 	UStaticMeshComponent* mesh;
+	UStaticMeshComponent* meshSword;
 
 	ABattleGrid* battleGrid;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite) AActor* selectedUnit;
