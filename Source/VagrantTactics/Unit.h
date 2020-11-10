@@ -50,6 +50,7 @@ public:
 	void UseSkill();
 	void ActivateForBattle();
 	void WindUpAttack();
+	void WindUpSkill();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 

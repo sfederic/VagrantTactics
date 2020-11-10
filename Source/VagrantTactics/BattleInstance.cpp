@@ -75,6 +75,8 @@ void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		player->widgetEnemyTurnOrder = CreateWidget<UUserWidget>(GetWorld(), player->classEnemyTurnOrderWidget);
 		player->widgetEnemyTurnOrder->AddToViewport();
+
+		player->meshSword->SetVisibility(true);
 	}
 
 	box->DestroyComponent();

@@ -66,6 +66,7 @@ public:
 	void MoveToLevel();
 	void ZoomInOnTarget(AActor* target);
 	void ResetGuardWindow();
+	void ActivateGuardWindow(float windUpTime);
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;

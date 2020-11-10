@@ -106,15 +106,22 @@ void AUnit::Tick(float DeltaTime)
 				//Initial melee attack
 				if (Attack())
 				{
-					ShowMovementPath();
+					//ShowMovementPath();
 				}
-				else //If melee doessn't hit, move to skills
+				else //If melee doesn't hit, move to skills
 				{
 					USkillBase* skillToUse = CycleThroughAttackChoices(actorToFocusOn);
 					if (skillToUse)
 					{
 						battleGrid->HideAllNodes();
 						battleGrid->UnhideNodes(attackPathNodes);
+
+						FTimerHandle timerHandle;
+						//TODO: going to have to add attack wind up time to skills eventually
+						GetWorldTimerManager().SetTimer(timerHandle, this, &AUnit::WindUpSkill, attackWindUpTime, false);
+
+						APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+						player->ActivateGuardWindow(attackWindUpTime);
 
 						activeSkill = skillToUse;
 
@@ -123,7 +130,6 @@ void AUnit::Tick(float DeltaTime)
 						battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
 
 						bCurrentlyMoving = false;
-						bTurnFinished = true;
 					}
 				}
 			}
@@ -337,11 +343,11 @@ bool AUnit::Attack()
 					
 					player->currentCameraFOV = player->cameraFOVAttack;
 
-					player->bGuardWindowActive = true;
-					player->guardWindowTimerMax = attackWindUpTime;
-					player->widgetGuard->AddToViewport();
-
+					player->ActivateGuardWindow(attackWindUpTime);
+						
 					bWindingUpAttack = true;
+					bSetToUseSkill = false;
+					bChargingSkill = false;
 
 					return true;
 				}
@@ -450,5 +456,42 @@ void AUnit::WindUpAttack()
 
 	bWindingUpAttack = false;
 	bCurrentlyMoving = false;
+	bSetToUseSkill = false;
+	bChargingSkill = false;
+	bTurnFinished = true;
+}
+
+void AUnit::WindUpSkill()
+{
+	APlayerUnit* player = Cast<APlayerUnit>(actorToFocusOn);
+
+	if (activeSkill)
+	{
+		for (FGridNode* attackNode : attackPathNodes)
+		{
+			if (attackNode->Equals(player->xIndex, player->yIndex))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s skill %s hit."), *GetName(), *activeSkill->GetName());
+
+				UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+
+				int damage = currentAttackPoints - player->guardPoints;
+				if (damage < 0) { damage = 0; }
+				player->currentHealthPoints -= damage;
+
+				break;
+			}
+		}
+	}
+
+	battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
+	battleGrid->HideNodes(attackPathNodes);
+
+	ShowMovementPath();
+
+	bWindingUpAttack = false;
+	bCurrentlyMoving = false;
+	bSetToUseSkill = false;
+	bChargingSkill = false;
 	bTurnFinished = true;
 }

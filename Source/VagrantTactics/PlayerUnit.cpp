@@ -941,3 +941,10 @@ void APlayerUnit::ResetGuardWindow()
 	currentGuardWindowTimer = 0.f;
 	widgetGuard->RemoveFromViewport();
 }
+
+void APlayerUnit::ActivateGuardWindow(float windUpTime)
+{
+	bGuardWindowActive = true;
+	guardWindowTimerMax = windUpTime;
+	widgetGuard->AddToViewport();
+}

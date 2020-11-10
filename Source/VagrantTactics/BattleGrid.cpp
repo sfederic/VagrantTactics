@@ -49,11 +49,11 @@ void ABattleGrid::Tick(float DeltaTime)
 		{
 			if (!allUnits[activeUnitIndex]->bTurnFinished && !allUnits[activeUnitIndex]->bCurrentlyMoving)
 			{
-				if (allUnits[activeUnitIndex]->bSetToUseSkill)
+				/*if (allUnits[activeUnitIndex]->bSetToUseSkill)
 				{
 					allUnits[activeUnitIndex]->UseSkill();
-				}
-				else if (((!allUnits[activeUnitIndex]->bSetToMove) ))
+				}*/
+				if (!allUnits[activeUnitIndex]->bSetToMove)
 				{
 					if (allUnits[activeUnitIndex]->pathNodes.Num() < 1)
 					{
