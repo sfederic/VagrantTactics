@@ -49,6 +49,7 @@ public:
 	void FinishDisplayingSkill();
 	void UseSkill();
 	void ActivateForBattle();
+	void WindUpAttack();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
@@ -80,6 +81,7 @@ public:
 	int movementPathNodeIndex = 0;
 
 	UPROPERTY(EditAnywhere) float moveSpeed;
+	UPROPERTY(EditAnywhere) float attackWindUpTime = 1.f;
 
 	UPROPERTY(EditAnywhere) int turnSpeed;
 
@@ -106,4 +108,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere) bool bChargingSkill;
 	UPROPERTY(EditAnywhere) bool bCanEnterBattle = true;
+	UPROPERTY(VisibleAnywhere) bool bWindingUpAttack = false;
 };

@@ -101,6 +101,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUnitSkillWidget> classUnitSkillWidget;
 	UPROPERTY() UUnitSkillWidget* widgetUnitSkill;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classGuardWidget;
+	UPROPERTY() UUserWidget* widgetGuard;
+
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;
 	UPROPERTY(VisibleAnywhere, Category = "Spells") TSubclassOf<USpellBase> activeSpell;
@@ -115,6 +118,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;
 
 	UPROPERTY(EditAnywhere) int attackPoints;
+	UPROPERTY(EditAnywhere) int guardPoints;
 
 	//TODO: think about moving to GameInstance
 	//INTUITIONS 
@@ -160,4 +164,9 @@ public:
 	UPROPERTY(VisibleAnywhere) AConversationInstance* connectedConversationInstance;
 	UPROPERTY(VisibleAnywhere) bool bInConversation = false;
 	FVector conversationWidgetFocus;
+
+	//GUARDING
+	UPROPERTY(VisibleAnywhere) bool bGuardWindowActive = false;
+	UPROPERTY(VisibleAnywhere) float guardWindowTimerMax;
+	UPROPERTY(VisibleAnywhere) float currentGuardWindowTimer;
 };

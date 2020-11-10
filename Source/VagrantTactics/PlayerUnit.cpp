@@ -144,6 +144,8 @@ void APlayerUnit::BeginPlay()
 	timeOfDayWidget->AddToViewport();
 
 	widgetUnitSkill = CreateWidget<UUnitSkillWidget>(GetWorld(), classUnitSkillWidget);
+
+	widgetGuard = CreateWidget<UUserWidget>(GetWorld(), classGuardWidget);
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -153,6 +155,21 @@ void APlayerUnit::Tick(float DeltaTime)
 	//Set grid indices
 	xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
 	yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
+
+	//Guard window input
+	if (bGuardWindowActive)
+	{
+		if (currentGuardWindowTimer < guardWindowTimerMax)
+		{
+			currentGuardWindowTimer += DeltaTime;
+		}
+		else if (currentGuardWindowTimer > guardWindowTimerMax)
+		{
+			bGuardWindowActive = false;
+			currentGuardWindowTimer = 0.f;
+			widgetGuard->RemoveFromViewport();
+		}
+	}
 
 	//Set different move speeds for battle and exploration
 	float moveSpeed;
@@ -696,12 +713,17 @@ void APlayerUnit::PrimaryAction()
 
 void APlayerUnit::SecondaryAction()
 {
-	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
+	//GUARD
+	if (bGuardWindowActive)
 	{
-		if (currentActionPoints > 20)
-		{
-			currentActionPoints -= 20;
-		}
+		currentActionPoints -= 20;
+
+		guardPoints = 2;
+
+		widgetGuard->RemoveFromViewport();
+
+		bGuardWindowActive = false;
+		currentGuardWindowTimer = 0.f;
 	}
 }
 

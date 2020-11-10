@@ -17,6 +17,7 @@
 #include "HealthbarWidget.h"
 #include "SpeechComponent.h"
 #include "Components/WidgetComponent.h"
+#include "TimerManager.h"
 
 AUnit::AUnit()
 {
@@ -80,7 +81,7 @@ void AUnit::Tick(float DeltaTime)
 	}
 
 	//Movement path logic
-	if (pathNodes.Num() > 0 && bInBattle)
+	if (pathNodes.Num() > 0 && bInBattle && !bWindingUpAttack)
 	{
 		bCurrentlyMoving = true;
 
@@ -96,7 +97,7 @@ void AUnit::Tick(float DeltaTime)
 				yIndex = pathNodes[movementPathNodeIndex]->yIndex;
 				movementPathNodeIndex++;
 			}
-			else if (movementPathNodeIndex >= pathNodes.Num()) //END OF MOVE
+			else if ((movementPathNodeIndex >= pathNodes.Num())) //END OF MOVE
 			{
 				pathNodes.Empty();
 				movementPathNodeIndex = 0;
@@ -118,14 +119,13 @@ void AUnit::Tick(float DeltaTime)
 						activeSkill = skillToUse;
 
 						HighlightUnitOnSkillUse();
+
+						battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
+
+						bCurrentlyMoving = false;
+						bTurnFinished = true;
 					}
 				}
-
-				//Deactive current standing node
-				battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
-
-				bCurrentlyMoving = false;
-				bTurnFinished = true;
 			}
 		}
 	}
@@ -331,11 +331,14 @@ bool AUnit::Attack()
 				{
 					SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), targetNode->location));
 
-					UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+					FTimerHandle timerHandle;
+					GetWorldTimerManager().SetTimer(timerHandle, this, &AUnit::WindUpAttack, attackWindUpTime, false);
+					
+					player->bGuardWindowActive = true;
+					player->guardWindowTimerMax = attackWindUpTime;
+					player->widgetGuard->AddToViewport();
 
-					player->currentHealthPoints -= currentAttackPoints;
-
-					UE_LOG(LogTemp, Warning, TEXT("%s attacked."), *GetName());
+					bWindingUpAttack = true;
 
 					return true;
 				}
@@ -416,4 +419,24 @@ void AUnit::ActivateForBattle()
 			sc->ShowDialogue(true);
 		}
 	}
+}
+
+//This function is to wait for unit attack animation to play out and give player guard chances
+void AUnit::WindUpAttack()
+{
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+	APlayerUnit* player = Cast<APlayerUnit>(actorToFocusOn);
+
+	int damage = currentAttackPoints - player->guardPoints;
+	if (damage < 0) { damage = 0; }
+	player->currentHealthPoints -= damage;
+
+	UE_LOG(LogTemp, Warning, TEXT("%s attacked."), *GetName());
+
+	battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
+
+	bWindingUpAttack = false;
+
+	bCurrentlyMoving = false;
+	bTurnFinished = true;
 }
