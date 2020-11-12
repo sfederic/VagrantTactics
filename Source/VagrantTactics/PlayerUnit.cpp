@@ -569,6 +569,10 @@ void APlayerUnit::PrimaryAction()
 
 		widgetInteract->RemoveFromViewport();
 
+		//Change time of day
+		UMainGameInstance* mainInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		mainInstance->currentTimeOfDay++;
+
 		return;
 	}
 

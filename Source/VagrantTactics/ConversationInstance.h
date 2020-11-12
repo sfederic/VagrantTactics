@@ -27,8 +27,10 @@ public:
 	void ShowNextDialogueLineOnTimer();
 	void ShowNextDialogueLineOnPlayerInput();
 
-	UPROPERTY(EditAnywhere)
-	TArray<AActor*> npcConversationOrder;
+	UPROPERTY(EditAnywhere) TArray<AActor*> npcConversationOrder;
+
+	//Actors to activate based on event or current time of day
+	UPROPERTY(EditAnywhere) TArray<AActor*> actorsToActivate;
 
 	TArray<FConversationTable*> conversationRows;
 
@@ -37,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere) float timeBetweenTextChanges = 4.f;
 	UPROPERTY(EditAnywhere) float initialTimeForConversationStart = 1.0f;
+
+	//Whether to activate instance base on current world time. If 0, always active
+	UPROPERTY(EditAnywhere) int timeOfDayToActivate = 0;
 
 	int conversationOrderIndex = 0;
 

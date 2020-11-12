@@ -9,6 +9,7 @@
 #include "PlayerUnit.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameplayTags.h"
+#include "MainGameInstance.h"
 
 AConversationInstance::AConversationInstance()
 {
@@ -20,6 +21,31 @@ void AConversationInstance::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (timeOfDayToActivate != 0)
+	{
+		if (timeOfDayToActivate != gameInstance->currentTimeOfDay)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s not set to activate at %d time of day."), *GetName(), gameInstance->currentTimeOfDay);
+
+			//Hide actors in scene
+			for (AActor* actor : actorsToActivate)
+			{
+				actor->SetActorHiddenInGame(true);
+			}
+
+			Destroy();
+		}
+		else
+		{
+			//Activate actors in scene
+			for (AActor* actor : actorsToActivate)
+			{
+				actor->SetActorHiddenInGame(false);
+			}
+		}
+	}
+
 	if (conversationTable)
 	{
 		FString contextString;
