@@ -8,6 +8,7 @@
 #include "SpeechWidget.h"
 #include "PlayerUnit.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameplayTags.h"
 
 AConversationInstance::AConversationInstance()
 {
@@ -40,11 +41,15 @@ void AConversationInstance::Tick(float DeltaTime)
 
 void AConversationInstance::ShowNextDialogueLineOnTimer()
 {
+	//TArray<UActorComponent*> speechWidgetComponents = npcConversationOrder[conversationOrderIndex]->GetComponentsByTag(
+	//	UWidgetComponent::StaticClass(), ComponentTags::HealthBar);
+
 	if (conversationOrderIndex >= conversationRows.Num())
 	{
 		if (conversationOrderIndex > 0)
 		{
-			npcConversationOrder[conversationOrderIndex - 1]->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+			UWidgetComponent* speechWidgetComponent = Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex - 1]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+			speechWidgetComponent->SetHiddenInGame(false);
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
@@ -71,15 +76,16 @@ void AConversationInstance::ShowNextDialogueLineOnTimer()
 		//Don't hide previous speech widget if not first 
 		if (conversationOrderIndex > 0)
 		{
-			npcConversationOrder[conversationOrderIndex - 1]->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+			UWidgetComponent* speechWidgetComponent = 
+				Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex - 1]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+			speechWidgetComponent->SetHiddenInGame(true);
 		}
 
-		UWidgetComponent* widgetComponent = 
-			npcConversationOrder[conversationOrderIndex]->FindComponentByClass<UWidgetComponent>();
-		widgetComponent->SetHiddenInGame(false);
+		UWidgetComponent* speechWidgetComponent = 
+			Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+		speechWidgetComponent->SetHiddenInGame(false);
 
-		USpeechWidget* speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
-
+		USpeechWidget* speechWidget = Cast<USpeechWidget>(speechWidgetComponent->GetUserWidgetObject());
 		speechWidget->dialogueLine = conversationRows[conversationOrderIndex]->dialogueLine;
 		speechWidget->speakerName = conversationRows[conversationOrderIndex]->speakerName;
 
@@ -96,7 +102,9 @@ void AConversationInstance::ShowNextDialogueLineOnPlayerInput()
 	{
 		if (conversationOrderIndex > 0)
 		{
-			npcConversationOrder[conversationOrderIndex - 1]->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+			UWidgetComponent* speechWidgetComponent =
+				Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex - 1]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+			speechWidgetComponent->SetHiddenInGame(true);
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
@@ -127,18 +135,20 @@ void AConversationInstance::ShowNextDialogueLineOnPlayerInput()
 		//Don't hide previous speech widget if not first 
 		if (conversationOrderIndex > 0)
 		{
-			npcConversationOrder[conversationOrderIndex - 1]->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(true);
+			UWidgetComponent* speechWidgetComponent =
+				Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex - 1]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+			speechWidgetComponent->SetHiddenInGame(true);
 		}
 
-		UWidgetComponent* widgetComponent =
-			npcConversationOrder[conversationOrderIndex]->FindComponentByClass<UWidgetComponent>();
-		widgetComponent->SetHiddenInGame(false);
+		UWidgetComponent* speechWidgetComponent =
+			Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+		speechWidgetComponent->SetHiddenInGame(false);
 
 		//Set player camera focus on current actor speaking
 		APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		player->conversationWidgetFocus = widgetComponent->GetComponentLocation();
+		player->conversationWidgetFocus = speechWidgetComponent->GetComponentLocation();
 
-		USpeechWidget* speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
+		USpeechWidget* speechWidget = Cast<USpeechWidget>(speechWidgetComponent->GetUserWidgetObject());
 
 		speechWidget->dialogueLine = conversationRows[conversationOrderIndex]->dialogueLine;
 		speechWidget->speakerName = conversationRows[conversationOrderIndex]->speakerName;
