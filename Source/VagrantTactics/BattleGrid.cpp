@@ -154,8 +154,8 @@ void ABattleGrid::Init()
 				AActor* hitActor = hit.GetActor();
 				if (hitActor)
 				{
-					node.bActive = false;
-					transform.SetScale3D(nodeHiddenScale);
+					//node.bActive = false;
+					//transform.SetScale3D(nodeHiddenScale);
 
 					if (hitActor->ActorHasTag(GameplayTags::Player) || hitActor->ActorHasTag(GameplayTags::Unit)
 						|| hitActor->ActorHasTag(GameplayTags::NonObstruct))
@@ -207,8 +207,8 @@ void ABattleGrid::Init()
 			{
 				FHitResult platformHit;
 				FVector startPlatformHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
-				//FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
-				if (GetWorld()->LineTraceSingleByChannel(platformHit, startPlatformHit, transform.GetLocation(), ECC_WorldStatic, params))
+				FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
+				if (GetWorld()->LineTraceSingleByChannel(platformHit, startPlatformHit, endPlatformHit, ECC_WorldStatic, params))
 				{
 					if (platformHit.GetActor())
 					{

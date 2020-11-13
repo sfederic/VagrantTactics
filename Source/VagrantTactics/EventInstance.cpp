@@ -21,6 +21,8 @@ void AEventInstance::BeginPlay()
 		for (AActor* actor : actorsToActivate)
 		{
 			actor->SetActorHiddenInGame(true);
+			actor->SetActorEnableCollision(false);
+			actor->SetActorTickEnabled(false);
 		}
 	}
 	else if (timeOfDayActivation == gameInstance->currentTimeOfDay)
@@ -28,6 +30,8 @@ void AEventInstance::BeginPlay()
 		for (AActor* actor : actorsToActivate)
 		{
 			actor->SetActorHiddenInGame(false);
+			actor->SetActorEnableCollision(true);
+			actor->SetActorTickEnabled(true);
 		}
 	}
 }

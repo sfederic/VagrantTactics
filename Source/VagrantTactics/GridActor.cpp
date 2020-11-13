@@ -47,12 +47,17 @@ void AGridActor::BeginPlay()
 	TArray<UActorComponent*> widgets;
 	GetComponents(UWidgetComponent::StaticClass(), widgets);
 
-	TArray<UActorComponent*> outHealthBar = GetComponentsByTag(UWidgetComponent::StaticClass(), ComponentTags::HealthBar);
+	for (UActorComponent* component : widgets)
+	{
+		if (component->GetName() == TEXT("HealthBar"))
+		{
+			healthbarWidgetComponent = Cast<UWidgetComponent>(component);
+		}
+	}
 
 	//Setup health bar
 	if (bIsDestructible)
 	{
-		healthbarWidgetComponent = Cast<UWidgetComponent>(outHealthBar[0]);
 		if (healthbarWidgetComponent)
 		{
 			healthbarWidgetComponent->SetHiddenInGame(true);

@@ -127,10 +127,12 @@ void AUnit::Tick(float DeltaTime)
 
 						HighlightUnitOnSkillUse();
 
-						battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
-
-						bCurrentlyMoving = false;
+						return;
 					}
+
+					battleGrid->HideNode(battleGrid->GetNode(xIndex, yIndex));
+					bCurrentlyMoving = false;
+					bTurnFinished = true;
 				}
 			}
 		}
