@@ -356,9 +356,12 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		FGridNode* node = &rows[currentX + 1].columns[currentY];
 		if (!node->bClosed && node->bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
-			outNodes.Add(node);
+			if (node->location.Z < (centerNode->location.Z + 100.f))
+			{
+				node->bClosed = true;
+				node->parentNode = centerNode;
+				outNodes.Add(node);
+			}
 		}
 	}
 
@@ -368,9 +371,12 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		FGridNode* node = &rows[currentX - 1].columns[currentY];
 		if (!node->bClosed && node->bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
-			outNodes.Add(node);
+			if (node->location.Z < (centerNode->location.Z + 100.f))
+			{
+				node->bClosed = true;
+				node->parentNode = centerNode;
+				outNodes.Add(node);
+			}
 		}
 	}
 
@@ -380,9 +386,12 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		FGridNode* node = &rows[currentX].columns[currentY + 1];
 		if (!node->bClosed && node->bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
-			outNodes.Add(node);
+			if (node->location.Z < (centerNode->location.Z + 100.f))
+			{
+				node->bClosed = true;
+				node->parentNode = centerNode;
+				outNodes.Add(node);
+			}
 		}
 	}
 
@@ -392,9 +401,12 @@ void ABattleGrid::GetNeighbouringNodes(FGridNode* centerNode, TArray<FGridNode*>
 		FGridNode* node = &rows[currentX].columns[currentY - 1];
 		if (!node->bClosed && node->bActive)
 		{
-			node->bClosed = true;
-			node->parentNode = centerNode;
-			outNodes.Add(node);
+			if (node->location.Z < (centerNode->location.Z + 100.f))
+			{
+				node->bClosed = true;
+				node->parentNode = centerNode;
+				outNodes.Add(node);
+			}
 		}
 	}
 }

@@ -74,6 +74,7 @@ void AGridActor::Tick(float DeltaTime)
 	xIndex = FMath::RoundToInt(GetActorLocation().X / LevelGridValues::gridUnitDistance);
 	yIndex = FMath::RoundToInt(GetActorLocation().Y / LevelGridValues::gridUnitDistance);
 
+	//TODO: I don't think this fits well here. Would be better to call in an event-esque fashion somewhere else (Player)
 	if (bIsDestructible)
 	{
 		if (currentHealth <= 0)
@@ -130,17 +131,24 @@ void AGridActor::Tick(float DeltaTime)
 
 			//Check for Intuition
 			UIntuitionComponent* intuitionComponent = FindComponentByClass<UIntuitionComponent>();
-			if (intuitionComponent)
+			if (intuitionComponent && intuitionComponent->intuitionClass)
 			{
 				UIntuition* newIntuition = NewObject<UIntuition>(player, intuitionComponent->intuitionClass);
-				IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(newIntuition);
-				if (intuitionInterface)
+				if (newIntuition)
 				{
-					intuitionInterface->AddIntuition();
-				}
+					IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(newIntuition);
+					if (intuitionInterface)
+					{
+						intuitionInterface->AddIntuition();
 
-				player->intuitions.Add(newIntuition);
-				GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+						player->intuitions.Add(newIntuition);
+						GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+					}
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Intuition class on component not set in %s"), *GetName());
 			}
 
 			bIsDestructible = false;

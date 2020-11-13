@@ -115,9 +115,6 @@ void APlayerUnit::BeginPlay()
 		controller->bShowMouseCursor = true;
 	}
 
-	mesh = FindComponentByClass<UStaticMeshComponent>();
-	check(mesh);
-
 	//Main camera setup
 	camera = FindComponentByClass<UCameraComponent>();
 	cameraFocusRotation = camera->GetComponentRotation();
@@ -278,7 +275,7 @@ void APlayerUnit::Move(FVector direction)
 		{
 			if (bGuardWindowActive)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Player Move dodge!."));
+				UE_LOG(LogTemp, Warning, TEXT("Player dodge!"));
 				goto Move;
 			}
 
@@ -371,7 +368,15 @@ void APlayerUnit::Move(FVector direction)
 		}
 
 		FGridNode* nextNodeToMoveTo = battleGrid->GetNode(xIndex, yIndex);
-		if (!nextNodeToMoveTo->bActive)
+
+		//Check next node height
+		if (nextNodeToMoveTo->location.Z >= (GetActorLocation().Z + 100.f))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Node to move to too high."));
+			nextLocation = GetActorLocation();
+			return;
+		}
+		else if (!nextNodeToMoveTo->bActive)
 		{
 			nextLocation = GetActorLocation();
 			UE_LOG(LogTemp, Warning, TEXT("Player can't move into inactive node"));
