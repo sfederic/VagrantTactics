@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerUnit.h"
 #include "InteractWidget.h"
+#include "MainGameInstance.h"
 
 AEntranceTrigger::AEntranceTrigger()
 {
@@ -32,13 +33,30 @@ void AEntranceTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	if (player)
 	{
-		player->overlappedEntrace = this;
-		if (player->widgetInteract)
+		//Key in inventory
+		UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		if (gameInstance->entraceKeys.Contains(entranceKey) || (entranceKey == TEXT("")))
 		{
-			if (!player->widgetInteract->IsInViewport())
+			if (player->widgetInteract)
 			{
-				player->widgetInteract->interactText = FText::FromString(TEXT("Open"));
-				player->widgetInteract->AddToViewport();
+				if (!player->widgetInteract->IsInViewport())
+				{
+					player->overlappedEntrace = this;
+
+					player->widgetInteract->interactText = FText::FromString(TEXT("Open"));
+					player->widgetInteract->AddToViewport();
+				}
+			}
+		}
+		else //Entrance is locked
+		{
+			if (player->widgetInteract)
+			{
+				if (!player->widgetInteract->IsInViewport())
+				{
+					player->widgetInteract->interactText = FText::FromString(TEXT("Locked"));
+					player->widgetInteract->AddToViewport();
+				}
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "EntranceKeys.h"
 #include "EntranceTrigger.generated.h"
 
 class UBoxComponent;
@@ -32,4 +33,7 @@ public:
 	UBoxComponent* box;
 
 	UPROPERTY(EditAnywhere) FName connectedLevel;
+
+	//Key to entrace. Held in GameInstance
+	UPROPERTY(EditAnywhere) FName entranceKey;
 };

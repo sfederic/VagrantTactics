@@ -37,6 +37,8 @@ public:
 	//Details once player interacts with object
 	UPROPERTY(EditAnywhere) FText detailsText;
 
+	UPROPERTY(EditAnywhere) FName keyToPickup;
+
 	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
 	UPROPERTY(EditAnywhere) AActor* connectedActor;
 

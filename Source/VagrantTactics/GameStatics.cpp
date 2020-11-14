@@ -10,6 +10,36 @@ AGridActor* GameStatics::GetActorAtGridIndex(int x, int y)
 	return nullptr;
 }
 
+UMainGameInstance* GameStatics::GetMainInstance(const UWorld* world)
+{
+	UGameInstance* instance = UGameplayStatics::GetGameInstance(world);
+	if (instance)
+	{
+		UMainGameInstance* mainInstance = Cast<UMainGameInstance>(instance);
+		if (mainInstance)
+		{
+			return mainInstance;
+		}
+	}
+
+	return nullptr;
+}
+
+APlayerUnit* GetPlayer(const UWorld* world)
+{
+	APawn* playerPawn = UGameplayStatics::GetPlayerPawn(world, playerIndex);
+	if (playerPawn)
+	{
+		APlayerUnit* player = Cast<APlayerUnit>(playerPawn);
+		if (player)
+		{
+			return player;
+		}
+	}
+
+	return nullptr;
+}
+
 //TODO: gamemode constantly returning null. Had to go back to using older approach per actor
 /*ABattleGrid* GameStatics::GetActiveBattleGrid()
 {
@@ -21,3 +51,5 @@ AGridActor* GameStatics::GetActorAtGridIndex(int x, int y)
 	}
 	return nullptr;
 }*/
+
+

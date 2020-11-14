@@ -610,6 +610,13 @@ void APlayerUnit::PrimaryAction()
 					return;
 				}
 			}
+			else 
+			{
+				if (overlappedInteractTrigger->keyToPickup != TEXT(""))
+				{
+					UE_LOG(LogTemp, Waning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
+				}
+			}
 		}
 	}
 
