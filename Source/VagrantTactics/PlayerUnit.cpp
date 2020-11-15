@@ -30,6 +30,7 @@
 #include "UnitSkillWidget.h"
 #include "NPCUnit.h"
 #include "ConversationInstance.h"
+#include "GameStatics.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -612,9 +613,13 @@ void APlayerUnit::PrimaryAction()
 			}
 			else 
 			{
+				//Add entrace key to inventory
 				if (overlappedInteractTrigger->keyToPickup != TEXT(""))
 				{
-					UE_LOG(LogTemp, Waning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
+					UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
+					gameInstance->entraceKeys.Add(overlappedInteractTrigger->keyToPickup);
+					UE_LOG(LogTemp, Warning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
+					return;
 				}
 			}
 		}
@@ -676,8 +681,18 @@ void APlayerUnit::PrimaryAction()
 			{
 				//if (battleGrid->bBattleActive)
 				{
+					//Deal damage and stress to unit
 					gridActor->currentHealth -= attackPoints;
 					currentActionPoints -= costToAttack;
+					AUnit* unit = Cast<AUnit>(gridActor);
+					if(unit)
+					{
+						//TODO: don't know if player will be able to deal more stress damage somehow
+						if (unit->currentStressPoints < unit->maxStressPoints)
+						{
+							unit->currentStressPoints += 1;
+						}
+					}
 
 					currentCameraFOV = cameraFOVAttack;
 

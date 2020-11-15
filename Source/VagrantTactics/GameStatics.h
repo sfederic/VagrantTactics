@@ -14,6 +14,4 @@ public:
 	//static ABattleGrid* GetActiveBattleGrid();
 	static UMainGameInstance* GetMainInstance(const UWorld* world);
 	static APlayerUnit* GetPlayer(const UWorld* world);
-
-	const int32 playerIndex = 0;
 };

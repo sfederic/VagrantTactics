@@ -51,6 +51,7 @@ public:
 	void ActivateForBattle();
 	void WindUpAttack();
 	void WindUpSkill();
+	virtual void ActivateStress();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
@@ -76,7 +77,7 @@ public:
 	UPROPERTY(EditAnywhere) EUnitState unitState;
 
 	//For displaying enemy name on UI widgets
-	UPROPERTY(EditAnywhere, BlueprintReadOnly) FText unitName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText unitName;
 
 	FVector nextMoveLocation;
 	int movementPathNodeIndex = 0;
@@ -88,6 +89,9 @@ public:
 
 	UPROPERTY(EditAnywhere) int maxMovementPoints;
 	UPROPERTY(VisibleAnywhere) int currentMovementPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) int maxStressPoints;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) int currentStressPoints = 0;
 
 	UPROPERTY(EditAnywhere) int maxAttackDistancePoints;
 	UPROPERTY(VisibleAnywhere) int currentAttackDistancePoints;

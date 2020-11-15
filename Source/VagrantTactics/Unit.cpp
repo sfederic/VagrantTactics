@@ -497,3 +497,9 @@ void AUnit::WindUpSkill()
 	bChargingSkill = false;
 	bTurnFinished = true;
 }
+
+//Effect to activate when unit hits max stress
+void AUnit::ActivateStress()
+{
+	
+}

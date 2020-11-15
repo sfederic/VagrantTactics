@@ -27,7 +27,7 @@ UMainGameInstance* GameStatics::GetMainInstance(const UWorld* world)
 
 APlayerUnit* GetPlayer(const UWorld* world)
 {
-	APawn* playerPawn = UGameplayStatics::GetPlayerPawn(world, playerIndex);
+	APawn* playerPawn = UGameplayStatics::GetPlayerPawn(world, 0);
 	if (playerPawn)
 	{
 		APlayerUnit* player = Cast<APlayerUnit>(playerPawn);

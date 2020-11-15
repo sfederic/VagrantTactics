@@ -19,10 +19,12 @@ void AVagrantTacticsGameModeBase::StartPlay()
 	//Get BattleGrid
 	TArray<AActor*> outBattleGrid;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABattleGrid::StaticClass(), outBattleGrid);
-	check(outBattleGrid.Num() == 1); //Make sure there's only one grid per level
-	activeBattleGrid = Cast<ABattleGrid>(outBattleGrid[0]);
-
-	activeBattleGrid->Init();
+	//check(outBattleGrid.Num() == 1); //Make sure there's only one grid per level
+	if (outBattleGrid.Num() > 0)
+	{
+		activeBattleGrid = Cast<ABattleGrid>(outBattleGrid[0]);
+		activeBattleGrid->Init();
+	}
 
 	//Get all GridActors in level
 	TArray<AActor*> outGridActors;
