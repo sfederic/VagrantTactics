@@ -67,6 +67,7 @@ public:
 	void ZoomInOnTarget(AActor* target);
 	void ResetGuardWindow();
 	void ActivateGuardWindow(float windUpTime);
+	void WorldReset();
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -106,6 +107,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classGuardWidget;
 	UPROPERTY() UUserWidget* widgetGuard;
+
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classDeathWidget;
+	UPROPERTY() UUserWidget* widgetDeath;
 
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;

@@ -154,6 +154,16 @@ void APlayerUnit::Tick(float DeltaTime)
 	xIndex = FMath::RoundToInt(nextLocation.X / LevelGridValues::gridUnitDistance);
 	yIndex = FMath::RoundToInt(nextLocation.Y / LevelGridValues::gridUnitDistance);
 
+	//Check for death
+	if (currentHealthPoints <= 0)
+	{
+		FTimerHandle timerHandle;
+		widgetDeath = CreateWidget<UUserWidget>(GetWorld(), classDeathWidget);
+		widgetDeath->AddToViewport();
+		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::WorldReset, 3.0f, false);
+		this->SetActorTickEnabled(false);
+	}
+
 	//Guard window input
 	if (bGuardWindowActive)
 	{
@@ -585,6 +595,15 @@ void APlayerUnit::PrimaryAction()
 	//Check for interaction
 	if (overlappedInteractTrigger)
 	{
+		//Add entrace key to inventory
+		if (overlappedInteractTrigger->keyToPickup != TEXT(""))
+		{
+			UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
+			gameInstance->entraceKeys.Add(overlappedInteractTrigger->keyToPickup);
+			UE_LOG(LogTemp, Warning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
+			return;
+		}
+
 		if (bCanInteractWithTriggersConnection)
 		{
 			//interact widgets
@@ -608,17 +627,6 @@ void APlayerUnit::PrimaryAction()
 
 					selectedUnit = nullptr;
 					bHoldingItem = true;
-					return;
-				}
-			}
-			else 
-			{
-				//Add entrace key to inventory
-				if (overlappedInteractTrigger->keyToPickup != TEXT(""))
-				{
-					UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
-					gameInstance->entraceKeys.Add(overlappedInteractTrigger->keyToPickup);
-					UE_LOG(LogTemp, Warning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
 					return;
 				}
 			}
@@ -672,7 +680,7 @@ void APlayerUnit::PrimaryAction()
 		FHitResult hit;
 		FCollisionQueryParams hitParams;
 		hitParams.AddIgnoredActor(this);
-		//TODO: cache mesh below 
+		//TODO: This trace is junk. need to find a way to attack based on node and mesh direction
 		FVector endHit = GetActorLocation() + (FindComponentByClass<UStaticMeshComponent>()->GetForwardVector() * moveDistance);
 		if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
 		{
@@ -691,6 +699,11 @@ void APlayerUnit::PrimaryAction()
 						if (unit->currentStressPoints < unit->maxStressPoints)
 						{
 							unit->currentStressPoints += 1;
+							if (unit->currentStressPoints >= unit->maxStressPoints)
+							{
+								//TODO: add an interface here
+								unit->ActivateStress();
+							}
 						}
 					}
 
@@ -978,4 +991,10 @@ void APlayerUnit::ActivateGuardWindow(float windUpTime)
 	bGuardWindowActive = true;
 	guardWindowTimerMax = windUpTime;
 	widgetGuard->AddToViewport();
+}
+
+//Reset world on player death or time of day end
+void APlayerUnit::WorldReset()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("StartingStatue_Map"));
 }

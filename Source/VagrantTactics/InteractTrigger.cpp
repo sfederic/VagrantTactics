@@ -33,10 +33,6 @@ void AInteractTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	player->overlappedInteractTrigger = this;
-
-	//Older code. Now in Player's Tick()
-	//player->widgetInteract->interactText = interactText;
-	//player->widgetInteract->AddToViewport();
 }
 
 void AInteractTrigger::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

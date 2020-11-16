@@ -501,5 +501,5 @@ void AUnit::WindUpSkill()
 //Effect to activate when unit hits max stress
 void AUnit::ActivateStress()
 {
-	
+
 }
