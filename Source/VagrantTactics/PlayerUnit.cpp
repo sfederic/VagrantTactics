@@ -684,8 +684,9 @@ void APlayerUnit::PrimaryAction()
 		FHitResult hit;
 		FCollisionQueryParams hitParams;
 		hitParams.AddIgnoredActor(this);
-		//TODO: This trace is junk. need to find a way to attack based on node and mesh direction
-		FVector endHit = GetActorLocation() + (FindComponentByClass<UStaticMeshComponent>()->GetForwardVector() * moveDistance);
+		FVector endHit = GetActorLocation() + (mesh->GetForwardVector() * moveDistance);
+
+		//TODO: This trace is junk. need to find a way to attack based on node and mesh directiom
 		if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
 		{
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
@@ -939,7 +940,6 @@ void APlayerUnit::Cancel()
 
 void APlayerUnit::ShowIntuitions()
 {
-	//TODO: Keep an eye on this. Don't know how UE handles Widgets with GC
 	if (intuitionsWidget == nullptr)
 	{
 		intuitionsWidget = CreateWidget<UUserWidget>(GetWorld(), classIntuitionsWidget);
