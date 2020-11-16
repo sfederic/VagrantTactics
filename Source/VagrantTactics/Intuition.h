@@ -19,8 +19,11 @@ class VAGRANTTACTICS_API UIntuition : public UObject, public IIntuitionInterface
 {
 	GENERATED_BODY()
 public:
-	~UIntuition();
 	virtual void AddIntuition() override;
+
+	//text to show when hovering over the widget item
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText tooltipText;
 
 	//What to show in UI when browsing intuitions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -29,4 +32,7 @@ public:
 	//Just a string to ID the intuition for checks
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName intuitonID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* tooltipImage;
 };
