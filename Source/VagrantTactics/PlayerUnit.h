@@ -68,6 +68,7 @@ public:
 	void ResetGuardWindow();
 	void ActivateGuardWindow(float windUpTime);
 	void WorldReset();
+	void AddIntuition(UIntuition* intuitionToAdd);
 
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -127,9 +128,8 @@ public:
 	UPROPERTY(EditAnywhere) int attackPoints;
 	UPROPERTY(EditAnywhere) int guardPoints;
 
-	//TODO: think about moving to GameInstance
 	//INTUITIONS 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
 
 	//MESHES
 	UStaticMeshComponent* mesh;

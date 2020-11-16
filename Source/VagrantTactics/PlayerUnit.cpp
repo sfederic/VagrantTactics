@@ -31,6 +31,7 @@
 #include "NPCUnit.h"
 #include "ConversationInstance.h"
 #include "GameStatics.h"
+#include "Intuition.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -42,6 +43,9 @@ APlayerUnit::APlayerUnit()
 void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//Get all intuitions
+	intuitions = GameStatics::GetMainInstance(GetWorld())->intuitions;
 
 	//Opening camera fadein
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 1.f, FColor::Black, true, true);
@@ -997,4 +1001,15 @@ void APlayerUnit::ActivateGuardWindow(float windUpTime)
 void APlayerUnit::WorldReset()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), TEXT("StartingStatue_Map"));
+}
+
+void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
+{
+	intuitions.Add(intuitionToAdd);
+
+	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
+
+	UMainGameInstance* gameInstace = GameStatics::GetMainInstance(GetWorld());
+	gameInstace->intuitions = intuitions;
 }

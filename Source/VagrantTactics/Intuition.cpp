@@ -6,3 +6,8 @@ void UIntuition::AddIntuition()
 {
 
 }
+
+UIntuition::~UIntuition()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s deleted."), *GetName());
+}

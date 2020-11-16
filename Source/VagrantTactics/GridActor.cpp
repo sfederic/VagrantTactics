@@ -15,6 +15,7 @@
 #include "VagrantTacticsGameModeBase.h"
 #include "IntuitionComponent.h"
 #include "BattleInstance.h"
+#include "GameStatics.h"
 
 void AGridActor::AddIntuition()
 {
@@ -133,16 +134,16 @@ void AGridActor::Tick(float DeltaTime)
 			UIntuitionComponent* intuitionComponent = FindComponentByClass<UIntuitionComponent>();
 			if (intuitionComponent && intuitionComponent->intuitionClass)
 			{
-				UIntuition* newIntuition = NewObject<UIntuition>(player, intuitionComponent->intuitionClass);
+				UIntuition* newIntuition = NewObject<UIntuition>(GameStatics::GetMainInstance(GetWorld()), intuitionComponent->intuitionClass);
 				if (newIntuition)
 				{
+					newIntuition->AddToRoot();
+
 					IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(newIntuition);
 					if (intuitionInterface)
 					{
 						intuitionInterface->AddIntuition();
-
-						player->intuitions.Add(newIntuition);
-						GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+						player->AddIntuition(newIntuition);
 					}
 				}
 			}

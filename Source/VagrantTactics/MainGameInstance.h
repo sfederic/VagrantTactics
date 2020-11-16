@@ -7,6 +7,8 @@
 #include "EntranceKeys.h"
 #include "MainGameInstance.generated.h"
 
+class UIntuition;
+
 //For handling in-game time and intuitions
 UCLASS()
 class VAGRANTTACTICS_API UMainGameInstance : public UGameInstance
@@ -22,4 +24,7 @@ public:
 	int currentTimeOfDay;
 
 	UPROPERTY() TArray<FName> entraceKeys;
+
+	//there's a copy of all intuitions on player too, here for saving purposes
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TArray<UIntuition*> intuitions;
 };
