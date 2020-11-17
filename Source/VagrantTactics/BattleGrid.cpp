@@ -133,19 +133,20 @@ void ABattleGrid::Init()
 			node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, 0.f);
 			node.bActive = true;
 
+			//NOTE: careful with node.location and transform.GetLocation(). 0 is centered, transform has -50.f offset
+
 			FTransform transform;
 			transform.SetLocation(FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, -LevelGridValues::nodeHeightOffset));
 			transform.SetScale3D(nodeVisibleScale);
 
 			FHitResult hit;
-
-			FVector startHit = node.location + FVector(0.f, 0.f, 1000.f);
+			FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
 
 			//Grid actor that will update connected node indices later
 			AGridActor* gridActorToUpdate = nullptr;
 
 			//Get the base foundation of the grid (lowest level)
-			if(GetWorld()->LineTraceSingleByChannel(hit, startHit, node.location, ECC_WorldStatic, params))
+			if(GetWorld()->LineTraceSingleByChannel(hit, startHit, transform.GetLocation(), ECC_WorldStatic, params))
 			{
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
@@ -157,9 +158,6 @@ void ABattleGrid::Init()
 				AActor* hitActor = hit.GetActor();
 				if (hitActor)
 				{
-					//node.bActive = false;
-					//transform.SetScale3D(nodeHiddenScale);
-
 					if (hitActor->ActorHasTag(GameplayTags::Player) || hitActor->ActorHasTag(GameplayTags::Unit)
 						|| hitActor->ActorHasTag(GameplayTags::NonObstruct))
 					{
@@ -176,27 +174,13 @@ void ABattleGrid::Init()
 				}
 			}
 
-			//Check for any obstacles on top of base via box sweep
-			/*if (GetWorld()->SweepSingleByChannel(hit, startHit, node.location, FQuat::Identity,
-				ECC_WorldStatic, FCollisionShape::MakeBox(FVector(40.f))))
-			{
-				if (hit.GetActor())
-				{
-					if (hit.GetActor()->ActorHasTag(GameplayTags::Player))
-					{
-						node.bActive = true;
-						transform.SetScale3D(nodeVisibleScale);
-					}
-				}
-			}*/
-
+			//Grid Actors
 			for(AGridActor* gridActor : allGridActors)
 			{
 				if ((gridActor->xIndex == x) && (gridActor->yIndex == y))
 				{
 					if (!gridActor->Tags.Contains(GameplayTags::Player))
 					{
-						//Setting the scale for the instanced is the only way for now to disable their collision and visibility.
 						transform.SetScale3D(nodeHiddenScale);
 						node.bActive = false;
 
@@ -206,35 +190,8 @@ void ABattleGrid::Init()
 				}
 			}
 
-			//Deal with platforms and holes in floor
-			{
-				FHitResult platformHit;
-				FVector startPlatformHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
-				FVector endPlatformHit = transform.GetLocation() - FVector(0.f, 0.f, -200.f);
-				if (GetWorld()->LineTraceSingleByChannel(platformHit, startPlatformHit, endPlatformHit, ECC_WorldStatic, params))
-				{
-					if (platformHit.GetActor())
-					{
-						if (platformHit.GetActor()->Tags.Contains(GameplayTags::Platform))
-						{
-							transform.SetLocation(platformHit.ImpactPoint + FVector(0.f, 0.f, 5.f));
-							transform.SetScale3D(nodeVisibleScale);
-							node.location = transform.GetLocation() + FVector(0.f, 0.f, LevelGridValues::nodeHeightOffset);
-							node.bActive = true;
-						}
-					}
-				}
-				else
-				{
-					//Hole in level floor
-					/*transform.SetLocation(FVector((float)x, (float)y, 0.f));
-					transform.SetScale3D(nodeHiddenScale);
-					node.location = transform.GetLocation();
-					node.bActive = false;*/
-				}
-			}
 
-
+			//Check for actors larger than 1x1x1
 			if (hit.GetActor())
 			{
 				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
@@ -258,10 +215,10 @@ void ABattleGrid::Init()
 				transform.SetScale3D(nodeHiddenScale);
 			}
 
-
+			//Grid node mesh instance
 			int32 instancedMeshIndex = gridMesh->AddInstance(transform);
 
-
+			//Update actor indices
 			if (gridActorToUpdate)
 			{
 				gridActorToUpdate->connectedNodeIndices.Add(instancedMeshIndex);
