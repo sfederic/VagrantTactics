@@ -41,7 +41,8 @@ public:
 	UPROPERTY(EditAnywhere) float initialTimeForConversationStart = 1.0f;
 
 	//Whether to activate instance base on current world time. If 0, always active
-	UPROPERTY(EditAnywhere) int timeOfDayToActivate = 0;
+	UPROPERTY(EditAnywhere) int hourToActivate = 0;
+	UPROPERTY(EditAnywhere) int minuteToActivate = 0;
 
 	int conversationOrderIndex = 0;
 

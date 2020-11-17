@@ -16,7 +16,7 @@ void AEventInstance::BeginPlay()
 	
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if (timeOfDayActivation != gameInstance->currentTimeOfDay)
+	if (!gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
 	{
 		for (AActor* actor : actorsToActivate)
 		{
@@ -25,7 +25,7 @@ void AEventInstance::BeginPlay()
 			actor->SetActorTickEnabled(false);
 		}
 	}
-	else if (timeOfDayActivation == gameInstance->currentTimeOfDay)
+	else if (gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
 	{
 		for (AActor* actor : actorsToActivate)
 		{

@@ -591,7 +591,7 @@ void APlayerUnit::PrimaryAction()
 
 		//Change time of day
 		UMainGameInstance* mainInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		mainInstance->currentTimeOfDay++;
+		mainInstance->ProgressTimeOfDay();
 
 		return;
 	}

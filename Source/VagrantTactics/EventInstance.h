@@ -24,7 +24,8 @@ public:
 	UPROPERTY(EditAnywhere) TArray<AActor*> actorsToActivate;
 
 	//If 0, always active;
-	UPROPERTY(EditAnywhere) int timeOfDayActivation = 0;
+	UPROPERTY(EditAnywhere) int hourToActivate = 0;
+	UPROPERTY(EditAnywhere) int minuteToActivate = 0;
 
 	//A generic bool that just serves a link
 	UPROPERTY(EditAnywhere) bool bActivate;

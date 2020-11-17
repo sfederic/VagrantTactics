@@ -16,12 +16,17 @@ class VAGRANTTACTICS_API UMainGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	UMainGameInstance();
+	bool CheckTimeOfDayActivation(int hour, int minute);
+	void ProgressTimeOfDay();
 
 	FName previousLevelMovedFrom;
 
 	//TODO: figure out whether time is constantly incrementing (Majora's Mask) or increments when an event occurs/finishes.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int currentTimeOfDay;
+	int currentHour;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int currentMinute;
 
 	UPROPERTY() TArray<FName> entraceKeys;
 

@@ -22,11 +22,11 @@ void AConversationInstance::BeginPlay()
 	Super::BeginPlay();
 	
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	if (timeOfDayToActivate != 0)
+	if (hourToActivate != 0)
 	{
-		if (timeOfDayToActivate != gameInstance->currentTimeOfDay)
+		if ((hourToActivate != gameInstance->currentHour) && (minuteToActivate != gameInstance->currentMinute))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s not set to activate at %d time of day."), *GetName(), gameInstance->currentTimeOfDay);
+			UE_LOG(LogTemp, Warning, TEXT("%s not set to activate at %d : %d time of day."), *GetName(), gameInstance->currentHour, gameInstance->currentMinute);
 
 			//Hide actors in scene
 			for (AActor* actor : actorsToActivate)
