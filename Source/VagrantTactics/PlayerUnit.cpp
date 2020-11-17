@@ -32,6 +32,7 @@
 #include "ConversationInstance.h"
 #include "GameStatics.h"
 #include "Intuition.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -148,6 +149,9 @@ void APlayerUnit::BeginPlay()
 	widgetUnitSkill = CreateWidget<UUnitSkillWidget>(GetWorld(), classUnitSkillWidget);
 
 	widgetGuard = CreateWidget<UUserWidget>(GetWorld(), classGuardWidget);
+
+	widgetDebugControls = CreateWidget<UUserWidget>(GetWorld(), classDebugControlsWidget);
+	widgetDebugControls->AddToViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -514,6 +518,11 @@ Turn:
 
 void APlayerUnit::PrimaryAction()
 {
+	if (overlappedSavePoint)
+	{
+
+	}
+
 	//Attack target if weapon unsheathed and not in battle
 	if (bWeaponUnsheathed)
 	{
@@ -1000,7 +1009,12 @@ void APlayerUnit::ActivateGuardWindow(float windUpTime)
 //Reset world on player death or time of day end
 void APlayerUnit::WorldReset()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("StartingStatue_Map"));
+	bGameOver = true;
+
+	UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+
+	widgetIntuitionTransfer = CreateWidget<UUserWidget>(GetWorld(), classIntuitionTransfer);
+	widgetIntuitionTransfer->AddToViewport();
 }
 
 void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)

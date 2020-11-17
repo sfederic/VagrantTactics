@@ -23,6 +23,7 @@ class UStaticMeshComponent;
 class APickupItem;
 class UUnitSkillWidget;
 class AConversationInstance;
+class ASavePoint;
 
 //Player class.
 UCLASS()
@@ -112,6 +113,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classDeathWidget;
 	UPROPERTY() UUserWidget* widgetDeath;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classDebugControlsWidget;
+	UPROPERTY() UUserWidget* widgetDebugControls;
+
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classIntuitionTransfer;
+	UPROPERTY() UUserWidget* widgetIntuitionTransfer;
+
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;
 	UPROPERTY(VisibleAnywhere, Category = "Spells") TSubclassOf<USpellBase> activeSpell;
@@ -120,6 +127,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Overlaps") AEntranceTrigger* overlappedEntrace;
 	UPROPERTY(VisibleAnywhere, Category = "Overlaps") AInteractTrigger* overlappedInteractTrigger;
 	UPROPERTY(VisibleAnywhere, Category = "Overlaps") APickupItem* overlappedPickupItem;
+	ASavePoint* overlappedSavePoint;
 
 	//AP COSTS
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToAttack;
@@ -130,6 +138,8 @@ public:
 
 	//INTUITIONS 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
+	UPROPERTY(BlueprintReadOnly) TArray<UIntuition*> intuitionsToCarryOver;
+	UPROPERTY(BlueprintReadOnly) int maxIntuitionsToCarryOver = 4;
 
 	//MESHES
 	UStaticMeshComponent* mesh;
@@ -176,4 +186,6 @@ public:
 	UPROPERTY(VisibleAnywhere) bool bGuardWindowActive = false;
 	UPROPERTY(VisibleAnywhere) float guardWindowTimerMax;
 	UPROPERTY(VisibleAnywhere) float currentGuardWindowTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) bool bGameOver = false;
 };
