@@ -137,9 +137,8 @@ public:
 	UPROPERTY(EditAnywhere) int guardPoints;
 
 	//INTUITIONS 
+	//Only for debug purposes, main intuition handling is in game isntance
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
-	UPROPERTY(BlueprintReadOnly) TArray<UIntuition*> intuitionsToCarryOver;
-	UPROPERTY(BlueprintReadOnly) int maxIntuitionsToCarryOver = 4;
 
 	//MESHES
 	UStaticMeshComponent* mesh;

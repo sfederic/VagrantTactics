@@ -18,6 +18,7 @@ public:
 	UMainGameInstance();
 	bool CheckTimeOfDayActivation(int hour, int minute);
 	void ProgressTimeOfDay();
+	UFUNCTION(BlueprintCallable) void CarryOverIntuitions();
 
 	FName previousLevelMovedFrom;
 
@@ -31,5 +32,11 @@ public:
 	UPROPERTY() TArray<FName> entraceKeys;
 
 	//there's a copy of all intuitions on player too, here for saving purposes
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TArray<UIntuition*> intuitions;
+	UPROPERTY(BlueprintReadOnly) TArray<UIntuition*> intuitions;
+
+	UPROPERTY(BlueprintReadOnly) TArray<UIntuition*> intuitionsToCarryOver;
+
+	UPROPERTY(BlueprintReadOnly) int maxIntuitionsToCarryOver = 4;
+
+	bool bGameOver;
 };

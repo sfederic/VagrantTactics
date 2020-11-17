@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MainGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerUnit.h"
 
 UMainGameInstance::UMainGameInstance()
 {
@@ -31,4 +33,10 @@ void UMainGameInstance::ProgressTimeOfDay()
 		currentHour++;
 		currentMinute = 0;
 	}
+}
+
+void UMainGameInstance::CarryOverIntuitions()
+{
+	bGameOver = true;
+	intuitions = intuitionsToCarryOver;
 }

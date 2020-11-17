@@ -45,8 +45,11 @@ void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Get all intuitions
-	intuitions = GameStatics::GetMainInstance(GetWorld())->intuitions;
+	//Get all intuitions on reset
+	UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
+	intuitions = mainInstance->intuitions;
+	mainInstance->bGameOver = false;
+	bGameOver = false;
 
 	//Opening camera fadein
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 1.f, FColor::Black, true, true);
@@ -1009,9 +1012,9 @@ void APlayerUnit::ActivateGuardWindow(float windUpTime)
 //Reset world on player death or time of day end
 void APlayerUnit::WorldReset()
 {
-	bGameOver = true;
-
 	UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+
+	bGameOver = true;
 
 	widgetIntuitionTransfer = CreateWidget<UUserWidget>(GetWorld(), classIntuitionTransfer);
 	widgetIntuitionTransfer->AddToViewport();
@@ -1025,5 +1028,5 @@ void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
 	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
 
 	UMainGameInstance* gameInstace = GameStatics::GetMainInstance(GetWorld());
-	gameInstace->intuitions = intuitions;
+	gameInstace->intuitions.Add(intuitionToAdd);
 }

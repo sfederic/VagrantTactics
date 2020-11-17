@@ -138,6 +138,8 @@ void AGridActor::Tick(float DeltaTime)
 					NewObject<UIntuition>(UGameplayStatics::GetGameInstance(GetWorld()), intuitionComponent->intuitionClass);
 				if (newIntuition)
 				{
+					//newIntuition->AddToRoot();
+
 					IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(newIntuition);
 					if (intuitionInterface)
 					{
