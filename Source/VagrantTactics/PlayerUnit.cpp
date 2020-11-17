@@ -59,7 +59,6 @@ void APlayerUnit::BeginPlay()
 	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
 
 	//Setup meshes
-	//TODO: I can never figure out a good way to handle multiple components. 
 	TArray<UActorComponent*> outMeshes;
 	GetComponents(UStaticMeshComponent::StaticClass(), outMeshes);
 	for (UActorComponent* component : outMeshes)
