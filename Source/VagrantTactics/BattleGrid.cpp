@@ -9,6 +9,7 @@
 #include "Unit.h"
 #include "PlayerUnit.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -149,6 +150,8 @@ void ABattleGrid::Init()
 				node.bActive = true;
 				transform.SetScale3D(nodeVisibleScale);
 				transform.SetLocation(hit.ImpactPoint + FVector(0.f, 0.f, 1.f));
+				FRotator rot = UKismetMathLibrary::MakeRotFromZ(hit.ImpactNormal);
+				transform.SetRotation(FQuat(rot));
 				node.location = FVector((float)x * LevelGridValues::gridUnitDistance, (float)y * LevelGridValues::gridUnitDistance, hit.ImpactPoint.Z + 50.f);
 
 				AActor* hitActor = hit.GetActor();
