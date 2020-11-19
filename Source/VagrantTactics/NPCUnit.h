@@ -9,6 +9,7 @@
 class USpeechWidget;
 class AConversationInstance;
 class UWidgetComponent;
+class UIntuition;
 
 //Just a unit with speech
 UCLASS()
@@ -30,6 +31,10 @@ public:
 	UWidgetComponent* speechWidgetComponent;
 
 	UPROPERTY(EditAnywhere) AConversationInstance* conversationInstance;
+
+	//INTUITION DATA
+	//the intuition to check against to see how player will react to NPC death (eg. if ==, then no stress on player)
+	UPROPERTY(EditAnywhere) FName deathIntuitionID;
 
 	bool bSetToMoveDuringConversation = false;
 };

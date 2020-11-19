@@ -187,4 +187,8 @@ public:
 	UPROPERTY(VisibleAnywhere) float currentGuardWindowTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) bool bGameOver = false;
+
+	//STRESS
+	UPROPERTY(EditAnywhere) int currentStressPoints;
+	UPROPERTY(EditAnywhere) int maxStressPoints;
 };

@@ -9,6 +9,7 @@ UMainGameInstance::UMainGameInstance()
 	//Start day at 6 AM
 	currentHour = 6;
 	currentMinute = 0;
+	playerStressPoints = 0;
 }
 
 bool UMainGameInstance::CheckTimeOfDayActivation(int hour, int minute)

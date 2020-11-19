@@ -51,6 +51,8 @@ void APlayerUnit::BeginPlay()
 	mainInstance->bGameOver = false;
 	bGameOver = false;
 
+	currentStressPoints = mainInstance->playerStressPoints;
+
 	//Opening camera fadein
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 1.f, FColor::Black, true, true);
 

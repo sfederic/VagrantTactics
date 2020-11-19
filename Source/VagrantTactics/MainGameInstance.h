@@ -38,5 +38,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly) int maxIntuitionsToCarryOver = 4;
 
+	UPROPERTY(BlueprintReadWrite) int playerStressPoints;
+
 	bool bGameOver;
 };

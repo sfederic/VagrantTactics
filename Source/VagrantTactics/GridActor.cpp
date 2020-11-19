@@ -11,11 +11,13 @@
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Unit.h"
+#include "NPCUnit.h"
 #include "GameStatics.h"
 #include "VagrantTacticsGameModeBase.h"
 #include "IntuitionComponent.h"
 #include "BattleInstance.h"
 #include "GameStatics.h"
+#include "Intuition.h"
 
 void AGridActor::AddIntuition()
 {
@@ -130,7 +132,29 @@ void AGridActor::Tick(float DeltaTime)
 				Destroy();
 			}
 
-			//Check for Intuition
+			//Check for death intuition check (player stress)
+			ANPCUnit* npc = Cast<ANPCUnit>(this);
+			if (npc)
+			{
+				if (npc->deathIntuitionID != TEXT(""))
+				{
+					UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
+					for (UIntuition* intuition : mainInstance->intuitions)
+					{
+						if (intuition->intuitonID == npc->deathIntuitionID)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Player is not under extreme stress. Got what they deserved."));
+							goto SkipDeathIntuition;
+						}
+					}
+
+					UE_LOG(LogTemp, Warning, TEXT("Player is under extreme stress. Why is this happening?."));
+				}
+			}
+
+			SkipDeathIntuition:
+
+			//Check for Intuition to add to player (on actor death)
 			UIntuitionComponent* intuitionComponent = FindComponentByClass<UIntuitionComponent>();
 			if (intuitionComponent && intuitionComponent->intuitionClass)
 			{
