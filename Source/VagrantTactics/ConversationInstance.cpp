@@ -24,25 +24,35 @@ void AConversationInstance::BeginPlay()
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (hourToActivate != 0)
 	{
-		if ((hourToActivate != gameInstance->currentHour) && (minuteToActivate != gameInstance->currentMinute))
+		//Activate on hour
+		if (bOnlyActivateOnHour)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s not set to activate at %d : %d time of day."), *GetName(), gameInstance->currentHour, gameInstance->currentMinute);
-
-			//Hide actors in scene
+			if (hourToActivate == gameInstance->currentHour)
+			{
+				for (AActor* actor : actorsToActivate)
+				{
+					actor->SetActorHiddenInGame(false);
+				}
+			}
+		}
+		else if ((hourToActivate == gameInstance->currentHour) && (minuteToActivate == gameInstance->currentMinute))
+		{
+			//Activate on hour and minutes
+			for (AActor* actor : actorsToActivate)
+			{
+				actor->SetActorHiddenInGame(false);
+			}
+		}
+		else
+		{
+			//Hide all actors and destroy
 			for (AActor* actor : actorsToActivate)
 			{
 				actor->SetActorHiddenInGame(true);
 			}
 
 			Destroy();
-		}
-		else
-		{
-			//Activate actors in scene
-			for (AActor* actor : actorsToActivate)
-			{
-				actor->SetActorHiddenInGame(false);
-			}
+			return;
 		}
 	}
 

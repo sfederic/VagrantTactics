@@ -501,5 +501,5 @@ void AUnit::WindUpSkill()
 //Effect to activate when unit hits max stress
 void AUnit::ActivateStress()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("%s is under stress."), *GetName());
 }

@@ -600,6 +600,9 @@ void APlayerUnit::PrimaryAction()
 		//TODO: This works roughly to remove all NPC dialogue while moving level, but new dialogue will still pop up
 		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
 
+		//Keep the time of day widget to show time progression when camera fades between entrances
+		timeOfDayWidget->AddToViewport();
+
 		widgetInteract->RemoveFromViewport();
 
 		//Change time of day

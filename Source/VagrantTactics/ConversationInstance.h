@@ -48,4 +48,7 @@ public:
 
 	//Whether the player has input in the dialogue (for button presses, etc.)
 	UPROPERTY(EditAnywhere) bool bIsPlayerConnected;
+
+	//Whether the instance disregards minutes and acivates on an hourly period instead
+	UPROPERTY(EditAnywhere) bool bOnlyActivateOnHour;
 };
