@@ -62,6 +62,15 @@ void AUnit::Tick(float DeltaTime)
 		particleFocusBeam->SetBeamEndPoint(0, actorToFocusOn->GetActorLocation());
 	}
 
+	//Unit fear (shake unit)
+	if (unitState == EUnitState::InFear)
+	{
+		FVector shakeLoc = GetActorLocation();
+		float shakeLocZ = shakeLoc.Z;
+		shakeLoc += FVector(FMath::RandRange(-5.0f, 5.0f));
+		shakeLoc.Z = shakeLocZ;
+		SetActorLocation(shakeLoc);
+	}
 
 	//Get all actors to focus on that match with unit tags to focus on
 	for (int focusTagIndex = 0; focusTagIndex < focusTags.Num(); focusTagIndex++)
@@ -250,6 +259,7 @@ void AUnit::MoveTo(FGridNode* destinationNode)
 	FGridNode* nextNode = nullptr;
 	switch (unitState)
 	{
+	case EUnitState::Stationary: nextNode = startingNode; break;
 	case EUnitState::Chase:	nextNode = movementPathNodes[lowestHCostIndex]; break;
 	case EUnitState::Flee: nextNode = movementPathNodes[highestHCostIndex]; break;
 	case EUnitState::Wander: 
@@ -502,4 +512,11 @@ void AUnit::WindUpSkill()
 void AUnit::ActivateStress()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s is under stress."), *GetName());
+	USpeechComponent* sc = FindComponentByClass<USpeechComponent>();
+	sc->ShowStressDialogue();
+
+	bUnderStress = true;
+	currentMovementPoints = movementPointsUnderStress;
+	currentAttackPoints = attackPointsUnderStress;
+	unitState = stateUnderStress;
 }

@@ -33,6 +33,7 @@
 #include "GameStatics.h"
 #include "Intuition.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "SpeechWidget.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -59,6 +60,10 @@ void APlayerUnit::BeginPlay()
 	//Get previous level name for debugging purposes
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	previousLevelMovedFrom = gameInstance->previousLevelMovedFrom;
+
+	//Setup components
+	speechWidgetComponent = Cast<UWidgetComponent>(GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
+	speechWidget = Cast<USpeechWidget>(speechWidgetComponent->GetUserWidgetObject());
 
 	//Setup meshes
 	TArray<UActorComponent*> outMeshes;
@@ -1033,4 +1038,23 @@ void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
 
 	UMainGameInstance* gameInstace = GameStatics::GetMainInstance(GetWorld());
 	gameInstace->intuitions.Add(intuitionToAdd);
+}
+
+void APlayerUnit::AddStress(int stressPoints, ANPCUnit* npc)
+{
+	currentStressPoints += stressPoints;
+	if (currentStressPoints >= maxStressPoints)
+	{
+		FTimerHandle handle;
+		GetWorldTimerManager().SetTimer(handle, this, &APlayerUnit::PlayerThoughtEnd, 3.0f, false);
+		speechWidgetComponent->SetHiddenInGame(false);
+		speechWidget->dialogueLine = npc->playerDialogueOnDeath;
+	}
+}
+
+//Set speech widget only for player on a timer
+void APlayerUnit::PlayerThoughtEnd()
+{
+	speechWidgetComponent->SetHiddenInGame(true);
+	speechWidget->dialogueLine = FText::FromString("");
 }

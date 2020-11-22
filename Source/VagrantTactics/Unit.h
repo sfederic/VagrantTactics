@@ -18,7 +18,9 @@ enum class EUnitState : uint8
 {
 	Chase, //Persue either an attack target or target of interest
 	Flee, //Move further away from target
-	Wander //Moves to random node
+	Wander, //Moves to random node
+	Stationary, //Unit stays in a single spot. TODO: staionary causes a few issues for now, don't use
+	InFear //Unit staionary, shakes
 };
 
 //Base class for all units.
@@ -55,15 +57,29 @@ public:
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;
 
+	//STRESS
+	UPROPERTY(EditAnywhere, Category = "Stress") int movementPointsUnderStress;
+	UPROPERTY(EditAnywhere, Category = "Stress") int attackPointsUnderStress;
+	UPROPERTY(EditAnywhere, Category = "Stress") EUnitState stateUnderStress;
+	UPROPERTY(VisibleAnywhere, Category = "Stress") bool bUnderStress = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stress") int maxStressPoints;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stress") int currentStressPoints = 0;
+
+	//PARTICLES
 	UParticleSystemComponent* particleFocusBeam;
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleTemplateFocusBeam;
 
+	//CAMERA
 	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
 
+	//GRID NODES
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click
 	TArray<FGridNode*> pathNodes; //Path nodes are the final path the unit will take in Tick()
 	TArray<FGridNode*> attackPathNodes; //Nodes that a charged attack will hit on next turn.
 
+	FGridNode* meleeAttackNodeTarget;
+
+	//SKILLS
 	UPROPERTY(EditAnywhere, Category = "Skills") TArray<TSubclassOf<USkillBase>> skillClasses;
 	UPROPERTY(VisibleAnywhere, Category = "Skills") TArray<USkillBase*> skills;
 	USkillBase* activeSkill;
@@ -90,9 +106,6 @@ public:
 	UPROPERTY(EditAnywhere) int maxMovementPoints;
 	UPROPERTY(VisibleAnywhere) int currentMovementPoints;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly) int maxStressPoints;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) int currentStressPoints = 0;
-
 	UPROPERTY(EditAnywhere) int maxAttackDistancePoints;
 	UPROPERTY(VisibleAnywhere) int currentAttackDistancePoints;
 
@@ -114,6 +127,4 @@ public:
 	UPROPERTY(VisibleAnywhere) bool bChargingSkill;
 	UPROPERTY(EditAnywhere) bool bCanEnterBattle = true;
 	UPROPERTY(VisibleAnywhere) bool bWindingUpAttack = false;
-
-	FGridNode* meleeAttackNodeTarget;
 };

@@ -35,6 +35,8 @@ public:
 	//INTUITION DATA
 	//the intuition to check against to see how player will react to NPC death (eg. if ==, then no stress on player)
 	UPROPERTY(EditAnywhere) FName deathIntuitionID;
+	UPROPERTY(EditAnywhere) FText playerDialogueOnDeath;
+	UPROPERTY(EditAnywhere) int stressPointsOnDeath;
 
 	bool bSetToMoveDuringConversation = false;
 };

@@ -9,6 +9,7 @@
 class UCameraComponent;
 class ABattleGrid;
 class AUnit;
+class ANPCUnit;
 class UCameraShake;
 class UParticleSystem;
 class UUserWidget;
@@ -24,6 +25,8 @@ class APickupItem;
 class UUnitSkillWidget;
 class AConversationInstance;
 class ASavePoint;
+class UWidgetComponent;
+class USpeechWidget;
 
 //Player class.
 UCLASS()
@@ -70,7 +73,9 @@ public:
 	void ActivateGuardWindow(float windUpTime);
 	void WorldReset();
 	void AddIntuition(UIntuition* intuitionToAdd);
-
+	void AddStress(int stressPoints, ANPCUnit* npc);
+	void PlayerThoughtEnd();
+		
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
 
@@ -118,6 +123,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classIntuitionTransfer;
 	UPROPERTY() UUserWidget* widgetIntuitionTransfer;
+
+	//WIDGET COMPONENTS
+	UWidgetComponent* speechWidgetComponent;
+	USpeechWidget* speechWidget;
 
 	//SPELLS
 	UPROPERTY(EditAnywhere, Category = "Spells") TArray<TSubclassOf<USpellBase>> spells;

@@ -58,6 +58,16 @@ void USpeechComponent::ShowDialogue(bool bStartCombat)
 	GetOwner()->GetWorldTimerManager().SetTimer(handle, this, &USpeechComponent::HideDialogue, 3.0f, false);
 }
 
+void USpeechComponent::ShowStressDialogue()
+{
+	widgetComponent->SetHiddenInGame(false);
+	speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
+	speechWidget->dialogueLine = stressText;
+
+	FTimerHandle handle;
+	GetOwner()->GetWorldTimerManager().SetTimer(handle, this, &USpeechComponent::HideDialogue, 3.0f, false);
+}
+
 void USpeechComponent::HideDialogue()
 {
 	widgetComponent->SetHiddenInGame(true);

@@ -25,12 +25,16 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void ShowDialogue(bool bStartCombat);
+	void ShowStressDialogue();
 	void HideDialogue();
 
 	UPROPERTY(EditAnywhere) UDataTable* conversationTable;
 
 	UPROPERTY(EditAnywhere) FText dialogueText;
 	UPROPERTY(EditAnywhere) FText startCombatText;
+
+	//Text shown on unit when stress hits max
+	UPROPERTY(EditAnywhere) FText stressText;
 
 	UWidgetComponent* widgetComponent;
 	USpeechWidget* speechWidget;

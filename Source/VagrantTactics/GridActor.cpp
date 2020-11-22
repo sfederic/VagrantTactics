@@ -149,6 +149,7 @@ void AGridActor::Tick(float DeltaTime)
 					}
 
 					UE_LOG(LogTemp, Warning, TEXT("Player is under extreme stress. Why is this happening?."));
+					player->AddStress(npc->stressPointsOnDeath, npc);
 				}
 			}
 
