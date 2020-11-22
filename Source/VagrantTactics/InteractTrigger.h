@@ -7,6 +7,7 @@
 #include "InteractTrigger.generated.h"
 
 class AGridActor;
+class UIntuition;
 
 //Base class for interaction boxes. 
 UCLASS()
@@ -41,6 +42,9 @@ public:
 
 	//Connected actors to mark for Destroy()/Change material on player interaction or focus on
 	UPROPERTY(EditAnywhere) AActor* connectedActor;
+
+	//Intuition to give to player on inspection
+	UPROPERTY(EditAnywhere) TSubclassOf<UIntuition> intuitionToGain;
 
 	//Denotes whether the connectedActor can be picked up and added to player mesh socket
 	UPROPERTY(EditAnywhere) bool bPickupConnectedActor;

@@ -72,6 +72,7 @@ public:
 	void ResetGuardWindow();
 	void ActivateGuardWindow(float windUpTime);
 	void WorldReset();
+	void AddIntuition(TSubclassOf<UIntuition> intuitionClass);
 	void AddIntuition(UIntuition* intuitionToAdd);
 	void AddStress(int stressPoints, ANPCUnit* npc);
 	void PlayerThoughtEnd();

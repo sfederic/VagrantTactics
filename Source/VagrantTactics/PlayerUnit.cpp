@@ -629,12 +629,20 @@ void APlayerUnit::PrimaryAction()
 			return;
 		}
 
+		if (overlappedInteractTrigger->intuitionToGain)
+		{
+			AddIntuition(overlappedInteractTrigger->intuitionToGain);
+		}
+
 		if (bCanInteractWithTriggersConnection)
 		{
 			//interact widgets
 			widgetInteract->RemoveFromViewport();
 			widgetInteractDetails->detailsText = overlappedInteractTrigger->detailsText;
-			widgetInteractDetails->AddToViewport();
+			if (!widgetInteractDetails->IsInViewport())
+			{
+				widgetInteractDetails->AddToViewport();
+			}
 
 			//Zoom in on inspected object
 			currentCameraFOV = cameraFOVAttack;
@@ -1029,15 +1037,43 @@ void APlayerUnit::WorldReset()
 	widgetIntuitionTransfer->AddToViewport();
 }
 
-void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
+void APlayerUnit::AddIntuition(TSubclassOf<UIntuition> intuitionClass)
 {
-	intuitions.Add(intuitionToAdd);
+	UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
+	UIntuition* intuitionToAdd = NewObject<UIntuition>(gameInstance, intuitionClass);
 
+	for (UIntuition* intuition : gameInstance->intuitions)
+	{
+		if (intuition->intuitonID == intuitionToAdd->intuitonID)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Intuition %s already in game instance."), *intuitionToAdd->GetName());
+			return;
+		}
+	}
+
+	gameInstance->intuitions.Add(intuitionToAdd);
+	intuitions.Add(intuitionToAdd);
 	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
 	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
+}
 
-	UMainGameInstance* gameInstace = GameStatics::GetMainInstance(GetWorld());
-	gameInstace->intuitions.Add(intuitionToAdd);
+void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
+{
+	UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
+
+	for (UIntuition* intuition : gameInstance->intuitions)
+	{
+		if (intuition->intuitonID == intuitionToAdd->intuitonID)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Intuition %s already in game instance."), *intuitionToAdd->GetName());
+			return;
+		}
+	}
+
+	gameInstance->intuitions.Add(intuitionToAdd);
+	intuitions.Add(intuitionToAdd);
+	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
 }
 
 void APlayerUnit::AddStress(int stressPoints, ANPCUnit* npc)
