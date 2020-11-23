@@ -36,6 +36,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly) TArray<UIntuition*> intuitionsToCarryOver;
 
+	//List of every single NPC/Unit/GridActor that has died in-game
+	UPROPERTY() TArray<FName> killedActors;
+
 	UPROPERTY(BlueprintReadOnly) int maxIntuitionsToCarryOver = 4;
 
 	UPROPERTY(BlueprintReadWrite) int playerStressPoints;

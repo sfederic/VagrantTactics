@@ -178,6 +178,9 @@ void AGridActor::Tick(float DeltaTime)
 				UE_LOG(LogTemp, Warning, TEXT("Intuition class on component not set in %s"), *GetName());
 			}
 
+			UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
+			mainInstance->killedActors.Add(*this->GetName());
+
 			bIsDestructible = false;
 		}
 	}

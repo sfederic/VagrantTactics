@@ -52,7 +52,16 @@ void APlayerUnit::BeginPlay()
 	mainInstance->bGameOver = false;
 	bGameOver = false;
 
+	//Setup stress
 	currentStressPoints = mainInstance->playerStressPoints;
+	if (currentStressPoints >= maxStressPoints)
+	{
+		maxHealthPoints = (maxHealthPoints / 2);
+		maxActionPoints = (maxActionPoints / 2);
+	}
+
+	currentActionPoints = maxActionPoints;
+	currentHealthPoints = maxHealthPoints;
 
 	//Opening camera fadein
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.f, 0.f, 1.f, FColor::Black, true, true);
@@ -119,9 +128,6 @@ void APlayerUnit::BeginPlay()
 
 	nextLocation = GetActorLocation();
 	nextRotation = GetActorRotation();
-
-	currentActionPoints = maxActionPoints;
-	currentHealthPoints = maxHealthPoints;
 
 	//Components
 	APlayerController* controller = Cast<APlayerController>(GetController());
@@ -1085,6 +1091,9 @@ void APlayerUnit::AddStress(int stressPoints, ANPCUnit* npc)
 		GetWorldTimerManager().SetTimer(handle, this, &APlayerUnit::PlayerThoughtEnd, 3.0f, false);
 		speechWidgetComponent->SetHiddenInGame(false);
 		speechWidget->dialogueLine = npc->playerDialogueOnDeath;
+
+		//Go for the Demon's Souls 'half-life' mechanic on stress activated for now
+		GameStatics::GetMainInstance(GetWorld())->playerStressPoints = currentStressPoints;
 	}
 }
 

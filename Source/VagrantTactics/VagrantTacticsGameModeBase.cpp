@@ -6,6 +6,7 @@
 #include "BattleGrid.h"
 #include "Unit.h"
 #include "PlayerUnit.h"
+#include "GameStatics.h"
 
 AVagrantTacticsGameModeBase::AVagrantTacticsGameModeBase()
 {
@@ -14,7 +15,7 @@ AVagrantTacticsGameModeBase::AVagrantTacticsGameModeBase()
 
 void AVagrantTacticsGameModeBase::StartPlay()
 {
-	Super::StartPlay();
+	Super::StartPlay();	
 
 	//Get BattleGrid
 	TArray<AActor*> outBattleGrid;
@@ -34,5 +35,24 @@ void AVagrantTacticsGameModeBase::StartPlay()
 		AGridActor* gridActor = Cast<AGridActor>(actor);
 		gridActor->battleGrid = activeBattleGrid;
 		gridActors.Add(gridActor);
+	}
+
+	//Remove all actors from level that have been previously destroyed
+	UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
+	for (AActor* actorToDestroyOnLevelLoad : outGridActors)
+	{
+		for (FName& actorName : mainInstance->killedActors)
+		{
+			if (actorToDestroyOnLevelLoad->GetName() == actorName.ToString())
+			{
+				AGridActor* gridActor = Cast<AGridActor>(actorToDestroyOnLevelLoad);
+				if (gridActor)
+				{
+					activeBattleGrid->UnhideNode(activeBattleGrid->GetNode(gridActor->xIndex, gridActor->yIndex));
+				}
+
+				actorToDestroyOnLevelLoad->Destroy();
+			}
+		}
 	}
 }
