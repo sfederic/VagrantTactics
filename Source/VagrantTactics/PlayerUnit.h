@@ -10,7 +10,7 @@ class UCameraComponent;
 class ABattleGrid;
 class AUnit;
 class ANPCUnit;
-class UCameraShake;
+class UMatineeCameraShake;
 class UParticleSystem;
 class UUserWidget;
 class AEntranceTrigger;
@@ -86,7 +86,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFocusLerpSpeed;
 	UPROPERTY(VisibleAnywhere, Category="Camera") float currentCameraFOV;
 	UPROPERTY(EditAnywhere, Category="Camera") float cameraFOVLerpSpeed;
-	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShake> cameraShakeAttack;
+	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UMatineeCameraShake> cameraShakeAttack;
 	const float maxCameraFOV = 90.f;
 	const float cameraFOVAttack = 45.f;
 	const float cameraFOVConversation = 60.f;
