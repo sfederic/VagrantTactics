@@ -716,12 +716,6 @@ void APlayerUnit::PrimaryAction()
 
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
 	{
-		if ((currentActionPoints - costToAttack) < 0)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Not enough points to attack."));
-			return;
-		}
-
 		FHitResult hit;
 		FCollisionQueryParams hitParams;
 		hitParams.AddIgnoredActor(this);
@@ -817,19 +811,6 @@ void APlayerUnit::PrimaryAction()
 				if(npcToStartCombatWith)
 				{
 					npcToStartCombatWith->ActivateForBattle();
-
-					//Needed a way to setup enemy turn order widget outside of battle instances
-					if (widgetEnemyTurnOrder == nullptr)
-					{
-						widgetEnemyTurnOrder = CreateWidget<UUserWidget>(GetWorld(), classEnemyTurnOrderWidget);
-						if (widgetEnemyTurnOrder)
-						{
-							if (!widgetEnemyTurnOrder->IsInViewport())
-							{
-								widgetEnemyTurnOrder->AddToViewport();
-							}
-						}
-					}
 				}
 			}
 		}

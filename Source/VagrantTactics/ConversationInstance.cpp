@@ -62,11 +62,8 @@ void AConversationInstance::BeginPlay()
 		conversationTable->GetAllRows(contextString, conversationRows);
 	}
 
-	if (!bIsPlayerConnected)
-	{
-		FTimerHandle handle;
-		GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, initialTimeForConversationStart, false);
-	}
+	FTimerHandle handle;
+	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, initialTimeForConversationStart, false);
 }
 
 void AConversationInstance::Tick(float DeltaTime)

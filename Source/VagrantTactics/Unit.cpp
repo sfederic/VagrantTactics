@@ -389,11 +389,12 @@ USkillBase* AUnit::CycleThroughAttackChoices(AActor* target)
 	for (int i = 0; i < skills.Num(); i++)
 	{
 		ISkillInterface* skillInterface = Cast<ISkillInterface>(skills[i]);
-		skillInterface->ChargeSkill(xIndex, yIndex, this, target);
-
-		bSetToUseSkill = true;
-
-		return skills[i];
+		if (skillInterface)
+		{
+			skillInterface->ChargeSkill(xIndex, yIndex, this, target);
+			bSetToUseSkill = true;
+			return skills[i];
+		}
 	}
 
 	return nullptr;
