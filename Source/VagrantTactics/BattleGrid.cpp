@@ -171,40 +171,21 @@ void ABattleGrid::Init()
 						node.bActive = false;
 						transform.SetScale3D(nodeHiddenScale);
 					}
-				}
-			}
 
-			//Grid Actors
-			for(AGridActor* gridActor : allGridActors)
-			{
-				if ((gridActor->xIndex == x) && (gridActor->yIndex == y))
-				{
-					if (!gridActor->Tags.Contains(GameplayTags::Player))
+					for (AGridActor* gridActor : allGridActors)
 					{
-						transform.SetScale3D(nodeHiddenScale);
-						node.bActive = false;
-
-						gridActorToUpdate = gridActor;
-						break;
+						uint32 hitActorID = hitActor->GetUniqueID();
+						uint32 gridActorID = gridActor->GetUniqueID();
+						if (gridActorID == hitActorID)
+						{
+							gridActorToUpdate = gridActor;
+							node.bActive = false;
+							transform.SetScale3D(nodeHiddenScale);
+						}
 					}
 				}
 			}
 
-
-			//Check for actors larger than 1x1x1
-			if (hit.GetActor())
-			{
-				AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
-				if(gridActor)
-				{
-					if (gridActor->bLargerThanUnitSquare)
-					{
-						gridActorToUpdate = gridActor;
-						node.bActive = false;
-						transform.SetScale3D(nodeHiddenScale);
-					}
-				}
-			}
 
 			//Check for hole in floor
 			FHitResult holeHit;
