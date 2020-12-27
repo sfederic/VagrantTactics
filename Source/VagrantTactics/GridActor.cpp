@@ -82,7 +82,7 @@ void AGridActor::Tick(float DeltaTime)
 	{
 		if (currentHealth <= 0)
 		{
-			battleGrid->UnhideNodes(connectedNodeIndices, false);
+			battleGrid->UnhideNodes(connectedNodeIndices, true, true);
 
 			//For single GridActors that are spawned after level creation
 			//battleGrid->UnhideNode(battleGrid->GetNode(xIndex, yIndex));
@@ -95,7 +95,9 @@ void AGridActor::Tick(float DeltaTime)
 			if (Tags.Contains(GameplayTags::Destructible))
 			{
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
-				dc->ApplyDamage(100.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 100.f);
+				dc->ApplyDamage(50.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 50.f);
+
+				FindComponentByClass<UStaticMeshComponent>()->DestroyComponent();
 
 				healthbarWidgetComponent->SetHiddenInGame(true);
 

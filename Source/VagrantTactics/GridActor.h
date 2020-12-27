@@ -30,7 +30,7 @@ public:
 	void SetIndices();
 
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
-	UPROPERTY() TArray<int32> connectedNodeIndices;
+	UPROPERTY(VisibleAnywhere) TArray<int32> connectedNodeIndices;
 
 	UHealthbarWidget* healthbarWidget;
 	UWidgetComponent* healthbarWidgetComponent;

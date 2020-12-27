@@ -472,20 +472,44 @@ void ABattleGrid::UnhideNodes(TArray<FGridNode*>& nodesToUnhide)
 	}
 }
 
-void ABattleGrid::UnhideNodes(TArray<int32>& indices, bool bShow)
+void ABattleGrid::UnhideNodes(TArray<int32>& indices, bool bShow, bool bRecalculateLocation)
 {
 	gridMesh->MarkRenderStateDirty();
+
+	FCollisionQueryParams recalculateIgnores;
+	if (bRecalculateLocation)
+	{
+		TArray<AActor*> outDestructibleActors;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), GameplayTags::Destructible, outDestructibleActors);
+		recalculateIgnores.AddIgnoredActors(outDestructibleActors);
+	}
 
 	for (int i = 0; i < indices.Num(); i++)
 	{
 		FGridNode* node = nodeMap.Find(indices[i]);
 		GetNode(node->xIndex, node->yIndex)->bActive = true;
+		GetNode(node->xIndex, node->yIndex)->location.Z = 0.f;
 
 		if (bShow)
 		{
 			FTransform transform;
 			gridMesh->GetInstanceTransform(indices[i], transform);
 			transform.SetScale3D(nodeVisibleScale);
+
+			if (bRecalculateLocation)
+			{
+				FHitResult newLocationHit;
+				FVector startHit = transform.GetLocation() + FVector(0.f, 0.f, 1000.f);
+				FVector endHit = transform.GetLocation() - FVector(0.f, 0.f, 1000.f);
+				if (GetWorld()->LineTraceSingleByChannel(newLocationHit, startHit, endHit, ECC_WorldStatic, recalculateIgnores))
+				{
+					FVector newNodeLocation = newLocationHit.ImpactPoint;
+					newNodeLocation.Z += 1.f;
+					transform.SetLocation(newNodeLocation);
+					GetNode(node->xIndex, node->yIndex)->location = newLocationHit.ImpactPoint + FVector(0.f, 0.f, 50.f);
+				}
+			}
+
 			gridMesh->UpdateInstanceTransform(indices[i], transform);
 		}
 	}

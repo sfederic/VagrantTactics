@@ -40,7 +40,7 @@ public:
 	void HideNodes(TArray<FGridNode*>& nodesToHide);
 	void HideNodes(TArray<int32>& indices);
 	void UnhideNodes(TArray<FGridNode*>& nodesToUnhide);
-	void UnhideNodes(TArray<int32>& indices, bool bShow);
+	void UnhideNodes(TArray<int32>& indices, bool bShow, bool bRecalculateLocation);
 	void ResetAllNodeValues();
 	void ChangeTurn();
 	void SortUnitsByTurnSpeed();
