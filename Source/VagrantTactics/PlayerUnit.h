@@ -75,6 +75,7 @@ public:
 	void AddIntuition(TSubclassOf<UIntuition> intuitionClass);
 	void AddIntuition(UIntuition* intuitionToAdd);
 	void AddStress(int stressPoints, ANPCUnit* npc);
+	void PlayerThought(FText* text);
 	void PlayerThoughtEnd();
 		
 	//PARTICLES

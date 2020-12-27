@@ -30,6 +30,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
 
+	UPROPERTY(EditAnywhere) FText playerSpeechOnBattleEnd;
+
 	UPROPERTY(EditAnywhere) AConversationInstance* conversationInstanceToActivateOnOverlap;
 
 	UPROPERTY(VisibleAnywhere) int numOfUnitsAlive;

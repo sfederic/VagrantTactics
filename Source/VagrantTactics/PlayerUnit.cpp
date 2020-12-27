@@ -1123,6 +1123,15 @@ void APlayerUnit::AddStress(int stressPoints, ANPCUnit* npc)
 	}
 }
 
+//Display a text box for player's thoughts at events
+void APlayerUnit::PlayerThought(FText* text)
+{
+	speechWidget->dialogueLine = *text;
+	speechWidgetComponent->SetHiddenInGame(false);
+	FTimerHandle handle;
+	GetWorldTimerManager().SetTimer(handle, this, &APlayerUnit::PlayerThoughtEnd, 4.0f, false);
+}
+
 //Set speech widget only for player on a timer
 void APlayerUnit::PlayerThoughtEnd()
 {

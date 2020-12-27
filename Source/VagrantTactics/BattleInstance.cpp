@@ -9,6 +9,7 @@
 #include "PlayerUnit.h"
 #include "Blueprint/UserWidget.h"
 #include "ConversationInstance.h"
+#include "SpeechWidget.h"
 
 ABattleInstance::ABattleInstance()
 {
@@ -54,6 +55,13 @@ void ABattleInstance::Tick(float DeltaTime)
 			{
 				player->widgetEnemyTurnOrder->RemoveFromViewport();
 			}
+
+			//Make player say something at end of battle
+			if (!playerSpeechOnBattleEnd.EqualTo(FText::FromString(TEXT(""))))
+			{
+				player->PlayerThought(&playerSpeechOnBattleEnd);
+			}
+			
 		}
 
 		Destroy();
