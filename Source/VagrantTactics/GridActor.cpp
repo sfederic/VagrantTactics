@@ -95,7 +95,7 @@ void AGridActor::Tick(float DeltaTime)
 			if (Tags.Contains(GameplayTags::Destructible))
 			{
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
-				dc->ApplyDamage(50.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 50.f);
+				dc->ApplyDamage(100.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 100.f);
 
 				FindComponentByClass<UStaticMeshComponent>()->DestroyComponent();
 

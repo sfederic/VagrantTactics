@@ -34,6 +34,7 @@
 #include "Intuition.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "SpeechWidget.h"
+#include "CollisionDebugDrawingPublic.h"
 
 APlayerUnit::APlayerUnit()
 {
@@ -726,39 +727,45 @@ void APlayerUnit::PrimaryAction()
 		FCollisionQueryParams hitParams;
 		hitParams.AddIgnoredActor(this);
 		FVector endHit = GetActorLocation() + (mesh->GetForwardVector() * moveDistance);
+		FCollisionShape attackSweepShape = FCollisionShape::MakeBox(FVector(32.f));
 
-		//TODO: This trace is junk. need to find a way to attack based on node and mesh directiom
-		if (GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), endHit, ECC_WorldStatic, hitParams))
+		if (GetWorld()->SweepSingleByChannel(hit, GetActorLocation(), endHit, FQuat::Identity, ECC_WorldStatic, attackSweepShape, hitParams))
 		{
+			TArray<FHitResult> attackBoxDrawHits;
+			DrawBoxSweeps(GetWorld(), GetActorLocation(), endHit, attackSweepShape.GetExtent(), FQuat::Identity, attackBoxDrawHits, 2.0f);
+
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 			if (gridActor)
 			{
-				//if (battleGrid->bBattleActive)
+				//Show healthbar on destructibles outside of battle
+				gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+
+				gridActor->currentHealth -= attackPoints;
+
+				if (battleGrid->bBattleActive)
 				{
-					//Deal damage and stress to unit
-					gridActor->currentHealth -= attackPoints;
 					currentActionPoints -= costToAttack;
-					AUnit* unit = Cast<AUnit>(gridActor);
-					if(unit)
-					{
-						//TODO: don't know if player will be able to deal more stress damage somehow
-						if (unit->currentStressPoints < unit->maxStressPoints)
-						{
-							unit->currentStressPoints += 1;
-							if (unit->currentStressPoints >= unit->maxStressPoints)
-							{
-								//TODO: add an interface here
-								unit->ActivateStress();
-							}
-						}
-					}
-
-					currentCameraFOV = cameraFOVAttack;
-
-					UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
 				}
 
 				AUnit* unit = Cast<AUnit>(gridActor);
+				if(unit)
+				{
+					//TODO: don't know if player will be able to deal more stress damage somehow
+					if (unit->currentStressPoints < unit->maxStressPoints)
+					{
+						unit->currentStressPoints += 1;
+						if (unit->currentStressPoints >= unit->maxStressPoints)
+						{
+							//TODO: add an interface here
+							unit->ActivateStress();
+						}
+					}
+				}
+
+				currentCameraFOV = cameraFOVAttack;
+				selectedUnit = gridActor;
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
+
 				if (unit)
 				{
 					selectedUnit = unit;
