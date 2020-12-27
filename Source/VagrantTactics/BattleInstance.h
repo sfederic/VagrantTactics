@@ -8,6 +8,7 @@
 
 class AUnit;
 class UBoxComponent;
+class AConversationInstance;
 
 //The instance that connects all units in an area and instigates battles based on area.
 UCLASS()
@@ -28,6 +29,8 @@ public:
 	void ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(VisibleAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
+
+	UPROPERTY(EditAnywhere) AConversationInstance* conversationInstanceToActivateOnOverlap;
 
 	UPROPERTY(VisibleAnywhere) int numOfUnitsAlive;
 

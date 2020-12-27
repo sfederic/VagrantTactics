@@ -9,6 +9,7 @@
 
 class ANPCUnit;
 class UDataTable;
+class ABattleInstance;
 
 //Takes a number of actors and switches between their dialogue through a DataTable
 UCLASS()
@@ -51,4 +52,8 @@ public:
 
 	//Whether the instance disregards minutes and acivates on an hourly period instead
 	UPROPERTY(EditAnywhere) bool bOnlyActivateOnHour;
+
+	/*If the player starts a battle that needs conversation at the beginning, link it to
+	a convsationinstance and then activate the BattleInstance Overlap event once work is done here.*/
+	UPROPERTY(EditAnywhere) ABattleInstance* battleInstanceToActivateOnEnd;
 };

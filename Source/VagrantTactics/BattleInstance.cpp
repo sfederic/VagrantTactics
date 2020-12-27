@@ -8,6 +8,7 @@
 #include "BattleGrid.h"
 #include "PlayerUnit.h"
 #include "Blueprint/UserWidget.h"
+#include "ConversationInstance.h"
 
 ABattleInstance::ABattleInstance()
 {
@@ -61,6 +62,16 @@ void ABattleInstance::Tick(float DeltaTime)
 
 void ABattleInstance::ActivateBattleOnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//Check for dialogue at start of battle
+	if (conversationInstanceToActivateOnOverlap)
+	{
+		APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		conversationInstanceToActivateOnOverlap->battleInstanceToActivateOnEnd = this;
+		conversationInstanceToActivateOnOverlap->ShowNextDialogueLineOnTimer();
+		player->connectedConversationInstance = conversationInstanceToActivateOnOverlap;
+		return;
+	}
+
 	AVagrantTacticsGameModeBase* gameMode = Cast<AVagrantTacticsGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	gameMode->activeBattleGrid->ActivateBattle();
 

@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameplayTags.h"
 #include "MainGameInstance.h"
+#include "BattleInstance.h"
 
 AConversationInstance::AConversationInstance()
 {
@@ -62,8 +63,11 @@ void AConversationInstance::BeginPlay()
 		conversationTable->GetAllRows(contextString, conversationRows);
 	}
 
-	FTimerHandle handle;
-	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, initialTimeForConversationStart, false);
+	if (battleInstanceToActivateOnEnd == nullptr)
+	{
+		FTimerHandle handle;
+		GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, initialTimeForConversationStart, false);
+	}
 }
 
 void AConversationInstance::Tick(float DeltaTime)
@@ -101,8 +105,11 @@ void AConversationInstance::ShowNextDialogueLineOnTimer()
 		return;
 	}
 
-	FTimerHandle handle;
-	GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, timeBetweenTextChanges, false);
+	if (battleInstanceToActivateOnEnd == nullptr)
+	{
+		FTimerHandle handle;
+		GetWorldTimerManager().SetTimer(handle, this, &AConversationInstance::ShowNextDialogueLineOnTimer, timeBetweenTextChanges, false);
+	}
 
 	if (npcConversationOrder.Num() > 0)
 	{
@@ -121,6 +128,14 @@ void AConversationInstance::ShowNextDialogueLineOnTimer()
 		USpeechWidget* speechWidget = Cast<USpeechWidget>(speechWidgetComponent->GetUserWidgetObject());
 		speechWidget->dialogueLine = conversationRows[conversationOrderIndex]->dialogueLine;
 		speechWidget->speakerName = conversationRows[conversationOrderIndex]->speakerName;
+
+		if (battleInstanceToActivateOnEnd)
+		{
+			//Set player camera focus on current actor speaking
+			APlayerUnit* player = Cast<APlayerUnit>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+			player->conversationWidgetFocus = speechWidgetComponent->GetComponentLocation();
+			player->bInConversation = true;
+		}
 
 		if (conversationOrderIndex < conversationRows.Num())
 		{
@@ -158,6 +173,18 @@ void AConversationInstance::ShowNextDialogueLineOnPlayerInput()
 		player->ResetCameraFocusAndFOV();
 
 		conversationOrderIndex = 0;
+
+
+		if (battleInstanceToActivateOnEnd)
+		{
+			battleInstanceToActivateOnEnd->conversationInstanceToActivateOnOverlap = nullptr;
+
+			FHitResult dummySweepResult;
+			battleInstanceToActivateOnEnd->ActivateBattleOnOverlap(nullptr, nullptr, nullptr, 0, false, dummySweepResult);
+
+			Destroy();
+		}
+
 
 		return;
 	}
