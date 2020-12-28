@@ -39,4 +39,5 @@ public:
 	UPROPERTY(EditAnywhere) int stressPointsOnDeath;
 
 	bool bSetToMoveDuringConversation = false;
+	UPROPERTY(EditAnywhere) bool bTurnsTowardPlayerToSpeak = true;
 };
