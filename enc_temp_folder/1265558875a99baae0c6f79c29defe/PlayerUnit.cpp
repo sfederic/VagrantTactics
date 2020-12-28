@@ -599,12 +599,7 @@ void APlayerUnit::PrimaryAction()
 							npc->conversationInstance->ShowNextDialogueLineOnPlayerInput();
 							connectedConversationInstance = npc->conversationInstance;
 							bInConversation = true;
-
-							if (npc->bTurnsTowardPlayerToSpeak)
-							{
-								npc->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(npc->GetActorLocation(), this->GetActorLocation()));
-							}
-
+							npc->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(npc->GetActorLocation(), this->GetActorLocation()));
 							currentCameraFOV = cameraFOVConversation;
 							return;
 						}
