@@ -86,7 +86,7 @@ void AConversationInstance::ShowNextDialogueLineOnTimer()
 		if (conversationOrderIndex > 0)
 		{
 			UWidgetComponent* speechWidgetComponent = Cast<UWidgetComponent>(npcConversationOrder[conversationOrderIndex - 1]->GetDefaultSubobjectByName(TEXT("WidgetSpeech")));
-			speechWidgetComponent->SetHiddenInGame(false);
+			speechWidgetComponent->SetHiddenInGame(true);
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("%s conversation finished."), *this->GetName());
