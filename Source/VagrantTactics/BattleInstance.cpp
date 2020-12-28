@@ -58,16 +58,37 @@ void ABattleInstance::Tick(float DeltaTime)
 				player->widgetEnemyTurnOrder->RemoveFromViewport();
 			}
 
-			//Make player say something at end of battle
-			if (!playerSpeechOnBattleEnd.EqualTo(FText::FromString(TEXT(""))))
+			//Make player say shit based on intuitions held on battle end
+			UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+			if (speechOnBattleEnd.Num() > 0)
 			{
-				player->PlayerThought(&playerSpeechOnBattleEnd);
+				for (UIntuition* intuition : gameInstance->intuitions)
+				{
+					for (FIntuitionDialogue& dialogue : speechOnBattleEnd)
+					{
+						if (intuition->intuitonID == dialogue.intuitionID)
+						{
+							player->PlayerThought(&dialogue.dialogueLine);
+							break;
+						}
+					}
+				}
+
+				//Else just play default dialogue line (denoted by no ID)
+				for (FIntuitionDialogue& dialogue : speechOnBattleEnd)
+				{
+					if (dialogue.intuitionID == TEXT(""))
+					{
+						player->PlayerThought(&dialogue.dialogueLine);
+						break;
+					}
+				}
 			}
 			
 			//Give player intuition at end of battle
 			if (intuitionToGainOnBattleEnd)
 			{
-				UGameInstance* gameInstance = UGameplayStatics::GetGameInstance(GetWorld());
 				UIntuition* battleEndIntuition = NewObject<UIntuition>(gameInstance, intuitionToGainOnBattleEnd);
 				GameStatics::GetPlayer(GetWorld())->AddIntuition(battleEndIntuition);
 			}

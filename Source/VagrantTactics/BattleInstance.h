@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "IntuitionDialogue.h"
 #include "BattleInstance.generated.h"
 
 class AUnit;
@@ -31,7 +32,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
 
-	UPROPERTY(EditAnywhere) FText playerSpeechOnBattleEnd;
+	UPROPERTY(EditAnywhere)
+	TArray<FIntuitionDialogue> speechOnBattleEnd;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<UIntuition> intuitionToGainOnBattleEnd;
 

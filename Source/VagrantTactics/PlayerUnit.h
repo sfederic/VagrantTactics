@@ -147,9 +147,9 @@ public:
 	UPROPERTY(EditAnywhere) int attackPoints;
 	UPROPERTY(EditAnywhere) int guardPoints;
 
-	//INTUITIONS 
-	//Only for debug purposes, main intuition handling is in game isntance
+	//DEBUG INTUITIONS (Both only for debug purposes, main intuition handling is in game isntance)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
+	UPROPERTY(EditAnywhere, Category = "Intuitions") TArray<TSubclassOf<UIntuition>> intuitionsToSpawnWith;
 
 	//MESHES
 	UStaticMeshComponent* mesh;

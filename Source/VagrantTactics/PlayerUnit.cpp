@@ -37,7 +37,6 @@
 #include "CollisionDebugDrawingPublic.h"
 #include "IntuitionInterface.h"
 
-
 APlayerUnit::APlayerUnit()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -48,6 +47,15 @@ APlayerUnit::APlayerUnit()
 void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//Spawn all test intuitions for player (rough code, no checks against anything. Use just for in-level testing).
+	for (TSubclassOf<UIntuition> spawnIntuitionClass : intuitionsToSpawnWith)
+	{
+		UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
+		UIntuition* spawnIntuition = NewObject<UIntuition>(gameInstance, spawnIntuitionClass);
+		gameInstance->intuitions.Add(spawnIntuition);
+		intuitions.Add(spawnIntuition);
+	}
 
 	//Get all intuitions on reset
 	UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
