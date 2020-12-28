@@ -360,7 +360,7 @@ void APlayerUnit::Move(FVector direction)
 				}
 			}
 
-			if (fenceHitActor)
+			/*if (fenceHitActor)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%s hit on player move. Cannot move."), *fenceHitActor->GetName());
 				mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + (direction * 100.f)));
@@ -369,7 +369,7 @@ void APlayerUnit::Move(FVector direction)
 
 			UE_LOG(LogTemp, Warning, TEXT("Something blocking player move. Cannot move."));
 			mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + (direction * 100.f)));
-			return;
+			return;*/
 		}
 
 		currentCameraFOV = maxCameraFOV;

@@ -266,7 +266,7 @@ void ABattleGrid::ActivateBattle()
 		gridMesh->SetHiddenInGame(true);
 
 		ResetAllNodeValues();
-		ActivateAllNodes();
+		//ActivateAllNodes();
 
 		//Hide all grid actor health bars on battle end
 		TArray<AActor*> outGridActors;
