@@ -70,7 +70,7 @@ void ABattleInstance::Tick(float DeltaTime)
 						if (intuition->intuitonID == dialogue.intuitionID)
 						{
 							player->PlayerThought(&dialogue.dialogueLine);
-							break;
+							goto EndThought;
 						}
 					}
 				}
@@ -86,6 +86,8 @@ void ABattleInstance::Tick(float DeltaTime)
 				}
 			}
 			
+			EndThought:
+
 			//Give player intuition at end of battle
 			if (intuitionToGainOnBattleEnd)
 			{
