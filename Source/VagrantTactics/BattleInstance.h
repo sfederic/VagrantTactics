@@ -9,6 +9,7 @@
 class AUnit;
 class UBoxComponent;
 class AConversationInstance;
+class UIntuition;
 
 //The instance that connects all units in an area and instigates battles based on area.
 UCLASS()
@@ -31,6 +32,8 @@ public:
 	UPROPERTY(VisibleAnywhere) TArray<AUnit*> unitsToActivateOnBattleStart;
 
 	UPROPERTY(EditAnywhere) FText playerSpeechOnBattleEnd;
+
+	UPROPERTY(EditAnywhere) TSubclassOf<UIntuition> intuitionToGainOnBattleEnd;
 
 	UPROPERTY(EditAnywhere) AConversationInstance* conversationInstanceToActivateOnOverlap;
 

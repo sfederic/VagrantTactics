@@ -10,6 +10,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ConversationInstance.h"
 #include "SpeechWidget.h"
+#include "GameStatics.h"
+#include "Intuition.h"
 
 ABattleInstance::ABattleInstance()
 {
@@ -62,6 +64,13 @@ void ABattleInstance::Tick(float DeltaTime)
 				player->PlayerThought(&playerSpeechOnBattleEnd);
 			}
 			
+			//Give player intuition at end of battle
+			if (intuitionToGainOnBattleEnd)
+			{
+				UGameInstance* gameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+				UIntuition* battleEndIntuition = NewObject<UIntuition>(gameInstance, intuitionToGainOnBattleEnd);
+				GameStatics::GetPlayer(GetWorld())->AddIntuition(battleEndIntuition);
+			}
 		}
 
 		Destroy();

@@ -25,7 +25,7 @@ UMainGameInstance* GameStatics::GetMainInstance(const UWorld* world)
 	return nullptr;
 }
 
-APlayerUnit* GetPlayer(const UWorld* world)
+APlayerUnit* GameStatics::GetPlayer(const UWorld* world)
 {
 	APawn* playerPawn = UGameplayStatics::GetPlayerPawn(world, 0);
 	if (playerPawn)

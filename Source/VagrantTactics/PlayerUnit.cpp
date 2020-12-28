@@ -35,6 +35,8 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "SpeechWidget.h"
 #include "CollisionDebugDrawingPublic.h"
+#include "IntuitionInterface.h"
+
 
 APlayerUnit::APlayerUnit()
 {
@@ -539,17 +541,17 @@ void APlayerUnit::PrimaryAction()
 
 	}
 
+	if (connectedConversationInstance)
+	{
+		connectedConversationInstance->ShowNextDialogueLineOnPlayerInput();
+		return;
+	}
+
 	//Attack target if weapon unsheathed and not in battle
 	if (bWeaponUnsheathed)
 	{
 		//TODO: Player can't go through doors if weapon is out
 		goto Attack;
-	}
-
-	if (connectedConversationInstance)
-	{
-		connectedConversationInstance->ShowNextDialogueLineOnPlayerInput();
-		return;
 	}
 
 	//Talk to NPC
@@ -1100,6 +1102,13 @@ void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
 			UE_LOG(LogTemp, Warning, TEXT("Intuition %s already in game instance."), *intuitionToAdd->GetName());
 			return;
 		}
+	}
+
+	//Handle any other effects the intuition needs
+	IIntuitionInterface* intuitionInterface = Cast<IIntuitionInterface>(intuitionToAdd);
+	if (intuitionInterface)
+	{
+		intuitionInterface->AddIntuition();
 	}
 
 	gameInstance->intuitions.Add(intuitionToAdd);
