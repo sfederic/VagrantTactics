@@ -349,27 +349,14 @@ void APlayerUnit::Move(FVector direction)
 		if (GetWorld()->LineTraceSingleByChannel(fenceHit, GetActorLocation(), GetActorLocation() + (direction * 100.f),
 			ECC_WorldStatic, fenceParams))
 		{
-			AActor* fenceHitActor = fenceHit.GetActor();
-			if(fenceHitActor)
+			if(fenceHit.GetActor())
 			{
 				if (fenceHit.GetActor()->ActorHasTag(GameplayTags::Fence))
 				{
 					UE_LOG(LogTemp, Warning, TEXT("fence or small wall hit"));
-					mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + (direction * 100.f)));
 					return;
 				}
 			}
-
-			if (fenceHitActor)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s hit on player move. Cannot move."), *fenceHitActor->GetName());
-				mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + (direction * 100.f)));
-				return;
-			}
-
-			UE_LOG(LogTemp, Warning, TEXT("Something blocking player move. Cannot move."));
-			mesh->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + (direction * 100.f)));
-			return;
 		}
 
 		currentCameraFOV = maxCameraFOV;
