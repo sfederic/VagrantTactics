@@ -90,8 +90,8 @@ FGridNode* ABattleGrid::GetNode(int x, int y)
 {
 	if (bIsSetAtWorldOrigin)
 	{
-		check(x < sizeX&& x > -1);
-		check(y < sizeY&& y > -1);
+		check(x < sizeX && x > -1);
+		check(y < sizeY && y > -1);
 	}
 
 	return &rows[x].columns[y];
@@ -212,6 +212,13 @@ void ABattleGrid::Init()
 			nodeMap.Add(instancedMeshIndex, rows[x].columns[y]);
 		}
 	}
+
+	//Setup all inactive nodes that all gridactors are on
+	for (AGridActor* gridActor : allGridActors)
+	{
+		FGridNode* node = this->GetNode(gridActor->xIndex, gridActor->yIndex);
+		node->bActive = false;
+	}
 }
 
 //Both starts and ends battle
@@ -266,7 +273,6 @@ void ABattleGrid::ActivateBattle()
 		gridMesh->SetHiddenInGame(true);
 
 		ResetAllNodeValues();
-		//ActivateAllNodes();
 
 		//Hide all grid actor health bars on battle end
 		TArray<AActor*> outGridActors;
