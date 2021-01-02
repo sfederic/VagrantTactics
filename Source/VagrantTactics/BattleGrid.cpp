@@ -216,8 +216,20 @@ void ABattleGrid::Init()
 	//Setup all inactive nodes that all gridactors are on
 	for (AGridActor* gridActor : allGridActors)
 	{
-		FGridNode* node = this->GetNode(gridActor->xIndex, gridActor->yIndex);
-		node->bActive = false;
+		//Keep note that in some cutscene instances, grid actors might be off the level's battle grid
+		//Eg. NPC giving a speech on a balcony
+		if (gridActor->xIndex < this->sizeX)
+		{
+			if (gridActor->yIndex < this->sizeY)
+			{
+				FGridNode* node = this->GetNode(gridActor->xIndex, gridActor->yIndex);
+				if (node)
+				{
+					node->bActive = false;
+				}
+			}
+		}
+		
 	}
 }
 

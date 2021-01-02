@@ -765,11 +765,6 @@ void APlayerUnit::PrimaryAction()
 			AGridActor* gridActor = Cast<AGridActor>(hit.GetActor());
 			if (gridActor)
 			{
-				//Show healthbar on destructibles outside of battle
-				gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
-
-				gridActor->currentHealth -= attackPoints;
-
 				if (battleGrid->bBattleActive)
 				{
 					currentActionPoints -= costToAttack;
@@ -778,6 +773,68 @@ void APlayerUnit::PrimaryAction()
 				AUnit* unit = Cast<AUnit>(gridActor);
 				if(unit)
 				{
+					if (unit)
+					{
+						selectedUnit = unit;
+
+						unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
+
+						//Dealing with unit position on attack
+						if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
+						{
+							if (unit->bFrontVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("front attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
+								return;
+							}
+						}
+						else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
+						{
+							if (unit->bBackVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("back attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
+								return;
+							}
+						}
+						else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
+						{
+							if (unit->bLeftVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("left side attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
+								return;
+							}
+						}
+						else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
+						{
+							if (unit->bRightVulnerable)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("right side attack"));
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
+								return;
+							}
+						}
+					}
+
+					//Show healthbar on destructibles outside of battle
+					gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+
+					gridActor->currentHealth -= attackPoints;
+
 					//TODO: don't know if player will be able to deal more stress damage somehow
 					if (unit->currentStressPoints < unit->maxStressPoints)
 					{
@@ -793,59 +850,6 @@ void APlayerUnit::PrimaryAction()
 				currentCameraFOV = cameraFOVAttack;
 				selectedUnit = gridActor;
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
-
-				if (unit)
-				{
-					selectedUnit = unit;
-
-					unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
-
-					//Dealing with unit position on attack
-					if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
-					{
-						if (unit->bFrontVulnerable)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("front attack"));
-						}
-						else
-						{
-							UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
-						}
-					}
-					else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
-					{
-						if (unit->bBackVulnerable)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("back attack"));
-						}
-						else
-						{
-							UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
-						}
-					}
-					else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
-					{
-						if (unit->bLeftVulnerable)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("left side attack"));
-						}
-						else
-						{
-							UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
-						}
-					}
-					else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
-					{
-						if (unit->bRightVulnerable)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("right side attack"));
-						}
-						else
-						{
-							UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
-						}
-					}
-				}
 
 				//Case for initiating combat with NPCs outside of battle
 				ANPCUnit* npcToStartCombatWith = Cast<ANPCUnit>(gridActor);
