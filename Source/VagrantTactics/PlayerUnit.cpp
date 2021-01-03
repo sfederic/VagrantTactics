@@ -175,9 +175,6 @@ void APlayerUnit::BeginPlay()
 	widgetUnitSkill = CreateWidget<UUnitSkillWidget>(GetWorld(), classUnitSkillWidget);
 
 	widgetGuard = CreateWidget<UUserWidget>(GetWorld(), classGuardWidget);
-
-	widgetDebugControls = CreateWidget<UUserWidget>(GetWorld(), classDebugControlsWidget);
-	widgetDebugControls->AddToViewport();
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -565,6 +562,25 @@ void APlayerUnit::PrimaryAction()
 	//Open doors
 	if (overlappedEntrace)
 	{
+		//TODO: remove on release
+		TArray<FString> MapFiles;
+		IFileManager::Get().FindFilesRecursive(MapFiles, *FPaths::ProjectContentDir(), TEXT("*.umap"), true, false, false);
+		if (MapFiles.Num() > 0)
+		{
+			for (FString& mapName : MapFiles)
+			{
+				if (mapName == overlappedEntrace->connectedLevel.ToString())
+				{
+					goto OpenDoor;
+				}
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Level name %s not found in files."), *overlappedEntrace->connectedLevel.ToString());
+			return;
+		}
+
+		OpenDoor:
+
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FColor::Black, true, true);
 		FTimerHandle timerHandle;
 		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::MoveToLevel, 2.0f, false);

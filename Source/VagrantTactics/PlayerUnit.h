@@ -120,9 +120,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classDeathWidget;
 	UPROPERTY() UUserWidget* widgetDeath;
 
-	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classDebugControlsWidget;
-	UPROPERTY() UUserWidget* widgetDebugControls;
-
 	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classIntuitionTransfer;
 	UPROPERTY() UUserWidget* widgetIntuitionTransfer;
 
