@@ -562,6 +562,30 @@ void APlayerUnit::PrimaryAction()
 
 	}
 
+	//Open doors
+	if (overlappedEntrace)
+	{
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FColor::Black, true, true);
+		FTimerHandle timerHandle;
+		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::MoveToLevel, 2.0f, false);
+		APlayerController* controller = Cast<APlayerController>(GetController());
+		DisableInput(controller);
+
+		//TODO: This works roughly to remove all NPC dialogue while moving level, but new dialogue will still pop up
+		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+
+		//Keep the time of day widget to show time progression when camera fades between entrances
+		timeOfDayWidget->AddToViewport();
+
+		widgetInteract->RemoveFromViewport();
+
+		//Change time of day
+		UMainGameInstance* mainInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		mainInstance->ProgressTimeOfDay();
+
+		return;
+	}
+
 	if (connectedConversationInstance)
 	{
 		connectedConversationInstance->ShowNextDialogueLineOnPlayerInput();
@@ -625,30 +649,6 @@ void APlayerUnit::PrimaryAction()
 
 	if (bInConversation)
 	{
-		return;
-	}
-
-	//Open doors
-	if (overlappedEntrace)
-	{
-		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FColor::Black, true, true);
-		FTimerHandle timerHandle;
-		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::MoveToLevel, 2.0f, false);
-		APlayerController* controller = Cast<APlayerController>(GetController());
-		DisableInput(controller);
-
-		//TODO: This works roughly to remove all NPC dialogue while moving level, but new dialogue will still pop up
-		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
-
-		//Keep the time of day widget to show time progression when camera fades between entrances
-		timeOfDayWidget->AddToViewport();
-
-		widgetInteract->RemoveFromViewport();
-
-		//Change time of day
-		UMainGameInstance* mainInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		mainInstance->ProgressTimeOfDay();
-
 		return;
 	}
 
@@ -830,11 +830,6 @@ void APlayerUnit::PrimaryAction()
 						}
 					}
 
-					//Show healthbar on destructibles outside of battle
-					gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
-
-					gridActor->currentHealth -= attackPoints;
-
 					//TODO: don't know if player will be able to deal more stress damage somehow
 					if (unit->currentStressPoints < unit->maxStressPoints)
 					{
@@ -846,6 +841,12 @@ void APlayerUnit::PrimaryAction()
 						}
 					}
 				}
+
+				//MAIN ATTACK LOGIC
+				//Show healthbar on destructibles outside of battle
+				gridActor->healthbarWidgetComponent->SetHiddenInGame(false);
+
+				gridActor->currentHealth -= attackPoints;
 
 				currentCameraFOV = cameraFOVAttack;
 				selectedUnit = gridActor;
