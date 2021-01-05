@@ -864,6 +864,12 @@ void APlayerUnit::PrimaryAction()
 
 				gridActor->currentHealth -= attackPoints;
 
+				//Refill players action bar if enemy defeated.
+				if (gridActor->currentHealth <= 0)
+				{
+					currentActionPoints = maxActionPoints;
+				}
+
 				currentCameraFOV = cameraFOVAttack;
 				selectedUnit = gridActor;
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
