@@ -562,14 +562,14 @@ void APlayerUnit::PrimaryAction()
 	//Open doors
 	if (overlappedEntrace)
 	{
-		//TODO: remove on release
+		//TODO: remove on release. Just to avoid crashes on OpenLevel()
 		TArray<FString> MapFiles;
 		IFileManager::Get().FindFilesRecursive(MapFiles, *FPaths::ProjectContentDir(), TEXT("*.umap"), true, false, false);
 		if (MapFiles.Num() > 0)
 		{
 			for (FString& mapName : MapFiles)
 			{
-				if (mapName == overlappedEntrace->connectedLevel.ToString())
+				if (mapName.Contains(overlappedEntrace->connectedLevel.ToString()))
 				{
 					goto OpenDoor;
 				}

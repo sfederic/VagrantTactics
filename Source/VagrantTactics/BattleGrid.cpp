@@ -249,30 +249,26 @@ void ABattleGrid::ActivateBattle()
 
 		gridMesh->SetHiddenInGame(false);
 
-		//Show all grid actor health bars on battle start
-		TArray<AActor*> outGridActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGridActor::StaticClass(), outGridActors);
-		for (AActor* actor : outGridActors)
-		{
-			AGridActor* gridActor = Cast<AGridActor>(actor);
-			if (gridActor->bIsDestructible)
-			{
-				//NOTE: This was causing a lot of trouble before when the component was accesed without Find
-				UWidgetComponent* wc = gridActor->FindComponentByClass<UWidgetComponent>();
-				if (wc)
-				{
-					wc->SetHiddenInGame(false);
-				}
-			}
-		}
-
-		//Set all unit focus at start of battle
+		//Show all unit actor health bars on battle start (don't worry about destructibles)
 		TArray<AActor*> outUnits;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
 		for (AActor* actor : outUnits)
 		{
 			AUnit* unit = Cast<AUnit>(actor);
-			unit->ShowUnitFocus();
+			if (unit)
+			{
+				unit->ShowUnitFocus();
+
+				if (unit->bIsDestructible)
+				{
+					//NOTE: This was causing a lot of trouble before when the component was accesed without Find
+					UWidgetComponent* wc = unit->FindComponentByClass<UWidgetComponent>();
+					if (wc)
+					{
+						wc->SetHiddenInGame(false);
+					}
+				}
+			}
 		}
 	}
 	else if (!bBattleActive)
