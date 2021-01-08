@@ -47,10 +47,14 @@ void USpeechComponent::ShowDialogue(bool bStartCombat)
 	}
 
 	//Rotate towards player (like in the old SNES games)
-	APawn* player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (player)
+	UWorld* world = GetWorld();
+	if (world)
 	{
-		GetOwner()->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), player->GetActorLocation()));
+		APawn* player = UGameplayStatics::GetPlayerPawn(world, 0);
+		if (player)
+		{
+			GetOwner()->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), player->GetActorLocation()));
+		}
 	}
 
 	//Set timer to hide dialogue

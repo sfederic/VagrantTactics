@@ -865,9 +865,12 @@ void APlayerUnit::PrimaryAction()
 				gridActor->currentHealth -= attackPoints;
 
 				//Refill players action bar if enemy defeated.
-				if (gridActor->currentHealth <= 0)
+				if (unit)
 				{
-					currentActionPoints = maxActionPoints;
+					if (unit->currentHealth <= 0)
+					{
+						currentActionPoints = maxActionPoints;
+					}
 				}
 
 				currentCameraFOV = cameraFOVAttack;
