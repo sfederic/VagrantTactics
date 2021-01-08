@@ -10,6 +10,11 @@ AGridActor* GameStatics::GetActorAtGridIndex(int x, int y)
 	return nullptr;
 }
 
+ABattleGrid* GameStatics::GetActiveBattleGrid()
+{
+	return nullptr;
+}
+
 UMainGameInstance* GameStatics::GetMainInstance(const UWorld* world)
 {
 	UGameInstance* instance = UGameplayStatics::GetGameInstance(world);

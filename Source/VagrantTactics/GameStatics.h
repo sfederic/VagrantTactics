@@ -11,7 +11,7 @@ class GameStatics
 {
 public:
 	static AGridActor* GetActorAtGridIndex(int x, int y);
-	//static ABattleGrid* GetActiveBattleGrid();
+	static ABattleGrid* GetActiveBattleGrid();
 	static UMainGameInstance* GetMainInstance(const UWorld* world);
 	static APlayerUnit* GetPlayer(const UWorld* world);
 };

@@ -63,7 +63,6 @@ void AEventInstance::DeactivateLinkedActors()
 	for (AActor* actor : actorsToActivate)
 	{
 		actor->Destroy();
-
 		/*actor->SetActorHiddenInGame(true);
 		actor->SetActorEnableCollision(false);
 		actor->SetActorTickEnabled(false);
@@ -71,7 +70,7 @@ void AEventInstance::DeactivateLinkedActors()
 		AUnit* unit = Cast<AUnit>(actor);
 		if (unit)
 		{
-			unit->battleGrid->HideNode(unit->battleGrid->GetNode(unit->xIndex, unit->yIndex));
+			//unit->battleGrid->HideNode(unit->battleGrid->GetNode(unit->xIndex, unit->yIndex));
 		}*/
 	}
 }
