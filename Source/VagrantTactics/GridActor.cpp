@@ -97,6 +97,12 @@ void AGridActor::Tick(float DeltaTime)
 				UDestructibleComponent* dc = FindComponentByClass<UDestructibleComponent>();
 				dc->ApplyDamage(100.f, GetActorLocation(), FVector(FMath::RandRange(-1.f, 1.f)), 100.f);
 
+				//Destroy all connected actors
+				for (AActor* actorToDestroy : actorsToDestroyOnBreak)
+				{
+					actorToDestroy->Destroy();
+				}
+
 				FindComponentByClass<UStaticMeshComponent>()->DestroyComponent();
 
 				healthbarWidgetComponent->SetHiddenInGame(true);

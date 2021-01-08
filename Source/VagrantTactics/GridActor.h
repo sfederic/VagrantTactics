@@ -29,6 +29,9 @@ public:
 	virtual void AddIntuition() override;
 	void SetIndices();
 
+	//Actors to destroy off of destructiblemesh's break (eg. painting on a wall, candle on a table)
+	UPROPERTY(EditAnywhere) TArray<AActor*> actorsToDestroyOnBreak;
+
 	//Every node an actor is connected to, even when scale larger than 1x1 on grid 
 	UPROPERTY(VisibleAnywhere) TArray<int32> connectedNodeIndices;
 
