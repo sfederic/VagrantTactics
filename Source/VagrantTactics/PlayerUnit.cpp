@@ -617,7 +617,6 @@ void APlayerUnit::PrimaryAction()
 			UMainGameInstance* gameInstance = GameStatics::GetMainInstance(GetWorld());
 			gameInstance->entraceKeys.Add(overlappedInteractTrigger->keyToPickup);
 			UE_LOG(LogTemp, Warning, TEXT("Key: %s added to inventory."), *overlappedInteractTrigger->keyToPickup.ToString());
-			return;
 		}
 
 		if (overlappedInteractTrigger->intuitionToGain)
@@ -651,9 +650,10 @@ void APlayerUnit::PrimaryAction()
 
 					selectedUnit = nullptr;
 					bHoldingItem = true;
-					return;
 				}
 			}
+
+			return;
 		}
 	}
 
