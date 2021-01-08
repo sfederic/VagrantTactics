@@ -22,6 +22,10 @@ void AEventInstance::BeginPlay()
 		{
 			ActivateLinkedActors();
 		}
+		else
+		{
+			DeactivateLinkedActors();
+		}
 	}
 	else
 	{
