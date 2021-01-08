@@ -608,6 +608,66 @@ void APlayerUnit::PrimaryAction()
 		return;
 	}
 
+	//Attack target if weapon unsheathed and not in battle
+	if (bWeaponUnsheathed)
+	{
+		//TODO: Player can't go through doors if weapon is out
+		goto Attack;
+	}
+
+	//Talk to NPC
+	if(!battleGrid->bBattleActive && !bWeaponUnsheathed)
+	{
+		FHitResult talkHit;
+		FCollisionQueryParams talkParams;
+		talkParams.AddIgnoredActor(this);
+		if (GetWorld()->LineTraceSingleByChannel(talkHit, GetActorLocation(), GetActorLocation() + (mesh->GetForwardVector() * 150.f),
+			ECC_WorldStatic, talkParams))
+		{
+			AActor* talkHitActor = talkHit.GetActor();
+			if (talkHitActor)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("hit talk actor : %s"), *talkHitActor->GetName());
+
+				ANPCUnit* npc = Cast<ANPCUnit>(talkHitActor);
+				if (npc)
+				{
+					if (npc->conversationInstance)
+					{
+						if (npc->conversationInstance->bIsPlayerConnected)
+						{
+							npc->conversationInstance->ShowNextDialogueLineOnPlayerInput();
+							connectedConversationInstance = npc->conversationInstance;
+							bInConversation = true;
+
+							if (npc->bTurnsTowardPlayerToSpeak)
+							{
+								npc->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(npc->GetActorLocation(), this->GetActorLocation()));
+							}
+
+							currentCameraFOV = cameraFOVConversation;
+							return;
+						}
+					}
+					else
+					{
+						USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
+						if (sc)
+						{
+							sc->ShowDialogue(false);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (bInConversation)
+	{
+		return;
+	}
+
 	//Check for interaction
 	if (overlappedInteractTrigger)
 	{
@@ -681,67 +741,6 @@ void APlayerUnit::PrimaryAction()
 		}
 
 	}
-
-	//Attack target if weapon unsheathed and not in battle
-	if (bWeaponUnsheathed)
-	{
-		//TODO: Player can't go through doors if weapon is out
-		goto Attack;
-	}
-
-	//Talk to NPC
-	if(!battleGrid->bBattleActive && !bWeaponUnsheathed)
-	{
-		FHitResult talkHit;
-		FCollisionQueryParams talkParams;
-		talkParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(talkHit, GetActorLocation(), GetActorLocation() + (mesh->GetForwardVector() * 150.f),
-			ECC_WorldStatic, talkParams))
-		{
-			AActor* talkHitActor = talkHit.GetActor();
-			if (talkHitActor)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("hit talk actor : %s"), *talkHitActor->GetName());
-
-				ANPCUnit* npc = Cast<ANPCUnit>(talkHitActor);
-				if (npc)
-				{
-					if (npc->conversationInstance)
-					{
-						if (npc->conversationInstance->bIsPlayerConnected)
-						{
-							npc->conversationInstance->ShowNextDialogueLineOnPlayerInput();
-							connectedConversationInstance = npc->conversationInstance;
-							bInConversation = true;
-
-							if (npc->bTurnsTowardPlayerToSpeak)
-							{
-								npc->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(npc->GetActorLocation(), this->GetActorLocation()));
-							}
-
-							currentCameraFOV = cameraFOVConversation;
-							return;
-						}
-					}
-					else
-					{
-						USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
-						if (sc)
-						{
-							sc->ShowDialogue(false);
-							return;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (bInConversation)
-	{
-		return;
-	}
-
 
 	if (battleGrid->bBattleActive)
 	{
