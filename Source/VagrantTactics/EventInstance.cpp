@@ -6,7 +6,7 @@
 
 AEventInstance::AEventInstance()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -16,22 +16,22 @@ void AEventInstance::BeginPlay()
 	
 	UMainGameInstance* gameInstance = Cast<UMainGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if (!gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
+	if (bActiveOverEntireHour)
 	{
-		for (AActor* actor : actorsToActivate)
+		if (gameInstance->currentHour == hourToActivate)
 		{
-			actor->SetActorHiddenInGame(true);
-			actor->SetActorEnableCollision(false);
-			actor->SetActorTickEnabled(false);
+			ActivateLinkedActors();
 		}
 	}
-	else if (gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
+	else
 	{
-		for (AActor* actor : actorsToActivate)
+		if (!gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
 		{
-			actor->SetActorHiddenInGame(false);
-			actor->SetActorEnableCollision(true);
-			actor->SetActorTickEnabled(true);
+			DeactivateLinkedActors();
+		}
+		else if (gameInstance->CheckTimeOfDayActivation(hourToActivate, minuteToActivate))
+		{
+			ActivateLinkedActors();
 		}
 	}
 }
@@ -40,4 +40,24 @@ void AEventInstance::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEventInstance::ActivateLinkedActors()
+{
+	for (AActor* actor : actorsToActivate)
+	{
+		actor->SetActorHiddenInGame(false);
+		actor->SetActorEnableCollision(true);
+		actor->SetActorTickEnabled(true);
+	}
+}
+
+void AEventInstance::DeactivateLinkedActors()
+{
+	for (AActor* actor : actorsToActivate)
+	{
+		actor->SetActorHiddenInGame(true);
+		actor->SetActorEnableCollision(false);
+		actor->SetActorTickEnabled(false);
+	}
 }

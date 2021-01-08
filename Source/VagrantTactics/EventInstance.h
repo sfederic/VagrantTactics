@@ -20,6 +20,8 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	void ActivateLinkedActors();
+	void DeactivateLinkedActors();
 
 	UPROPERTY(EditAnywhere) TArray<AActor*> actorsToActivate;
 
@@ -27,6 +29,6 @@ public:
 	UPROPERTY(EditAnywhere) int hourToActivate = 0;
 	UPROPERTY(EditAnywhere) int minuteToActivate = 0;
 
-	//A generic bool that just serves a link
-	UPROPERTY(EditAnywhere) bool bActivate;
+	//Diregards minutes and just activates instance over an hour (7 to 8 for example)
+	UPROPERTY(EditAnywhere) bool bActiveOverEntireHour = true;
 };
