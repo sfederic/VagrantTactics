@@ -37,7 +37,7 @@ void AVagrantTacticsGameModeBase::StartPlay()
 		gridActors.Add(gridActor);
 	}
 
-	//Remove all actors from level that have been previously destroyed
+	//Remove all actors from level that have been previously destroyed and destroy their connected-ornamental actors
 	UMainGameInstance* mainInstance = GameStatics::GetMainInstance(GetWorld());
 	for (AActor* actorToDestroyOnLevelLoad : outGridActors)
 	{
@@ -48,6 +48,11 @@ void AVagrantTacticsGameModeBase::StartPlay()
 				AGridActor* gridActor = Cast<AGridActor>(actorToDestroyOnLevelLoad);
 				if (gridActor)
 				{
+					for (AActor* connectedActorToDestroy : gridActor->actorsToDestroyOnBreak)
+					{
+						connectedActorToDestroy->Destroy();
+					}
+
 					activeBattleGrid->UnhideNode(activeBattleGrid->GetNode(gridActor->xIndex, gridActor->yIndex));
 				}
 

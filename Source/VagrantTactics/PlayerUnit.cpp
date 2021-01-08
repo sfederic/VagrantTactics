@@ -175,6 +175,9 @@ void APlayerUnit::BeginPlay()
 	widgetUnitSkill = CreateWidget<UUnitSkillWidget>(GetWorld(), classUnitSkillWidget);
 
 	widgetGuard = CreateWidget<UUserWidget>(GetWorld(), classGuardWidget);
+
+	//TODO: need to figure out settting animations in C++
+	widgetIntuitionGained = CreateWidget<UUserWidget>(GetWorld(), classWidgetIntuitionGained);
 }
 
 void APlayerUnit::Tick(float DeltaTime)
@@ -1164,7 +1167,12 @@ void APlayerUnit::AddIntuition(TSubclassOf<UIntuition> intuitionClass)
 
 	gameInstance->intuitions.Add(intuitionToAdd);
 	intuitions.Add(intuitionToAdd);
-	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+
+	//TODO: should there be a timer here on the splash widget so they can't ever overlap?
+	widgetIntuitionGained->AddToViewport();
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::IntuitionGainedWidgetHide, 3.0f, false);
+
 	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
 }
 
@@ -1190,7 +1198,11 @@ void APlayerUnit::AddIntuition(UIntuition* intuitionToAdd)
 
 	gameInstance->intuitions.Add(intuitionToAdd);
 	intuitions.Add(intuitionToAdd);
-	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Green, TEXT("Intuition added"));
+
+	widgetIntuitionGained->AddToViewport();
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerUnit::IntuitionGainedWidgetHide, 3.0f, false);
+
 	UE_LOG(LogTemp, Warning, TEXT("Intuition %s added"), *intuitionToAdd->GetName());
 }
 
@@ -1223,4 +1235,12 @@ void APlayerUnit::PlayerThoughtEnd()
 {
 	speechWidgetComponent->SetHiddenInGame(true);
 	speechWidget->dialogueLine = FText::FromString("");
+}
+
+void APlayerUnit::IntuitionGainedWidgetHide()
+{
+	if (widgetIntuitionGained)
+	{
+		widgetIntuitionGained->RemoveFromViewport();
+	}
 }

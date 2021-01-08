@@ -77,6 +77,7 @@ public:
 	void AddStress(int stressPoints, ANPCUnit* npc);
 	void PlayerThought(FText* text);
 	void PlayerThoughtEnd();
+	void IntuitionGainedWidgetHide();
 		
 	//PARTICLES
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleSystemFocus;
@@ -93,6 +94,9 @@ public:
 	const float cameraFOVConversation = 60.f;
 
 	//WIDGETS
+	UPROPERTY(EditAnywhere, Category = "Widgets") TSubclassOf<UUserWidget> classWidgetIntuitionGained;
+	UPROPERTY() UUserWidget* widgetIntuitionGained;
+
 	UPROPERTY(EditAnywhere, Category="Widgets") TSubclassOf<UUserWidget> classWidgetActionPoints;
 	UPROPERTY() UUserWidget* widgetActionPoints;
 
