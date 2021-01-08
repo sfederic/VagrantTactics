@@ -311,6 +311,12 @@ void APlayerUnit::Move(FVector direction)
 		return;
 	}
 
+	if (bInteracting)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player in interaction. Cannot move."));
+		return;
+	}
+
 	if (battleGrid->bBattleActive)
 	{
 		if (!battleGrid->bPlayerTurn)
@@ -544,6 +550,12 @@ void APlayerUnit::Rotate(float angle)
 		return;
 	}
 
+	if (bInteracting)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player in interaction. Cannot turn."));
+		return;
+	}
+
 Turn:
 
 	if (nextLocation.Equals(GetActorLocation()) && nextRotation.Equals(GetActorRotation()))
@@ -554,6 +566,13 @@ Turn:
 
 void APlayerUnit::PrimaryAction()
 {
+	if (bInteracting)
+	{
+		bInteracting = false;
+		Cancel();
+		return;
+	}
+
 	if (overlappedSavePoint)
 	{
 
@@ -653,6 +672,7 @@ void APlayerUnit::PrimaryAction()
 				}
 			}
 
+			bInteracting = true;
 			return;
 		}
 	}

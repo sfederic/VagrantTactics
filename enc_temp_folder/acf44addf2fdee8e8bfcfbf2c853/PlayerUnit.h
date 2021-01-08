@@ -196,9 +196,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) bool bGameOver = false;
 
-	//Whether player is reading, checking, opening something
-	UPROPERTY(VisibleAnywhere) bool bInteracting = false;
-
 	//STRESS
 	UPROPERTY(EditAnywhere) int currentStressPoints;
 	UPROPERTY(EditAnywhere) int maxStressPoints;
