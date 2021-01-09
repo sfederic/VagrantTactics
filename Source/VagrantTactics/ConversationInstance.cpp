@@ -49,7 +49,11 @@ void AConversationInstance::BeginPlay()
 			//Hide all actors and destroy
 			for (AActor* actor : actorsToActivate)
 			{
-				actor->Destroy();
+				AUnit* unit = Cast<AUnit>(actor);
+				if (unit)
+				{
+					unit->RemoveFromMap();
+				}
 			}
 
 			Destroy();

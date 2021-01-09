@@ -53,6 +53,7 @@ public:
 	void ActivateForBattle();
 	void WindUpAttack();
 	void WindUpSkill();
+	void RemoveFromMap();
 	virtual void ActivateStress();
 
 	UPROPERTY(VisibleAnywhere) AActor* actorToFocusOn;

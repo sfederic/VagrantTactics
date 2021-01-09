@@ -521,3 +521,10 @@ void AUnit::ActivateStress()
 	currentAttackPoints = attackPointsUnderStress;
 	unitState = stateUnderStress;
 }
+
+//Call this over Destroy(). Handles battlegrid numbers as well
+void AUnit::RemoveFromMap()
+{
+	battleGrid->numOfUnitsAlive--;
+	Destroy();
+}
