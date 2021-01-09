@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "NPCUnit.h"
 
 USpeechComponent::USpeechComponent()
 {
@@ -35,31 +36,38 @@ void USpeechComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void USpeechComponent::ShowDialogue(bool bStartCombat)
 {
-	widgetComponent->SetHiddenInGame(false);
-	speechWidget = Cast<USpeechWidget>(widgetComponent->GetUserWidgetObject());
-	if (bStartCombat)
+	ANPCUnit* npc = Cast<ANPCUnit>(GetOwner());
+	if (npc)
 	{
-		speechWidget->dialogueLine = startCombatText;
-	}
-	else
-	{
-		speechWidget->dialogueLine = dialogueText;
-	}
-
-	//Rotate towards player (like in the old SNES games)
-	UWorld* world = GetWorld();
-	if (world)
-	{
-		APawn* player = UGameplayStatics::GetPlayerPawn(world, 0);
-		if (player)
+		npc->speechWidgetComponent->SetHiddenInGame(false);
+		speechWidget = Cast<USpeechWidget>(npc->speechWidgetComponent->GetUserWidgetObject());
+		if (speechWidget)
 		{
-			GetOwner()->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), player->GetActorLocation()));
+			if (bStartCombat)
+			{
+				speechWidget->dialogueLine = startCombatText;
+			}
+			else
+			{
+				speechWidget->dialogueLine = dialogueText;
+			}
 		}
-	}
 
-	//Set timer to hide dialogue
-	FTimerHandle handle;
-	GetOwner()->GetWorldTimerManager().SetTimer(handle, this, &USpeechComponent::HideDialogue, 3.0f, false);
+		//Rotate towards player (like in the old SNES games)
+		UWorld* world = GetWorld();
+		if (world)
+		{
+			APawn* player = UGameplayStatics::GetPlayerPawn(world, 0);
+			if (player)
+			{
+				GetOwner()->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), player->GetActorLocation()));
+			}
+		}
+
+		//Set timer to hide dialogue
+		FTimerHandle handle;
+		GetOwner()->GetWorldTimerManager().SetTimer(handle, this, &USpeechComponent::HideDialogue, 3.0f, false);
+	}
 }
 
 void USpeechComponent::ShowStressDialogue()

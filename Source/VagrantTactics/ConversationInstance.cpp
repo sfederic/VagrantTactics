@@ -14,7 +14,7 @@
 
 AConversationInstance::AConversationInstance()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -49,7 +49,7 @@ void AConversationInstance::BeginPlay()
 			//Hide all actors and destroy
 			for (AActor* actor : actorsToActivate)
 			{
-				actor->SetActorHiddenInGame(true);
+				actor->Destroy();
 			}
 
 			Destroy();

@@ -751,7 +751,8 @@ void APlayerUnit::PrimaryAction()
 						USpeechComponent* sc = talkHitActor->FindComponentByClass<USpeechComponent>();
 						if (sc)
 						{
-							sc->ShowDialogue(false);
+							//TODO: big fix. FText crashing somewhere when speechcomponent is inherited in blueprint
+							//sc->ShowDialogue(false);
 							return;
 						}
 					}
