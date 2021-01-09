@@ -348,6 +348,8 @@ void APlayerUnit::Move(FVector direction)
 			}
 		}
 
+		selectedUnit = nullptr;
+
 		//Check for hit against fence or small walls between nodes
 		FHitResult fenceHit;
 		FCollisionQueryParams fenceParams;
@@ -908,12 +910,22 @@ void APlayerUnit::PrimaryAction()
 				selectedUnit = gridActor;
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
 
-				//Case for initiating combat with NPCs outside of battle
+				//Activate all actors that can battle in the map 
+				TArray<AActor*> unitsToActivateForBattle;
+				UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), unitsToActivateForBattle);
+				for (AActor* actor : unitsToActivateForBattle)
+				{
+					ANPCUnit* npcToActivateForBattle = Cast<ANPCUnit>(actor);
+					if (npcToActivateForBattle)
+					{
+						npcToActivateForBattle->ActivateForBattle();
+					}
+				}
+
+				//Case for initiating combat with NPC outside of battle
 				ANPCUnit* npcToStartCombatWith = Cast<ANPCUnit>(gridActor);
 				if(npcToStartCombatWith)
 				{
-					npcToStartCombatWith->ActivateForBattle();
-
 					//Needed a way to setup enemy turn order widget outside of battle instances
 					if (widgetEnemyTurnOrder == nullptr)
 					{
