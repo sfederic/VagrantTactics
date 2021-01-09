@@ -22,21 +22,6 @@ void ABattleGrid::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//Get all units and sort
-	TArray<AActor*> outUnits;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
-	for (AActor* actor : outUnits)
-	{
-		AUnit* unit = Cast<AUnit>(actor);
-		if (unit->bCanEnterBattle)
-		{
-			allUnits.Add(unit);
-		}
-	}
-
-	numOfUnitsAlive = outUnits.Num();
-
-	SortUnitsByTurnSpeed();
 }
 
 void ABattleGrid::Tick(float DeltaTime)
@@ -100,6 +85,23 @@ FGridNode* ABattleGrid::GetNode(int x, int y)
 
 void ABattleGrid::Init()
 {
+	//Get all units and sort
+	TArray<AActor*> outUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+	for (AActor* actor : outUnits)
+	{
+		AUnit* unit = Cast<AUnit>(actor);
+		if (unit->bCanEnterBattle)
+		{
+			allUnits.Add(unit);
+		}
+	}
+
+	numOfUnitsAlive = outUnits.Num();
+
+	SortUnitsByTurnSpeed();
+
+
 	gridMesh = FindComponentByClass<UInstancedStaticMeshComponent>();
 	check(gridMesh);
 	
@@ -112,10 +114,6 @@ void ABattleGrid::Init()
 		gridActor->SetIndices();
 		allGridActors.Add(gridActor);
 	}
-
-	//Getting all units to ignore for traces
-	TArray<AActor*> outUnits;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
 
 	FCollisionQueryParams params;
 	params.AddIgnoredActors(outUnits);

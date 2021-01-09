@@ -128,16 +128,23 @@ void AGridActor::Tick(float DeltaTime)
 						ABattleInstance* battleInstance = Cast<ABattleInstance>(outBattleInstance[0]);
 						battleInstance->numOfUnitsAlive--;
 					}
-					else if (battleGrid)
+					else if (battleGrid) //No battleinstance
 					{
-						battleGrid->numOfUnitsAlive--;
-						if (battleGrid->numOfUnitsAlive <= 0)
+						TArray<AActor*> remainingUnitsInBattle;
+						UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), remainingUnitsInBattle);
+						for (AActor* actor : remainingUnitsInBattle)
 						{
-							battleGrid->ActivateBattle();
+							if(Cast<AUnit>(actor)->bInBattle)
+							{
+								goto DestroyActor;
+							}
 						}
+
+						battleGrid->ActivateBattle();
 					}
 				}
 
+				DestroyActor:
 				Destroy();
 			}
 

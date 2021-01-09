@@ -13,9 +13,9 @@ AVagrantTacticsGameModeBase::AVagrantTacticsGameModeBase()
 
 }
 
-void AVagrantTacticsGameModeBase::StartPlay()
+void AVagrantTacticsGameModeBase::BeginPlay()
 {
-	Super::StartPlay();	
+	Super::BeginPlay();	
 
 	//Get BattleGrid
 	TArray<AActor*> outBattleGrid;

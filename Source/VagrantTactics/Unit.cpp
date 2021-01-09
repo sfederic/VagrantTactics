@@ -525,6 +525,7 @@ void AUnit::ActivateStress()
 //Call this over Destroy(). Handles battlegrid numbers as well
 void AUnit::RemoveFromMap()
 {
-	battleGrid->numOfUnitsAlive--;
+
+	//battleGrid->numOfUnitsAlive--;
 	Destroy();
 }
