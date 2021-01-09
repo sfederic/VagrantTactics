@@ -82,6 +82,10 @@ void USpeechComponent::ShowStressDialogue()
 
 void USpeechComponent::HideDialogue()
 {
-	widgetComponent->SetHiddenInGame(true);
-	speechWidget->dialogueLine = FText();
+	ANPCUnit* npc = Cast<ANPCUnit>(GetOwner());
+	if (npc)
+	{
+		npc->speechWidgetComponent->SetHiddenInGame(true);
+		speechWidget->dialogueLine = FText();
+	}
 }

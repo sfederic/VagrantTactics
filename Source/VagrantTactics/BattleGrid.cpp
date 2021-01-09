@@ -10,6 +10,7 @@
 #include "PlayerUnit.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ConversationInstance.h"
 
 ABattleGrid::ABattleGrid()
 {
@@ -243,6 +244,14 @@ void ABattleGrid::ActivateBattle()
 
 	if (bBattleActive)
 	{
+		//End all active conversations 
+		TArray<AActor*> outConversationInstances;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AConversationInstance::StaticClass(), outConversationInstances);
+		for (AActor* actor : outConversationInstances)
+		{
+			actor->Destroy();
+		}
+
 		GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("Battle Activated"));
 
 		player->widgetActionPoints->AddToViewport();

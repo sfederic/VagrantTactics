@@ -59,6 +59,7 @@ void AGridActor::BeginPlay()
 	}
 
 	//Setup health bar
+	//NOTE: This is causing a bit of trouble with the Blueprint side of things. Shit never inits and attachedUnit is never set
 	if (bIsDestructible)
 	{
 		if (healthbarWidgetComponent)
