@@ -584,6 +584,12 @@ void APlayerUnit::PrimaryAction()
 	//Open doors
 	if (overlappedEntrace)
 	{
+		if (battleGrid->bBattleActive)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player cannot use door in battle."));
+			return;
+		}
+
 		//TODO: remove on release. Just to avoid crashes on OpenLevel()
 		TArray<FString> MapFiles;
 		IFileManager::Get().FindFilesRecursive(MapFiles, *FPaths::ProjectContentDir(), TEXT("*.umap"), true, false, false);
