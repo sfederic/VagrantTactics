@@ -950,11 +950,8 @@ void APlayerUnit::SecondaryAction()
 	if (bGuardWindowActive)
 	{
 		currentActionPoints -= 20;
-
-		guardPoints = 2;
-
 		widgetGuard->RemoveFromViewport();
-
+		bIsGuarding = true;
 		bGuardWindowActive = false;
 		currentGuardWindowTimer = 0.f;
 	}

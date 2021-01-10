@@ -146,7 +146,6 @@ public:
 	UPROPERTY(EditAnywhere, Category="AP Costs") int costToMove;
 
 	UPROPERTY(EditAnywhere) int attackPoints;
-	UPROPERTY(EditAnywhere) int guardPoints;
 
 	//DEBUG INTUITIONS (Both only for debug purposes, main intuition handling is in game isntance)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Intuitions") TArray<UIntuition*> intuitions;
@@ -194,9 +193,10 @@ public:
 	FVector conversationWidgetFocus;
 
 	//GUARDING & DODGING
-	UPROPERTY(VisibleAnywhere) bool bGuardWindowActive = false;
-	UPROPERTY(VisibleAnywhere) float guardWindowTimerMax;
-	UPROPERTY(VisibleAnywhere) float currentGuardWindowTimer;
+	bool bGuardWindowActive = false;
+	bool bIsGuarding;
+	float guardWindowTimerMax;
+	float currentGuardWindowTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) bool bGameOver = false;
 
