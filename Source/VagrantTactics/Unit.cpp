@@ -118,6 +118,7 @@ void AUnit::Tick(float DeltaTime)
 				if (Attack())
 				{
 					//ShowMovementPath();
+
 				}
 				else //If melee doesn't hit, move to skills
 				{
@@ -140,6 +141,9 @@ void AUnit::Tick(float DeltaTime)
 
 						return;
 					}*/
+
+					bTurnFinished = true;
+					bCurrentlyMoving = false;
 				}
 			}
 		}
