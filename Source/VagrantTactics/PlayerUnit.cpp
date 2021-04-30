@@ -822,72 +822,72 @@ void APlayerUnit::PrimaryAction()
 				AUnit* unit = Cast<AUnit>(gridActor);
 				if(unit)
 				{
-					if (unit)
+					//Activate all actors that can battle in the map 
+					battleGrid->ActivateBattle();
+
+					selectedUnit = unit;
+
+					unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
+
+					//Dealing with unit position on attack
+					if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
 					{
-						selectedUnit = unit;
-
-						unit->FindComponentByClass<UWidgetComponent>()->SetHiddenInGame(false);
-
-						//Dealing with unit position on attack
-						if (unit->GetActorForwardVector().Equals(-GetActorForwardVector())) //Front attack
+						if (unit->bFrontVulnerable)
 						{
-							if (unit->bFrontVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("front attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
-								return;
-							}
+							UE_LOG(LogTemp, Warning, TEXT("front attack"));
 						}
-						else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
+						else
 						{
-							if (unit->bBackVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("back attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
-								return;
-							}
-						}
-						else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
-						{
-							if (unit->bLeftVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("left side attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
-								return;
-							}
-						}
-						else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
-						{
-							if (unit->bRightVulnerable)
-							{
-								UE_LOG(LogTemp, Warning, TEXT("right side attack"));
-							}
-							else
-							{
-								UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
-								return;
-							}
+							UE_LOG(LogTemp, Warning, TEXT("Unit front invulnerable"));
+							return;
 						}
 					}
-
-					//TODO: don't know if player will be able to deal more stress damage somehow
-					if (unit->currentStressPoints < unit->maxStressPoints)
+					else if (unit->GetActorForwardVector().Equals(GetActorForwardVector())) //Back attack
 					{
-						unit->currentStressPoints += 1;
-						if (unit->currentStressPoints >= unit->maxStressPoints)
+						if (unit->bBackVulnerable)
 						{
-							//TODO: add an interface here
-							unit->ActivateStress();
+							UE_LOG(LogTemp, Warning, TEXT("back attack"));
 						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Unit back invulnerable"));
+							return;
+						}
+					}
+					else if (unit->GetActorRightVector().Equals(GetActorForwardVector())) //Left side attack
+					{
+						if (unit->bLeftVulnerable)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("left side attack"));
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Unit left invulnerable"));
+							return;
+						}
+					}
+					else if (unit->GetActorRightVector().Equals(-GetActorForwardVector())) //Right side attack
+					{
+						if (unit->bRightVulnerable)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("right side attack"));
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Unit right invulnerable"));
+							return;
+						}
+					}
+				}
+
+				//TODO: don't know if player will be able to deal more stress damage somehow
+				if (unit->currentStressPoints < unit->maxStressPoints)
+				{
+					unit->currentStressPoints += 1;
+					if (unit->currentStressPoints >= unit->maxStressPoints)
+					{
+						//TODO: add an interface here
+						unit->ActivateStress();
 					}
 				}
 
@@ -910,7 +910,6 @@ void APlayerUnit::PrimaryAction()
 				selectedUnit = gridActor;
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeAttack, camera->GetComponentLocation(), 5.0f, 5.0f);
 
-				//Activate all actors that can battle in the map 
 				TArray<AActor*> unitsToActivateForBattle;
 				UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), unitsToActivateForBattle);
 				for (AActor* actor : unitsToActivateForBattle)

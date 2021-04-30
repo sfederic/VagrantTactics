@@ -56,8 +56,8 @@ public:
 	void RotateLeft();
 	void RotateRight();
 	void Rotate(float angle);
-	void PrimaryAction();
-	void SecondaryAction();
+	void PrimaryAction(); //Talking, attacking, using
+	void SecondaryAction(); //Defending, canceling
 	void EndTurn();
 	void Click();
 	void PreviewBattleGrid();

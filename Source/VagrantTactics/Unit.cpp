@@ -435,8 +435,6 @@ void AUnit::ActivateForBattle()
 		bInBattle = true;
 		healthbarWidgetComponent->SetHiddenInGame(false);
 
-		battleGrid->ActivateBattle();
-
 		USpeechComponent* sc = FindComponentByClass<USpeechComponent>();
 		if (sc)
 		{
