@@ -10,7 +10,7 @@
 
 class UParticleSystemComponent;
 class UParticleSystem;
-class UMatineeCameraShake;
+class UCameraShakeBase;
 class USpellBase;
 
 UENUM(BlueprintType)
@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Particles") UParticleSystem* particleTemplateFocusBeam;
 
 	//CAMERA
-	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UMatineeCameraShake> cameraShakeAttack;
+	UPROPERTY(EditAnywhere, Category="Camera") TSubclassOf<UCameraShakeBase> cameraShakeAttack;
 
 	//GRID NODES
 	TArray<FGridNode*> movementPathNodes; //Movement nodes are the preview nodes shown on click

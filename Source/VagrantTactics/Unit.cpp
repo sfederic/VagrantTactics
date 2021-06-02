@@ -8,7 +8,7 @@
 #include "LevelGridValues.h"
 #include "BattleGrid.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Camera/CameraShake.h"
+#include "Camera/CameraShakeBase.h"
 #include "GameStatics.h"
 #include "SkillBase.h"
 #include "TimerManager.h"
@@ -456,7 +456,7 @@ void AUnit::WindUpAttack()
 	}
 	else //Attack hits
 	{
-		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+		//UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
 
 		if (!player->bIsGuarding)
 		{
@@ -491,7 +491,7 @@ void AUnit::WindUpSkill()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%s skill %s hit."), *GetName(), *activeSkill->GetName());
 
-				UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
+				//UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->PlayCameraShake(cameraShakeAttack);
 
 				if(!player->bIsGuarding)
 				{
